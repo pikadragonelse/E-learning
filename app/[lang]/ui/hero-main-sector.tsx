@@ -1,10 +1,10 @@
-import Image from "next/image";
+import React from "react";
 import Link from "next/link";
 import { PlayCircleOutlined } from "@ant-design/icons";
 
-export default function Home() {
+export const HeroMainSector = () => {
     return (
-        <main className="h-full">
+        <div>
             <div className="bg-zinc-200 h-[280px] sm:h-[500px] flex items-center relative">
                 <div className="absolute w-full h-full bg-zinc-800/70"></div>
                 <div className="text-zinc-50 ml-5 sm:ml-36 sm:w-96 absolute">
@@ -21,22 +21,22 @@ export default function Home() {
                     </Link>
                 </div>
                 <img
-                    src="/main2.jpg"
+                    src={`/images/main2.jpg`}
                     alt=""
-                    className=" w-full h-full object-cover"
+                    className="w-full h-full object-cover"
                 />
             </div>
             <div className="h-[280px] sm:h-[500px] flex gap-2 mt-2">
                 <div className="bg-zinc-200 h-full w-1/2 relative">
                     <div className="absolute w-full h-full bg-zinc-800/70"></div>
                     <img
-                        src="/sub1.jpg"
+                        src="/images/sub1.jpg"
                         alt=""
                         className=" w-full h-full object-cover"
                     />
                     <div className="absolute top-2 left-2 sm:top-10 sm:left-10 text-zinc-50">
                         <h1 className="text-xs sm:text-lg">Trending courses</h1>
-                        <p className="font-medium text-base sm:text-5xl w-36 sm:w-96">
+                        <p className="font-medium text-base sm:text-3xl lg:text-5xl w-36 lg:w-96">
                             Build your future with 1000+ courses
                         </p>
                     </div>
@@ -63,7 +63,7 @@ export default function Home() {
                             </p>
                         </div>
                         <img
-                            src="/sub2.jpg"
+                            src="/images/sub2.jpg"
                             alt=""
                             className=" w-full h-full object-cover"
                         />
@@ -73,7 +73,7 @@ export default function Home() {
                             <div className="absolute w-full h-full bg-zinc-900/80"></div>
 
                             <img
-                                src="/sub3.jpg"
+                                src="/images/sub3.jpg"
                                 alt=""
                                 className=" w-full h-full object-cover"
                             />
@@ -91,7 +91,7 @@ export default function Home() {
                             <div className="absolute w-full h-full bg-zinc-900/80"></div>
 
                             <img
-                                src="/sub4.jpg"
+                                src="/images/sub4.jpg"
                                 alt=""
                                 className=" w-full h-full object-cover"
                             />
@@ -107,6 +107,6 @@ export default function Home() {
                     </div>
                 </div>
             </div>
-        </main>
+        </div>
     );
-}
+};

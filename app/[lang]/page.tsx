@@ -10,10 +10,40 @@ export default function Home({
     return (
         <main className="flex flex-col gap-10 ">
             <HeroMainSector />
-            <ItemCourse />
+            <div className="">
+                <h2 className="text-2xl text-orange-600 font-medium cursor-pointer w-fit mb-3">
+                    Recommended Courses
+                </h2>
+                <div className="overflow-auto flex justify-center">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 ">
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                    </div>
+                </div>
+            </div>
+            <div className="">
+                <h2 className="text-2xl text-orange-600 font-medium cursor-pointer w-fit mb-3">
+                    Recommended Courses
+                </h2>
+                <div className="overflow-auto flex justify-center">
+                    <div className="grid grid-cols-2 lg:grid-cols-4 ">
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                        <ItemCourse />
+                    </div>
+                </div>
+            </div>
         </main>
     );
-}
-function useStaticQuery(arg0: any): { images: any } {
-    throw new Error("Function not implemented.");
 }

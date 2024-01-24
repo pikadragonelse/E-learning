@@ -41,6 +41,7 @@ export function middleware(request: NextRequest) {
             "/images/logo-icon.png",
             "/images/logo-main.png",
             "/images/logo-text.png",
+            "/sample.vtt",
             // Your other files in `public`
         ].includes(pathname)
     )

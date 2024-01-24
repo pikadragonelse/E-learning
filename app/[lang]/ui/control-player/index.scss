@@ -1,0 +1,32 @@
+.control-player {
+    .ant-slider:hover .ant-slider-handle::after {
+        box-shadow: 0 0 0 2px #ff5f15;
+    }
+
+    .control-player-progress {
+        margin: 0 calc(2px + var(--spacing-sm));
+    }
+
+    .featured-container {
+        display: flex;
+        justify-content: space-between;
+
+        .feature {
+            display: flex;
+            align-items: center;
+        }
+    }
+}
+.hide-show-element {
+    transition: all 0.15s ease-in-out;
+
+    &.hide-element {
+        opacity: 0;
+        scale: 0;
+    }
+
+    &.show-element {
+        opacity: 1;
+        scale: 1;
+    }
+}

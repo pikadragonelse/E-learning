@@ -1,0 +1,30 @@
+.progress-bar-container {
+    padding: 12px 0;
+    width: 100%;
+
+    &:hover .progress-bar {
+        transform: scaleY(3);
+    }
+
+    .progress-bar {
+        height: 4px;
+        transform: scaleY(1);
+        width: 100%;
+        background-color: #e0e0de75;
+        overflow: hidden;
+        transition: all ease 0.1s;
+        cursor: pointer;
+        position: relative;
+
+        .progress-bar-line {
+            height: 100%;
+            text-align: "right";
+            position: absolute;
+        }
+
+        .progress-bar-line-loaded {
+            background-color: rgba(224, 224, 222, 0.74);
+            position: absolute;
+        }
+    }
+}

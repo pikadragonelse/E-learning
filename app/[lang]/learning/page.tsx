@@ -9,7 +9,7 @@ import { ControlPlayer } from "../ui/control-player";
 import clsx from "clsx";
 import { CaretRightOutlined, LoadingOutlined } from "@ant-design/icons";
 import screenfull from "screenfull";
-// import { VideoPlayerCustom } from "../ui/video-player-custom";
+import Video from "video.js";
 
 export default function Page({
     params: { lang },
@@ -102,6 +102,7 @@ export default function Page({
                     ref={videoRef}
                     width="100%"
                     height="640"
+                    preload="auto"
                     onProgress={(e) => {
                         updateBuffered(e);
                     }}

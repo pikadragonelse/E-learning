@@ -2,7 +2,8 @@
 
 import React from "react";
 import type { MenuProps } from "antd";
-import { Menu } from "antd";
+import { ConfigProvider, Menu } from "antd";
+import { BorderOutlined } from "@ant-design/icons";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -24,47 +25,20 @@ function getItem(
 
 const items: MenuProps["items"] = [
     getItem("Navigation One", "sub1", "", [
-        getItem(
-            "Item 1",
-            "g1",
-            null,
-            [getItem("Option 1", "1"), getItem("Option 2", "2")],
-            "group"
-        ),
-        getItem(
-            "Item 2",
-            "g2",
-            null,
-            [getItem("Option 3", "3"), getItem("Option 4", "4")],
-            "group"
-        ),
+        getItem("Item 1", "1", <BorderOutlined />),
+        getItem("Item 2", "2", <BorderOutlined />),
     ]),
 
     getItem("Navigation Two", "sub2", "", [
-        getItem("Option 5", "5"),
-        getItem("Option 6", "6"),
-        getItem("Submenu", "sub3", null, [
-            getItem("Option 7", "7"),
-            getItem("Option 8", "8"),
-        ]),
+        getItem("Option 5", "5", <BorderOutlined />),
+        getItem("Option 6", "6", <BorderOutlined />),
     ]),
-
-    { type: "divider" },
-
     getItem("Navigation Three", "sub4", "", [
-        getItem("Option 9", "9"),
-        getItem("Option 10", "10"),
-        getItem("Option 11", "11"),
-        getItem("Option 12", "12"),
+        getItem("Option 9", "9", <BorderOutlined />),
+        getItem("Option 10", "10", <BorderOutlined />),
+        getItem("Option 11", "11", <BorderOutlined />),
+        getItem("Option 12", "12", <BorderOutlined />),
     ]),
-
-    getItem(
-        "Group",
-        "grp",
-        null,
-        [getItem("Option 13", "13"), getItem("Option 14", "14")],
-        "group"
-    ),
 ];
 
 export type MenuLecture = { className?: string };
@@ -74,13 +48,26 @@ export const MenuLecture: React.FC<MenuLecture> = ({ className }) => {
     };
 
     return (
-        <Menu
-            onClick={onClick}
-            defaultSelectedKeys={["1"]}
-            defaultOpenKeys={["sub1"]}
-            mode="inline"
-            items={items}
-            className={className}
-        />
+        <ConfigProvider
+            theme={{
+                components: {
+                    Menu: {
+                        itemActiveBg: "rgb(255 208 183)",
+                        itemSelectedBg: "rgb(255 232 219)",
+                        itemSelectedColor: "rgb(255 97 15)",
+                        itemBorderRadius: 0,
+                    },
+                },
+            }}
+        >
+            <Menu
+                onClick={onClick}
+                defaultSelectedKeys={["1"]}
+                defaultOpenKeys={["sub1"]}
+                mode="inline"
+                items={items}
+                className={className}
+            />
+        </ConfigProvider>
     );
 };

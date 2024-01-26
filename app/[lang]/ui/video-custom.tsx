@@ -36,7 +36,9 @@ export const VideoCustom: React.FC = () => {
 
     let timer: NodeJS.Timeout;
     const timeout = function () {
-        setIsShowControl(false);
+        if (videoRef.current?.paused === false) {
+            setIsShowControl(false);
+        }
     };
 
     useEffect(() => {
@@ -140,19 +142,30 @@ export const VideoCustom: React.FC = () => {
                     }}
                 >
                     <CaretRightOutlined
-                        className="text-5xl text-zinc-50 absolute cursor-pointer bg-zinc-700 rounded-full p-3 top-[40%] left-[48%] z-10"
-                        hidden={!videoRef.current?.paused || isVideoLoading}
+                        className={clsx(
+                            "text-3xl sm:text-5xl text-zinc-50 absolute cursor-pointer bg-zinc-700 rounded-full p-3 z-10 ",
+                            {
+                                hidden:
+                                    !videoRef.current?.paused || isVideoLoading,
+                            }
+                        )}
                     />
                     <LoadingOutlined
-                        className="text-5xl absolute text-zinc-50 top-[40%] left-[48%] z-10 bg-black rounded-full p-3"
-                        hidden={!isVideoLoading}
+                        className={clsx(
+                            "text-3xl sm:text-5xl absolute text-zinc-50 z-10 bg-black rounded-full p-3",
+                            { hidden: !isVideoLoading }
+                        )}
                     />
                 </div>
                 <div
-                    className={clsx("absolute bottom-0 w-full px-4 py-4", {
-                        "opacity-100": isShowControl,
-                        "opacity-0": !isShowControl,
-                    })}
+                    className={clsx(
+                        "absolute bottom-0 w-full px-4 py-4",
+                        {
+                            "opacity-100": isShowControl,
+                            "opacity-0": !isShowControl,
+                        },
+                        "opacity-100"
+                    )}
                 >
                     <div className="video-progress relative flex items-center">
                         <ProgressBar

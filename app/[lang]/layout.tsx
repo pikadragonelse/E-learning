@@ -3,6 +3,8 @@ import { Inter } from "next/font/google";
 import "./globals.scss";
 import { Header } from "./ui/header";
 import { Footer } from "./ui/footer";
+import { Body } from "./ui/body";
+import { AntdRegistry } from "@ant-design/nextjs-registry";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -18,13 +20,13 @@ export default function RootLayout({
 }) {
     return (
         <html lang="en">
-            <body className={`${inter.className} text-gray-100`}>
-                <Header />
-                <div className="app-container min-h-screen bg-white p-2 sm:py-5 sm:px-20 mt-24">
-                    {children}
-                </div>
-                <Footer />
-            </body>
+            <AntdRegistry>
+                <body className={`${inter.className} text-gray-100`}>
+                    <Header />
+                    <Body>{children}</Body>
+                    <Footer />
+                </body>
+            </AntdRegistry>
         </html>
     );
 }

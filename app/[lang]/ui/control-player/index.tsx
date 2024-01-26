@@ -204,9 +204,9 @@ export const ControlPlayer = ({
                             onClick={handlePlayPause}
                         >
                             {isPlaying ? (
-                                <PauseOutlined className="text-3xl" />
+                                <PauseOutlined className="sm:text-3xl text-xl" />
                             ) : (
-                                <CaretRightOutlined className="text-3xl" />
+                                <CaretRightOutlined className="sm:text-3xl text-xl" />
                             )}
                         </div>
                     </Tooltip>
@@ -215,7 +215,7 @@ export const ControlPlayer = ({
                             className="feature-item feature-left-item cursor-pointer"
                             onClick={handleRewind}
                         >
-                            <IconRewind10s width={30} height={28} />
+                            <IconRewind10s className="sm:w-7 sm:h-7 w-6 h-6" />
                         </div>
                     </Tooltip>
                     <Tooltip title={`Tới 10s`} {...defaultPropsToolTip}>
@@ -223,11 +223,11 @@ export const ControlPlayer = ({
                             className="feature-item feature-left-item cursor-pointer"
                             onClick={handleForward}
                         >
-                            <IconForward10s width={30} height={28} />
+                            <IconForward10s className="sm:w-7 sm:h-7 w-6 h-6" />
                         </div>
                     </Tooltip>
 
-                    <div className="feature-item feature-left-item flex feature-volume items-center cursor-pointer">
+                    <div className="feature-item feature-left-item feature-volume items-center cursor-pointer hidden sm:flex">
                         <Tooltip
                             title={`${isMuted === true ? "Bật âm" : "Tắt âm"}`}
                             {...defaultPropsToolTip}
@@ -236,9 +236,7 @@ export const ControlPlayer = ({
                                 icon={mapIconVolume[isMuted.toString()]}
                                 size="lg"
                                 onClick={handleMuted}
-                                className="block"
-                                width={35}
-                                height={35}
+                                className="block sm:w-7 sm:h-7 w-6 h-6"
                             />
                         </Tooltip>
                         <ConfigProvider
@@ -258,7 +256,7 @@ export const ControlPlayer = ({
                         </ConfigProvider>
                     </div>
                     <Tooltip title={`Thời gian`} {...defaultPropsToolTip}>
-                        <div className="feature-item feature-left-item">
+                        <div className="feature-item feature-left-item text-xs sm:text-base">
                             <span>
                                 {formatTime(
                                     Number(
@@ -286,7 +284,7 @@ export const ControlPlayer = ({
                         {...defaultPropsToolTip}
                     >
                         <div
-                            className="feature-item feature-right-item cursor-pointer"
+                            className="feature-item feature-right-item cursor-pointer flex items-center"
                             onClick={setTrackMode}
                         >
                             <FontAwesomeIcon
@@ -295,8 +293,7 @@ export const ControlPlayer = ({
                                         ? faClosedCaptioning
                                         : faClosedCaptioningSolid
                                 }
-                                size="xl"
-                                className="mb-1"
+                                className="sm:w-7 sm:h-7 w-5 h-5"
                             />
                         </div>
                     </Tooltip>
@@ -341,7 +338,7 @@ export const ControlPlayer = ({
                         <Tooltip title={`Cài đặt`} {...defaultPropsToolTip}>
                             <div className="feature-item feature-right-item cursor-pointer">
                                 <SettingFilled
-                                    className={`text-2xl ${
+                                    className={`sm:text-2xl text-base ${
                                         isSelectedSettingIcon !== false
                                             ? "rotate-45"
                                             : ""
@@ -359,7 +356,7 @@ export const ControlPlayer = ({
                             <FontAwesomeIcon
                                 icon={isFullscreen ? faCompress : faExpand}
                                 size="xl"
-                                className="mb-1"
+                                className="mb-1 sm:w-7 sm:h-7 w-5 h-5"
                             />
                         </div>
                     </Tooltip>

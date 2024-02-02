@@ -1,9 +1,12 @@
 import React from "react";
 import { RightOutlined, PlayCircleOutlined } from "@ant-design/icons";
 
-export const ItemCourse = () => {
+export type ItemCourse = { className?: string };
+export const ItemCourse: React.FC<ItemCourse> = ({ className }) => {
     return (
-        <div className="aspect-video relative group shadow-xl text-zinc-50 m-1">
+        <div
+            className={`aspect-video relative group shadow-xl text-zinc-50 m-1 ${className}`}
+        >
             <div className="sm:h-full transition-all overflow-hidden relative cursor-pointer">
                 <img
                     src="https://coolwallpapers.me/picsup/3058990-book_computer_design_development_electronics_html_keyboard_laptop_macbook_notebook_pencil_technology_web_web-design_website.jpg"

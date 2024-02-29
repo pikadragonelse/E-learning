@@ -5,7 +5,7 @@ import { PlayCircleOutlined } from "@ant-design/icons";
 export const HeroMainSector = () => {
     return (
         <div>
-            <div className="bg-zinc-200 h-[280px] sm:h-[500px] flex items-center relative">
+            <div className="bg-zinc-200 h-[280px] sm:h-[500px] flex items-center relative rounded-xl overflow-hidden">
                 <div className="absolute w-full h-full bg-zinc-800/70"></div>
                 <div className="text-zinc-50 ml-5 sm:ml-36 sm:w-96 absolute">
                     <h1 className="text-xs sm:text-lg">Varied courses</h1>
@@ -27,7 +27,7 @@ export const HeroMainSector = () => {
                 />
             </div>
             <div className="h-[280px] sm:h-[500px] flex gap-2 mt-2">
-                <div className="bg-zinc-200 h-full w-1/2 relative">
+                <div className="bg-zinc-200 h-full w-1/2 relative rounded-xl overflow-hidden">
                     <div className="absolute w-full h-full bg-zinc-800/70"></div>
                     <img
                         src="/images/sub1.jpg"
@@ -49,7 +49,7 @@ export const HeroMainSector = () => {
                     </Link>
                 </div>
                 <div className=" h-full w-1/2 flex flex-col gap-2">
-                    <div className="bg-orange-700 h-1/2 flex items-center gap-2 relative overflow-hidden">
+                    <div className="bg-orange-700 h-1/2 flex items-center gap-2 relative rounded-xl overflow-hidden">
                         <Link
                             href=""
                             className="text-3xl sm:text-5xl sm:ml-10 flex gap-1 items-center ml-2 text-zinc-50 "
@@ -68,8 +68,8 @@ export const HeroMainSector = () => {
                             className=" w-full h-full object-cover"
                         />
                     </div>
-                    <div className=" h-1/2 flex gap-2">
-                        <div className="w-1/2  text-zinc-50 flex flex-col items-center justify-center text-center relative">
+                    <div className=" h-1/2 flex gap-2 ">
+                        <div className="w-1/2  text-zinc-50 flex flex-col items-center justify-center text-center relative rounded-xl overflow-hidden">
                             <div className="absolute w-full h-full bg-zinc-900/80"></div>
 
                             <img
@@ -87,7 +87,7 @@ export const HeroMainSector = () => {
                                 </p>
                             </div>
                         </div>
-                        <div className="w-1/2  text-zinc-50 flex flex-col items-center justify-center text-center relative">
+                        <div className="w-1/2  text-zinc-50 flex flex-col items-center justify-center text-center relative rounded-xl overflow-hidden">
                             <div className="absolute w-full h-full bg-zinc-900/80"></div>
 
                             <img

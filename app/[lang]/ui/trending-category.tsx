@@ -5,6 +5,7 @@ export type TrendingCategory = {
     icon?: JSX.Element;
     text?: string;
 };
+
 export const TrendingCategory: React.FC<TrendingCategory> = ({
     className,
     icon,
@@ -14,7 +15,7 @@ export const TrendingCategory: React.FC<TrendingCategory> = ({
         <div
             className={`min-w-28 text-zinc-300 flex gap-1 flex-col items-center p-2 cursor-pointer hover:text-orange-600 transition-all ${className}`}
         >
-            <div>{icon}</div>
+            <div className="w-10 h-10">{icon}</div>
             <span className="text-xs lg:text-base">{text}</span>
         </div>
     );

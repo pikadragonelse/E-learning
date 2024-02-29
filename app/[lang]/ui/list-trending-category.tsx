@@ -13,12 +13,12 @@ import { TrendingCategory } from "./trending-category";
 export const ListTrendingCategory = () => {
     return (
         <div className="overflow-hidden">
-            <div className="flex justify-between items-end py-2 md:py-8  overflow-auto">
+            <div className="flex justify-between items-end py-2 md:py-8 overflow-auto">
                 <TrendingCategory
                     icon={
                         <FontAwesomeIcon
                             icon={faCode}
-                            className="w-8 lg:w-14"
+                            className="md:text-2xl lg:text-4xl"
                         />
                     }
                     text="Coding"
@@ -27,7 +27,7 @@ export const ListTrendingCategory = () => {
                     icon={
                         <FontAwesomeIcon
                             icon={faNewspaper}
-                            className="w-6 lg:w-12"
+                            className="md:text-2xl lg:text-4xl"
                         />
                     }
                     text="Content writing"
@@ -36,7 +36,7 @@ export const ListTrendingCategory = () => {
                     icon={
                         <FontAwesomeIcon
                             icon={faMagnifyingGlassLocation}
-                            className="w-6 lg:w-12"
+                            className="md:text-2xl lg:text-4xl"
                         />
                     }
                     text="SEO"
@@ -45,7 +45,7 @@ export const ListTrendingCategory = () => {
                     icon={
                         <FontAwesomeIcon
                             icon={faPenRuler}
-                            className="w-6 lg:w-12"
+                            className="md:text-2xl lg:text-4xl"
                         />
                     }
                     text="Design"
@@ -54,7 +54,7 @@ export const ListTrendingCategory = () => {
                     icon={
                         <FontAwesomeIcon
                             icon={faCameraRetro}
-                            className="w-6 lg:w-12"
+                            className="md:text-2xl lg:text-4xl"
                         />
                     }
                     text="Photography"
@@ -63,7 +63,7 @@ export const ListTrendingCategory = () => {
                     icon={
                         <FontAwesomeIcon
                             icon={faScaleUnbalancedFlip}
-                            className="w-8 lg:w-14"
+                            className="md:text-2xl lg:text-4xl"
                         />
                     }
                     text="Sales"

@@ -41,8 +41,11 @@ const items: MenuProps["items"] = [
     ]),
 ];
 
-export type MenuLecture = { className?: string };
-export const MenuLecture: React.FC<MenuLecture> = ({ className }) => {
+export type MenuLecture = { className?: string; isSetDefault?: boolean };
+export const MenuLecture: React.FC<MenuLecture> = ({
+    className,
+    isSetDefault = true,
+}) => {
     const onClick: MenuProps["onClick"] = (e) => {
         console.log("click ", e);
     };
@@ -62,7 +65,7 @@ export const MenuLecture: React.FC<MenuLecture> = ({ className }) => {
         >
             <Menu
                 onClick={onClick}
-                defaultSelectedKeys={["1"]}
+                defaultSelectedKeys={isSetDefault ? ["1"] : [""]}
                 defaultOpenKeys={["sub1"]}
                 mode="inline"
                 items={items}

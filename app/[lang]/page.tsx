@@ -45,7 +45,7 @@ export default function Home({
             </div>
             <div className="">
                 <h2 className="text-2xl text-orange-600 font-medium cursor-pointer w-fit mb-3">
-                    Top instructor
+                    Top instructors
                 </h2>
                 <ListInstructor />
             </div>

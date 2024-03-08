@@ -12,7 +12,7 @@ export const ItemCourse: React.FC<ItemCourse> = ({ className }) => {
         >
             <Link
                 href="/detail-course"
-                className="sm:h-full block transition-all overflow-hidden relative cursor-pointer"
+                className="sm:h-full block transition-all overflow-hidden relative cursor-pointer text-zinc-50"
             >
                 <img
                     src="https://coolwallpapers.me/picsup/3058990-book_computer_design_development_electronics_html_keyboard_laptop_macbook_notebook_pencil_technology_web_web-design_website.jpg"

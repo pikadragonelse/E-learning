@@ -1,12 +1,20 @@
 "use client";
 
-import React from "react";
+import React, { useState } from "react";
 import { SubInfoDetailCourse } from "../ui/sub-info-detail-course";
 import { DetailOverviewInfo } from "../ui/detail-overview-info";
 import { CheckList } from "../ui/check-list";
 import { MenuLecture } from "../ui/menu-lecture";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { CustomButton } from "../ui/button";
+import { Comment } from "../ui/comment/comment";
+import { InstructorBriefInfo } from "../ui/instructor-brief-info";
+import { CarouselList } from "../ui/carousel-list";
+import { ItemCourseSub } from "../ui/item-course-sub";
+
+const initialComments: Comment[] = [
+    // Add your initial comments data here
+];
 
 export default function Page() {
     return (
@@ -114,6 +122,16 @@ export default function Page() {
                             their productivity.
                         </li>
                     </ul>
+                </div>
+            </div>
+            <div className="lg:ml-96 lg:mr-60 mx-2 mt-10 text-zinc-800">
+                <InstructorBriefInfo className="mb-6" />
+                <Comment isHideCommentForm isHideAction />
+                <div className="">
+                    <h1 className="font-medium text-2xl mb-4">
+                        Recommended course
+                    </h1>
+                    <ItemCourseSub />
                 </div>
             </div>
         </main>

@@ -25,7 +25,7 @@ export const CustomButton: React.FC<ButtonProps> = ({
         <ConfigProvider
             theme={{
                 token: {
-                    colorPrimary: "#f97316",
+                    colorPrimary: "#E3311D",
                 },
             }}
         >

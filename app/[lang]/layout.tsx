@@ -22,9 +22,7 @@ export default function RootLayout({
         <html lang="en">
             <AntdRegistry>
                 <body className={`${inter.className} text-gray-100`}>
-                    <Header />
-                    <Body>{children}</Body>
-                    <Footer />
+                    {children}
                 </body>
             </AntdRegistry>
         </html>

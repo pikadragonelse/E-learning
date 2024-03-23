@@ -14,7 +14,8 @@ import clsx from "clsx";
 import Link from "next/link";
 const url = "https://api.dicebear.com/7.x/miniavs/svg?seed=1";
 
-export const Header = () => {
+export type Header = { onClickCategoryIcon?: (props?: any) => unknown };
+export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
     const [isScroll, setIsScroll] = useState(false);
 
     useEffect(() => {
@@ -67,8 +68,12 @@ export const Header = () => {
                         </Link>
 
                         <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all">
-                            <MenuOutlined />
-                            <span className="hidden sm:block">Category</span>
+                            <MenuOutlined
+                                className="lg:hidden"
+                                onClick={onClickCategoryIcon}
+                            />
+                            <MenuOutlined className="hidden lg:block" />
+                            <span className="hidden lg:block">Category</span>
                         </div>
                     </div>
 

@@ -7,6 +7,7 @@ import LocaleSwitcher from "../ui/local-swithcher";
 import { VideoCustom } from "../ui/video-custom";
 import { MenuLecture } from "../ui/menu-lecture";
 import { ConfigProvider, Tabs, TabsProps } from "antd";
+import { Container } from "../ui/container";
 
 const items: TabsProps["items"] = [
     {
@@ -49,37 +50,39 @@ export default function Page({
         console.log(key);
     };
     return (
-        <main className="text-zinc-800 flex lg:flex-row flex-col ">
-            <div className="">
-                <VideoCustom />
-                <ConfigProvider
-                    theme={{
-                        components: {
-                            Tabs: {
-                                inkBarColor: "rgb(255 97 15)",
-                                itemHoverColor: "rgb(255 145 88)",
-                                itemSelectedColor: "rgb(255 97 15)",
-                                itemActiveColor: "rgb(255 87 0)",
+        <Container>
+            <div className="text-zinc-800 flex lg:flex-row flex-col ">
+                <div className="">
+                    <VideoCustom />
+                    <ConfigProvider
+                        theme={{
+                            components: {
+                                Tabs: {
+                                    inkBarColor: "rgb(255 97 15)",
+                                    itemHoverColor: "rgb(255 145 88)",
+                                    itemSelectedColor: "rgb(255 97 15)",
+                                    itemActiveColor: "rgb(255 87 0)",
+                                },
                             },
-                        },
-                    }}
-                >
-                    <Tabs
-                        defaultActiveKey="1"
-                        items={items}
-                        onChange={onChange}
-                        className="lg:hidden"
-                    />
-                    <Tabs
-                        defaultActiveKey="1"
-                        items={itemsDesktop}
-                        onChange={onChange}
-                        className="hidden lg:flex"
-                    />
-                </ConfigProvider>
-            </div>
+                        }}
+                    >
+                        <Tabs
+                            defaultActiveKey="1"
+                            items={items}
+                            onChange={onChange}
+                            className="lg:hidden"
+                        />
+                        <Tabs
+                            defaultActiveKey="1"
+                            items={itemsDesktop}
+                            onChange={onChange}
+                            className="hidden lg:flex"
+                        />
+                    </ConfigProvider>
+                </div>
 
-            <MenuLecture className="hidden lg:block w-1/3" />
-        </main>
+                <MenuLecture className="hidden lg:block w-1/3" />
+            </div>
+        </Container>
     );
 }

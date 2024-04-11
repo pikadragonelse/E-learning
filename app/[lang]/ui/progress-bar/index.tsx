@@ -119,7 +119,7 @@ export const ProgressBar = ({
                         style={{ width: `${loadedSeconds}%` }}
                     ></div>
                     <div
-                        className="progress-bar-line bg-orange-600"
+                        className="progress-bar-line bg-orange-700"
                         style={{ width: `${percent}%` }}
                     ></div>
                 </div>

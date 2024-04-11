@@ -36,9 +36,9 @@ export const ItemCourse: React.FC<ItemCourse> = ({ className }) => {
             </Link>
             <div className="flex justify-between items-center absolute bottom-1 w-full px-3">
                 <span className="text-xs sm:text-base">
-                    Price: <span className="text-orange-600">$30</span>
+                    Price: <span className="text-orange-700">$30</span>
                 </span>
-                <button className="flex gap-1 text-orange-600 items-center text-xs sm:text-sm hover:text-orange-400 py-1">
+                <button className="flex gap-1 text-orange-700 items-center text-xs sm:text-sm hover:text-orange-400 py-1">
                     <span
                         className=""
                         onClick={(event) => {

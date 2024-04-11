@@ -82,7 +82,7 @@ export const SidebarDrawer: React.FC<SidebarDrawer & DrawerProps> = ({
             }}
         >
             <Drawer {...props} className="text-zinc-800 lg:hidden">
-                <h1 className="text-lg font-medium text-orange-600">
+                <h1 className="text-lg font-medium text-orange-700">
                     Filters<span>(6)</span>
                 </h1>
                 <div className="overflow-auto max-h-[36rem]">

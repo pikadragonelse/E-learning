@@ -18,7 +18,7 @@ export const Container: React.FC<Container> = ({ children }) => {
                 onClose={() => setOpenSidebarDrawer(false)}
             />
             <Header onClickCategoryIcon={() => setOpenSidebarDrawer(true)} />
-            <Body>{children}</Body>
+            <Body className="">{children}</Body>
             <Footer />
         </main>
     );

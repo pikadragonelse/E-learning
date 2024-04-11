@@ -14,7 +14,7 @@ export const HeroMainSector = () => {
                     </p>
                     <Link
                         href=""
-                        className="text-xs sm:text-2xl flex gap-1 items-center mt-2 text-orange-600"
+                        className="text-xs sm:text-2xl flex gap-1 items-center mt-2 text-orange-700"
                     >
                         <PlayCircleOutlined />
                         <span>Start Now</span>
@@ -42,7 +42,7 @@ export const HeroMainSector = () => {
                     </div>
                     <Link
                         href=""
-                        className="text-xs sm:text-2xl flex gap-1 items-center mt-2 text-orange-600 absolute left-2 bottom-2 sm:left-10 sm:bottom-5"
+                        className="text-xs sm:text-2xl flex gap-1 items-center mt-2 text-orange-700 absolute left-2 bottom-2 sm:left-10 sm:bottom-5"
                     >
                         <PlayCircleOutlined />
                         <span>Start Now</span>
@@ -81,7 +81,7 @@ export const HeroMainSector = () => {
                                 <h1 className=" text-sm sm:text-xl sm:mt-2 font-medium">
                                     Instructors
                                 </h1>
-                                <p className=" text-orange-600 text-xs sm:text-sm lg:text-base">
+                                <p className=" text-orange-700 text-xs sm:text-sm lg:text-base">
                                     Many instructors come from all over the
                                     world
                                 </p>
@@ -99,7 +99,7 @@ export const HeroMainSector = () => {
                                 <h1 className=" text-sm sm:text-xl sm:mt-2 font-medium">
                                     Affordable
                                 </h1>
-                                <p className=" text-orange-600 text-xs sm:text-sm lg:text-base text-wrap">
+                                <p className=" text-orange-700 text-xs sm:text-sm lg:text-base text-wrap">
                                     There are both free and paid courses
                                 </p>
                             </div>

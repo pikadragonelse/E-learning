@@ -44,6 +44,8 @@ export function middleware(request: NextRequest) {
             "/images/bg-login.png",
             "/images/bg-login.webp",
             "/images/google.png",
+            "/images/create-course.jpg",
+
             "/sample.vtt",
             "/Download.mp4",
             "/documents/Download_out0001.jpg",

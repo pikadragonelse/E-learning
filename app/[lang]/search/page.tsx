@@ -82,13 +82,13 @@ export default function Page() {
                         },
                     },
                     token: {
-                        colorPrimary: "#f97316",
+                        colorPrimary: "#E3311D",
                     },
                 }}
             >
                 <div className="flex lg:mx-10 gap-6 text-zinc-800">
                     <div className="border-2 p-4 shadow-lg w-[600px] min-w-[300px] hidden lg:block h-fit">
-                        <h1 className="text-xl font-medium mb-5 text-orange-600">
+                        <h1 className="text-xl font-medium mb-5 text-orange-700">
                             Filters & categories
                         </h1>
 

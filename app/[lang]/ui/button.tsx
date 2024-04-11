@@ -10,10 +10,10 @@ import React from "react";
 // > = {
 //     link: "",
 //     default:
-//         "bg-zinc-50 hover:border-orange-600 text-zinc-800 hover:text-orange-600",
-//     primary: "bg-orange-500 hover:border-orange-600 text-zinc-50",
+//         "bg-zinc-50 hover:border-orange-700 text-zinc-800 hover:text-orange-700",
+//     primary: "bg-orange-500 hover:border-orange-700 text-zinc-50",
 //     text: "",
-//     dashed: "bg-transparent hover:border-orange-600 text-zinc-800 hover:text-orange-600",
+//     dashed: "bg-transparent hover:border-orange-700 text-zinc-800 hover:text-orange-700",
 // };
 
 export const CustomButton: React.FC<ButtonProps> = ({

@@ -18,3 +18,25 @@ video::cue {
     font-size: 18px;
     text-align: center;
 }
+
+.ant-rate-star.ant-rate-star-full,
+.ant-rate-star.ant-rate-star-zero,
+.ant-rate-star.ant-rate-star-half.ant-rate-star-active {
+    transition: transform 0s !important;
+}
+
+.ant-rate-star.ant-rate-star-half.ant-rate-star-active {
+    transform: scale(0.8) !important;
+}
+
+.ant-rate-star.ant-rate-star-full {
+    transform: scale(0.8) !important;
+}
+
+.ant-rate-star.ant-rate-star-zero {
+    transform: scale(0.8) !important;
+}
+
+.ant-rate .ant-rate-star {
+    margin: 0 !important;
+}

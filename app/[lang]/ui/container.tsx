@@ -5,6 +5,7 @@ import { Header } from "./header";
 import { Body } from "./body";
 import { Footer } from "./footer";
 import { SidebarDrawer } from "./sidebar-drawer";
+import { ConfigProvider } from "antd";
 
 export type Container = { children?: any };
 export const Container: React.FC<Container> = ({ children }) => {
@@ -18,7 +19,15 @@ export const Container: React.FC<Container> = ({ children }) => {
                 onClose={() => setOpenSidebarDrawer(false)}
             />
             <Header onClickCategoryIcon={() => setOpenSidebarDrawer(true)} />
-            <Body className="">{children}</Body>
+            <ConfigProvider
+                theme={{
+                    token: {
+                        colorPrimary: "#E3311D",
+                    },
+                }}
+            >
+                <Body className="">{children}</Body>
+            </ConfigProvider>
             <Footer />
         </main>
     );

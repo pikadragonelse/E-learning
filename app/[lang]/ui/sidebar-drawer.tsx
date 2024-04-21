@@ -86,8 +86,13 @@ export const SidebarDrawer: React.FC<SidebarDrawer & DrawerProps> = ({
                     Filters<span>(6)</span>
                 </h1>
                 <div className="overflow-auto max-h-[36rem]">
-                    {listMenu.map((menu) => (
-                        <Menu items={menu} mode="inline" className="border-0" />
+                    {listMenu.map((menu, index) => (
+                        <Menu
+                            key={index}
+                            items={menu}
+                            mode="inline"
+                            className="border-0"
+                        />
                     ))}
                 </div>
             </Drawer>

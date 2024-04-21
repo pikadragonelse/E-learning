@@ -1,9 +1,10 @@
 "use client";
 
-import React from "react";
+import React, { useEffect, useState } from "react";
 import type { MenuProps } from "antd";
 import { ConfigProvider, Menu } from "antd";
 import { BorderOutlined } from "@ant-design/icons";
+import { Topic } from "../lib/model/topic";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -41,14 +42,42 @@ const items: MenuProps["items"] = [
     ]),
 ];
 
-export type MenuLecture = { className?: string; isSetDefault?: boolean };
+export type MenuLecture = {
+    className?: string;
+    isSetDefault?: boolean;
+    dataList?: Topic[];
+};
 export const MenuLecture: React.FC<MenuLecture> = ({
     className,
     isSetDefault = true,
+    dataList = [],
 }) => {
+    const [officialData, setOfficialData] = useState<MenuProps["items"]>();
+
     const onClick: MenuProps["onClick"] = (e) => {
         console.log("click ", e);
     };
+
+    const handleDataList = () => {
+        const newList = dataList.map((topic, index) => {
+            const listLesson = topic.lessons.map((lesson, index) => {
+                return getItem(
+                    lesson.title,
+                    lesson.title + index,
+                    <BorderOutlined />
+                );
+            });
+            return getItem(topic.name, topic.name + index, "", listLesson);
+        });
+
+        setOfficialData(newList);
+    };
+
+    useEffect(() => {
+        if (dataList.length > 0) {
+            handleDataList();
+        }
+    }, [dataList]);
 
     return (
         <ConfigProvider
@@ -68,7 +97,7 @@ export const MenuLecture: React.FC<MenuLecture> = ({
                 defaultSelectedKeys={isSetDefault ? ["1"] : [""]}
                 defaultOpenKeys={["sub1"]}
                 mode="inline"
-                items={items}
+                items={officialData}
                 className={className}
             />
         </ConfigProvider>

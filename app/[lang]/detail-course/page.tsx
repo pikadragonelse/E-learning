@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { SubInfoDetailCourse } from "../ui/sub-info-detail-course";
 import { DetailOverviewInfo } from "../ui/detail-overview-info";
 import { CheckList } from "../ui/check-list";
@@ -9,17 +9,51 @@ import { CaretRightOutlined } from "@ant-design/icons";
 import { CustomButton } from "../ui/button";
 import { Comment } from "../ui/comment/comment";
 import { InstructorBriefInfo } from "../ui/instructor-brief-info";
-import { CarouselList } from "../ui/carousel-list";
 import { ItemCourseSub } from "../ui/item-course-sub";
 import { Container } from "../ui/container";
-
-const initialComments: Comment[] = [
-    // Add your initial comments data here
-];
+import { apiInstance } from "@/plugin/apiInstance";
+import { Course, defaultCourse } from "../lib/model/course";
+import { Modal } from "antd";
+import { VideoCustom } from "../ui/video-custom";
 
 export default function Page() {
+    const [courseData, setCourseData] = useState<Course>(defaultCourse);
+    const [openModalPreview, setOpenModalPreview] = useState(false);
+    const [refreshVideo, setRefreshVideo] = useState(0);
+
+    const getCourseData = () => {
+        apiInstance
+            .get("courses/e1a1051a-d8cd-40bd-a297-d2e9932e1c56")
+            .then((res) => {
+                setCourseData(res.data.data.course);
+                console.log(res.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    useEffect(() => {
+        getCourseData();
+    }, []);
+
     return (
         <Container>
+            <Modal
+                title="Preview course"
+                open={openModalPreview}
+                onCancel={() => {
+                    setOpenModalPreview(false);
+                    setRefreshVideo((prev) => prev + 1);
+                }}
+                footer={<></>}
+                className="w-[800px]"
+            >
+                <VideoCustom
+                    refresh={refreshVideo}
+                    videoSource={courseData.trailerUrl}
+                />
+            </Modal>
             <div className="relative">
                 <div className="h-64 md:h-96 lg:hidden relative group overflow-hidden">
                     <div className="absolute flex flex-col gap-2 items-center justify-center w-full h-full bg-zinc-800/40  transition-all cursor-pointer">
@@ -36,9 +70,21 @@ export default function Page() {
                         className="w-full h-full object-cover "
                     />
                 </div>
-                <SubInfoDetailCourse />
+                <SubInfoDetailCourse
+                    price={courseData.price}
+                    discount={courseData.discount}
+                    duration={courseData.duration}
+                    onClickPreview={() => setOpenModalPreview(true)}
+                />
                 <div className="h-3 hidden lg:block"></div>
-                <DetailOverviewInfo />
+                <DetailOverviewInfo
+                    title={courseData?.title}
+                    instructor={courseData?.instructor.profile.fullName}
+                    rating={Number(courseData?.averageRating.toFixed(1))}
+                    latestUpdate={courseData?.updatedAt}
+                    language={courseData?.language.languageName}
+                    desc={courseData?.introduction}
+                />
                 <div className="mt-4 lg:hidden">
                     <p className="text-zinc-800 font-medium text-2xl">$200</p>
                     <div className="mt-2 flex flex-col">
@@ -55,13 +101,18 @@ export default function Page() {
                         <h1 className="font-medium text-2xl mb-4">
                             What you'll learn
                         </h1>
-                        <CheckList />
+                        <CheckList
+                            dataList={courseData.learnsDescription
+                                .trim()
+                                .split(".")}
+                        />
                     </div>
                     <div className="mt-14">
                         <h1 className="font-medium text-2xl mb-4">Content</h1>
                         <MenuLecture
                             className="bg-zinc-50"
                             isSetDefault={false}
+                            dataList={courseData.topics}
                         />
                     </div>
                     <div className="mt-14">
@@ -69,18 +120,17 @@ export default function Page() {
                             Requirements
                         </h1>
                         <ul className="list-disc text-sm lg:text-base flex flex-col gap-2">
-                            <li className="ml-10">
-                                Basic computer skills: surfing websites, running
-                                programs, saving and opening documents, etc.
-                            </li>
-                            <li className="ml-10">
-                                Basic computer skills: surfing websites, running
-                                programs, saving and opening documents, etc.
-                            </li>
-                            <li className="ml-10">
-                                Basic computer skills: surfing websites, running
-                                programs, saving and opening documents, etc.
-                            </li>
+                            {courseData.requirementsDescription
+                                .split(".")
+                                .map((value, index) =>
+                                    value !== "" ? (
+                                        <li className="ml-10" key={index}>
+                                            {value}
+                                        </li>
+                                    ) : (
+                                        ""
+                                    )
+                                )}
                         </ul>
                     </div>
                     <div className="mt-14">
@@ -88,27 +138,7 @@ export default function Page() {
                             Description
                         </h1>
                         <p className="text-sm lg:text-base">
-                            If you're an office worker, student, administrator,
-                            or just want to become more productive with your
-                            computer, programming will allow you write code that
-                            can automate tedious tasks. This course follows the
-                            popular (and free!) book, Automate the Boring Stuff
-                            with Python. Automate the Boring Stuff with Python
-                            was written for people who want to get up to speed
-                            writing small programs that do practical tasks as
-                            soon as possible. You don't need to know sorting
-                            algorithms or object-oriented programming, so this
-                            course skips all the computer science and
-                            concentrates on writing code that gets stuff done.
-                            This course is for complete beginners and covers the
-                            popular Python programming language. You'll learn
-                            basic concepts as well as: Web scraping Parsing PDFs
-                            and Excel spreadsheets Automating the keyboard and
-                            mouse Sending emails and texts And several other
-                            practical topics By the end of this course, you'll
-                            be able to write code that not only dramatically
-                            increases your productivity, but also be able to
-                            list this fun and creative skill on your resume.
+                            {courseData.description}
                         </p>
                     </div>
                     <div className="mt-14">
@@ -135,8 +165,15 @@ export default function Page() {
                     </div>
                 </div>
                 <div className="lg:ml-96 lg:mr-60 mx-2 mt-10 text-zinc-800">
-                    <InstructorBriefInfo className="mb-6" />
-                    <Comment isHideCommentForm isHideAction />
+                    <InstructorBriefInfo
+                        className="mb-6"
+                        instructor={courseData.instructor}
+                    />
+                    <Comment
+                        isHideCommentForm
+                        isHideAction
+                        listReview={courseData.reviews}
+                    />
                     <div className="">
                         <h1 className="font-medium text-2xl mb-4">
                             Recommended course

@@ -13,22 +13,27 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
 
-export const SubInfoDetailCourse = () => {
+export type SubInfoDetailCourse = {
+    price?: number;
+    discount?: number;
+    duration?: number;
+    onClickPreview?: (...props: any) => unknown;
+};
+export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
+    price = 0,
+    discount = 0,
+    duration = 0,
+    onClickPreview = () => {},
+}) => {
     const [isAbsolute, setIsAbsolute] = useState(false);
 
     useEffect(() => {
         const handleScroll = (event: any) => {
-            console.log(
-                document.getElementsByTagName("html")[0].scrollHeight -
-                    document.getElementsByTagName("html")[0].scrollTop
-            );
-
             if (
                 document.getElementsByTagName("html")[0].scrollHeight -
                     document.getElementsByTagName("html")[0].scrollTop <
                 1000
             ) {
-                console.log(123);
                 setIsAbsolute(true);
             } else {
                 setIsAbsolute(false);
@@ -53,7 +58,10 @@ export const SubInfoDetailCourse = () => {
             )}
         >
             <div className="w-60 h-52 relative group overflow-hidden rounded-tl-lg rounded-tr-lg">
-                <div className="absolute flex items-center justify-center w-full h-full opacity-0 bg-zinc-800/40 group-hover:opacity-100 transition-all cursor-pointer">
+                <div
+                    onClick={onClickPreview}
+                    className="absolute flex items-center justify-center w-full h-full opacity-0 bg-zinc-800/40 group-hover:opacity-100 transition-all cursor-pointer"
+                >
                     <CaretRightOutlined
                         className={
                             "text-xl sm:text-3xl text-zinc-50  bg-zinc-700 rounded-full py-3 px-3"
@@ -68,9 +76,14 @@ export const SubInfoDetailCourse = () => {
             </div>
             <div className="p-2 flex flex-col gap-2">
                 <div className="flex items-center gap-2 ">
-                    <p className="text-2xl font-medium">$230</p>
-                    <p className="text-sm line-through text-zinc-400">$230</p>
+                    <p className="text-2xl font-medium">
+                        ${price - (price * discount) / 100}
+                    </p>
+                    <p className="text-sm line-through text-zinc-400">
+                        ${price}
+                    </p>
                 </div>
+                <div className="">{discount}% off</div>
                 <div className="">
                     <div className="flex gap-2">
                         <CustomButton type="primary" className="w-36 flex-1">
@@ -86,7 +99,7 @@ export const SubInfoDetailCourse = () => {
                 <ul className="text-sm mt-2 flex flex-col gap-2">
                     <li className="flex gap-1 items-center">
                         <FontAwesomeIcon icon={faTv} className="text-xs w-6" />
-                        <p className="">10 hours on-demand video</p>
+                        <p className="">{duration} hours on-demand video</p>
                     </li>
                     <li className="flex gap-1 items-center">
                         <FontAwesomeIcon

@@ -3,6 +3,7 @@ import { CustomButton } from "../button";
 import clsx from "clsx";
 import { FormComment } from "./form-comment";
 import { Rate } from "antd";
+import dayjs from "dayjs";
 
 export type ReplySection = {
     isHideAction?: boolean;
@@ -10,6 +11,7 @@ export type ReplySection = {
     name?: string;
     date?: string;
     content?: string;
+    rating?: number;
 };
 export const ReplySection: React.FC<ReplySection> = ({
     isHideAction = false,
@@ -17,6 +19,7 @@ export const ReplySection: React.FC<ReplySection> = ({
     name,
     date,
     content,
+    rating,
 }) => {
     const [isReplying, setIsReplying] = useState(false);
 
@@ -28,15 +31,20 @@ export const ReplySection: React.FC<ReplySection> = ({
                         <img
                             className="mr-2 w-10 h-10 rounded-full"
                             src={avt}
-                            alt="Michael Gough"
+                            alt={name}
                         />
                         <div className="flex flex-col items-start ml-2">
                             <span className="text-base mb-1">{name}</span>
-                            <Rate className="" />
+                            <div className="">
+                                <span className="mr-2">{rating}</span>
+                                <Rate className="" value={rating} disabled />
+                            </div>
                         </div>
                     </div>
                     <p className="text-sm text-gray-600 dark:text-gray-400">
-                        <span title="February 8th, 2022">{date}</span>
+                        <span title="February 8th, 2022">
+                            {dayjs(date).format("DD/MM/YYYY")}
+                        </span>
                     </p>
                 </div>
             </footer>
@@ -59,9 +67,9 @@ export const ReplySection: React.FC<ReplySection> = ({
                     >
                         <path
                             stroke="currentColor"
-                            stroke-linecap="round"
-                            stroke-linejoin="round"
-                            stroke-width="2"
+                            strokeLinecap="round"
+                            strokeLinejoin="round"
+                            strokeWidth="2"
                             d="M5 5h5M5 8h2m6-3h2m-5 3h6m2-7H2a1 1 0 0 0-1 1v9a1 1 0 0 0 1 1h3v5l5-5h8a1 1 0 0 0 1-1V2a1 1 0 0 0-1-1Z"
                         />
                     </svg>

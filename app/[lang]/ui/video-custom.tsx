@@ -7,11 +7,23 @@ import clsx from "clsx";
 import { CaretRightOutlined, LoadingOutlined } from "@ant-design/icons";
 import screenfull from "screenfull";
 
-export const VideoCustom: React.FC = () => {
+export type VideoCustom = { refresh?: number; videoSource?: string };
+export const VideoCustom: React.FC<VideoCustom> = ({
+    refresh,
+    videoSource = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+}) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [loadedSecondsVideo, setLoadedSecondsVideo] = useState(0);
     const videoRef = useRef<HTMLVideoElement>(null);
     const [isVideoLoading, setIsVideoLoading] = useState(false);
+
+    useEffect(() => {
+        setCurrentTime(0);
+        if (videoRef.current != null && videoRef != null) {
+            videoRef.current.currentTime = 0;
+            videoRef.current.pause();
+        }
+    }, [refresh]);
 
     const updateBuffered = (
         event: React.SyntheticEvent<HTMLVideoElement, Event>
@@ -113,10 +125,7 @@ export const VideoCustom: React.FC = () => {
                     }}
                     className=""
                 >
-                    <source
-                        src="https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4"
-                        type="video/mp4"
-                    />
+                    <source src={videoSource} type="video/mp4" />
                     <track
                         ref={trackRef}
                         src="/sample.vtt"

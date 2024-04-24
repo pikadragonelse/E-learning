@@ -40,3 +40,94 @@ video::cue {
 .ant-rate .ant-rate-star {
     margin: 0 !important;
 }
+
+.carousel-list {
+    display: flex !important;
+    overflow: auto;
+    width: 100%;
+    gap: 20px;
+}
+
+@media (min-width: 61rem) {
+    .carousel-list {
+        display: grid !important;
+        grid-gap: 1.6rem;
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (3 - 1) * 1.6rem) / 3);
+        overflow: unset;
+    }
+
+    .carousel-list.translate-1 {
+        transform: translateX(
+            calc(-1 * ((100% - (3 - 1) * 1.6rem) + 3 * 1.6rem))
+        ) !important;
+    }
+
+    .carousel-list.translate-2 {
+        transform: translateX(
+            calc(2 * (-1 * (100% - (3 - 1) * 1.6rem + 3 * 1.6rem)))
+        ) !important;
+    }
+
+    .carousel-list.translate-3 {
+        transform: translateX(
+            calc(3 * (-1 * (100% - (3 - 1) * 1.6rem + 3 * 1.6rem)))
+        ) !important;
+    }
+
+    .carousel-list.translate-4 {
+        transform: translateX(
+            calc(4 * (-1 * (100% - (3 - 1) * 1.6rem + 3 * 1.6rem)))
+        ) !important;
+    }
+}
+
+@media (min-width: 86rem) {
+    .carousel-list {
+        display: grid !important;
+        grid-gap: 1.6rem;
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (4 - 1) * 1.6rem) / 4);
+        overflow: unset;
+    }
+
+    .carousel-list.translate-1 {
+        transform: translateX(
+            calc(-1 * ((100% - (4 - 1) * 1.6rem) + 4 * 1.6rem))
+        ) !important;
+    }
+
+    .carousel-list.translate-2 {
+        transform: translateX(
+            calc(2 * (-1 * (100% - (4 - 1) * 1.6rem + 4 * 1.6rem)))
+        ) !important;
+    }
+
+    .carousel-list.translate-3 {
+        transform: translateX(
+            calc(3 * (-1 * (100% - (4 - 1) * 1.6rem + 4 * 1.6rem)))
+        ) !important;
+    }
+}
+
+@media (min-width: 100rem) {
+    .carousel-list {
+        display: grid !important;
+        grid-gap: 1.6rem;
+        grid-auto-flow: column;
+        grid-auto-columns: calc((100% - (5 - 1) * 1.6rem) / 5);
+        overflow: unset;
+    }
+
+    .carousel-list.translate-1 {
+        transform: translateX(
+            calc(-1 * ((100% - (5 - 1) * 1.6rem) + 5 * 1.6rem))
+        ) !important;
+    }
+
+    .carousel-list.translate-2 {
+        transform: translateX(
+            calc(2 * (-1 * (100% - (5 - 1) * 1.6rem + 5 * 1.6rem)))
+        ) !important;
+    }
+}

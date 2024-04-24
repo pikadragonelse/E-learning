@@ -18,12 +18,14 @@ export type SubInfoDetailCourse = {
     discount?: number;
     duration?: number;
     onClickPreview?: (...props: any) => unknown;
+    poster?: string;
 };
 export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
     price = 0,
     discount = 0,
     duration = 0,
     onClickPreview = () => {},
+    poster = "https://coolwallpapers.me/picsup/3058990-book_computer_design_development_electronics_html_keyboard_laptop_macbook_notebook_pencil_technology_web_web-design_website.jpg",
 }) => {
     const [isAbsolute, setIsAbsolute] = useState(false);
 
@@ -57,7 +59,7 @@ export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
                 }
             )}
         >
-            <div className="w-60 h-52 relative group overflow-hidden rounded-tl-lg rounded-tr-lg">
+            <div className="w-80 h-52 relative group overflow-hidden rounded-tl-lg rounded-tr-lg">
                 <div
                     onClick={onClickPreview}
                     className="absolute flex items-center justify-center w-full h-full opacity-0 bg-zinc-800/40 group-hover:opacity-100 transition-all cursor-pointer"
@@ -69,7 +71,7 @@ export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
                     />
                 </div>
                 <img
-                    src="https://coolwallpapers.me/picsup/3058990-book_computer_design_development_electronics_html_keyboard_laptop_macbook_notebook_pencil_technology_web_web-design_website.jpg"
+                    src={poster}
                     alt=""
                     className="w-full h-full object-cover "
                 />

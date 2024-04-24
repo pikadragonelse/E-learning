@@ -28,7 +28,7 @@ export const DetailOverviewInfo: React.FC<DetailOverviewInfo> = ({
     language,
 }) => {
     return (
-        <div className="bg-zinc-800 p-6 lg:pl-96 mt-2 flex flex-col gap-4">
+        <div className="bg-zinc-800 p-6 lg:pl-[500px] mt-2 flex flex-col gap-4">
             <h1 className="text-2xl lg:text-4xl font-medium lg:w-2/3">
                 {title}
             </h1>

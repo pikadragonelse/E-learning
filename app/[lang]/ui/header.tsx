@@ -9,14 +9,17 @@ import {
     BellOutlined,
     GlobalOutlined,
 } from "@ant-design/icons";
-import { Avatar } from "antd";
+import { Avatar, Popover } from "antd";
 import clsx from "clsx";
 import Link from "next/link";
+import { apiInstance } from "@/plugin/apiInstance";
+import { Category } from "../lib/model/categories";
 const url = "https://api.dicebear.com/7.x/miniavs/svg?seed=1";
 
 export type Header = { onClickCategoryIcon?: (props?: any) => unknown };
 export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
     const [isScroll, setIsScroll] = useState(false);
+    const [listCategory, setListCategory] = useState<Category[]>([]);
 
     useEffect(() => {
         const handleScroll = (event: any) => {
@@ -32,6 +35,19 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
         return () => {
             window.removeEventListener("scroll", handleScroll);
         };
+    }, []);
+
+    const getCategory = async () => {
+        try {
+            const responseData = await apiInstance.get("categories");
+            setListCategory(responseData.data);
+        } catch (error) {
+            console.log("Get categories failed", error);
+        }
+    };
+
+    useEffect(() => {
+        getCategory();
     }, []);
 
     return (
@@ -66,15 +82,30 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
                                 alt="Alpha logo"
                             />
                         </Link>
-
-                        <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all">
-                            <MenuOutlined
-                                className="lg:hidden"
-                                onClick={onClickCategoryIcon}
-                            />
-                            <MenuOutlined className="hidden lg:block" />
-                            <span className="hidden lg:block">Category</span>
-                        </div>
+                        <Popover
+                            content={
+                                <ul className="flex flex-col gap-2 w-80 flex-wrap text-lg">
+                                    {listCategory.map((category) => (
+                                        <li className="cursor-pointer p-2 hover:text-orange-600">
+                                            {category.name}
+                                        </li>
+                                    ))}
+                                </ul>
+                            }
+                            title="Categories"
+                            placement="bottomRight"
+                        >
+                            <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all">
+                                <MenuOutlined
+                                    className="lg:hidden"
+                                    onClick={onClickCategoryIcon}
+                                />
+                                <MenuOutlined className="hidden lg:block" />
+                                <span className="hidden lg:block">
+                                    Category
+                                </span>
+                            </div>
+                        </Popover>
                     </div>
 
                     <Search placeholder="Learning" className="max-w-xl" />

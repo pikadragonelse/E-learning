@@ -8,17 +8,19 @@ export const HeroMainSector = () => {
             <div className="bg-zinc-200 h-[280px] sm:h-[500px] flex items-center relative rounded-xl overflow-hidden">
                 <div className="absolute w-full h-full bg-zinc-800/70"></div>
                 <div className="text-zinc-50 ml-5 sm:ml-36 sm:w-96 absolute">
-                    <h1 className="text-xs sm:text-lg">Varied courses</h1>
+                    <h1 className="text-xs sm:text-lg text-orange-500">
+                        Varied courses
+                    </h1>
                     <p className="font-medium text-2xl sm:text-5xl">
                         Build your future with 1000+ courses
                     </p>
-                    <Link
+                    {/* <Link
                         href=""
                         className="text-xs sm:text-2xl flex gap-1 items-center mt-2 text-orange-700"
                     >
                         <PlayCircleOutlined />
                         <span>Start Now</span>
-                    </Link>
+                    </Link> */}
                 </div>
                 <img
                     src={`/images/main2.jpg`}
@@ -35,18 +37,20 @@ export const HeroMainSector = () => {
                         className=" w-full h-full object-cover"
                     />
                     <div className="absolute top-2 left-2 sm:top-10 sm:left-10 text-zinc-50">
-                        <h1 className="text-xs sm:text-lg">Trending courses</h1>
+                        <h1 className="text-xs sm:text-lg text-orange-600">
+                            Trending courses
+                        </h1>
                         <p className="font-medium text-base sm:text-3xl lg:text-5xl w-36 lg:w-96">
                             Build your future with 1000+ courses
                         </p>
                     </div>
-                    <Link
+                    {/* <Link
                         href=""
                         className="text-xs sm:text-2xl flex gap-1 items-center mt-2 text-orange-700 absolute left-2 bottom-2 sm:left-10 sm:bottom-5"
                     >
                         <PlayCircleOutlined />
                         <span>Start Now</span>
-                    </Link>
+                    </Link> */}
                 </div>
                 <div className=" h-full w-1/2 flex flex-col gap-2">
                     <div className="bg-orange-700 h-1/2 flex items-center gap-2 relative rounded-xl overflow-hidden">

@@ -5,6 +5,7 @@ import { Review, defaultReview } from "./review";
 import { Topic, defaultTopic } from "./topic";
 
 export interface Course {
+    posterUrl?: string;
     courseId: string;
     title: string;
     introduction: string;
@@ -35,9 +36,11 @@ export interface Course {
     instructor: Instructor;
     topics: Topic[];
     reviews: Review[];
+    page?: number;
 }
 
-export const defaultCourse = {
+export const defaultCourse: Course = {
+    posterUrl: "",
     courseId: "",
     title: "",
     introduction: "",
@@ -68,4 +71,5 @@ export const defaultCourse = {
     instructor: defaultInstructor,
     topics: [defaultTopic],
     reviews: [defaultReview],
+    page: 1,
 };

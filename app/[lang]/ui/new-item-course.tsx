@@ -1,40 +1,63 @@
 import React from "react";
 import { CustomButton } from "./button";
 import clsx from "clsx";
+import { Course, defaultCourse } from "../lib/model/course";
+import Link from "next/link";
 
 export type NewItemCourse = {
     className?: string;
-    img?: string;
+    course?: Course;
     isHiddenButton?: boolean;
+    layout?: "horizontal" | "vertical";
 };
 export const NewItemCourse: React.FC<NewItemCourse> = ({
     className,
-    img,
+    course = defaultCourse,
     isHiddenButton = false,
+    layout = "vertical",
 }) => {
     return (
         <div
-            className={`flex shadow-xl rounded-md overflow-hidden ${className}`}
+            className={clsx(
+                `flex shadow-xl rounded-md overflow-hidden ${className}`,
+                {
+                    "flex-col": layout === "vertical",
+                    "flex-row": layout === "horizontal",
+                }
+            )}
         >
-            <div className="w-[100px] min-w-[100px] sm:w-[200px] sm:min-w-[200px] lg:w-[280px] lg:min-w-[280px] h-44">
-                <img src={img} alt="" className="object-cover w-full h-full" />
-            </div>
-            <div className="text-zinc-800 bg-white p-4 pt-2 gap-2 flex flex-col justify-around ">
+            <Link
+                href={`/detail-course/${course.courseId}`}
+                className="block h-52 group overflow-hidden"
+            >
+                <img
+                    src={course?.posterUrl}
+                    alt=""
+                    className="object-cover w-full h-full transition-all group-hover:scale-110"
+                />
+            </Link>
+            <div className="text-zinc-800 bg-white p-4 pt-2 gap-2 flex flex-col justify-around flex-1">
                 <div className="">
-                    <h1 className=" lg:text-xl">New course</h1>
-                    <div className="flex items-center gap-2 text-orange-700">
-                        <p className="text-sm">Price: $20</p>
+                    <Link
+                        href={`/detail-course/${course.courseId}`}
+                        className="text-sm sm:text-xl hover:text-orange-600 line-clamp-2 h-14 mb-4"
+                    >
+                        {course?.title}
+                    </Link>
+                    <div className="flex items-end gap-2 text-orange-700">
+                        <p className="text-sm lg:text-base">
+                            Price: $
+                            {(
+                                course?.price -
+                                (course?.price * course?.discount) / 100
+                            ).toFixed(2)}
+                        </p>
                         <p className="text-xs lg:text-sm line-through text-orange-300">
-                            $39
+                            ${course?.price}
                         </p>
                     </div>
                 </div>
-                <p className="text-xs line-clamp-2">
-                    Very straight-to-point article. Really worth time reading.
-                    Thank you! But tools are just the instruments for the UX
-                    designers. The knowledge of the design tools are as
-                    important as the creation of the design strategy
-                </p>
+                <p className="text-sm line-clamp-2">{course.description}</p>
                 <div
                     className={clsx(" justify-end gap-2 ", {
                         hidden: isHiddenButton,

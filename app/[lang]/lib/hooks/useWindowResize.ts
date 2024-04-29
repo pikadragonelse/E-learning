@@ -1,7 +1,7 @@
 import { useEffect, useState } from "react";
 
 export const useWindowResize = () => {
-    const [windowSize, setWindowSize] = useState(window.innerWidth);
+    const [windowSize, setWindowSize] = useState(0);
 
     useEffect(() => {
         let timer: NodeJS.Timeout;

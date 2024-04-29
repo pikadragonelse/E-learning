@@ -1,58 +1,43 @@
 "use client";
 
-import { Button, Form, Input, Spin, notification } from "antd";
+import { Form, Input, Spin, notification } from "antd";
 import React, { useState } from "react";
 import { CustomButton } from "../ui/button";
-import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { MailOutlined } from "@ant-design/icons";
 import { useForm } from "antd/es/form/Form";
 import Image from "next/image";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useRouter } from "next/navigation";
-import { cookies } from "next/headers";
 
 type FieldType = {
     email: string;
-    password: string;
 };
 
-export type FormLogin = {
+export type FormForgotPass = {
     className?: string;
-    onGoToSignUp?: (...props: any) => unknown;
-    onForgotPass?: (...props: any) => unknown;
+    onGoToLogin?: (...props: any) => unknown;
 };
-export const FormLogin: React.FC<FormLogin> = ({
+export const FormForgotPass: React.FC<FormForgotPass> = ({
     className,
-    onGoToSignUp,
-    onForgotPass,
+    onGoToLogin,
 }) => {
     const [form] = useForm();
     const [isLoading, setIsLoading] = useState(false);
     const [api, contextHolders] = notification.useNotification();
-    const router = useRouter();
-    const cookiesStore = cookies();
 
     const login = (loginData: FieldType) => {
         setIsLoading(true);
         apiInstance
             .post("auth/login", loginData)
             .then((response) => {
-                let accessToken = JSON.stringify(
-                    response.data.result.token.accessToken
-                );
-                let refreshToken = JSON.stringify(
-                    response.data.result.token.refreshToken
-                );
-                cookiesStore.set("accessToken", accessToken, {
-                    expires: 1,
-                    secure: true,
-                });
-                cookiesStore.set("refreshToken", refreshToken, {
-                    expires: 1,
-                    secure: true,
-                });
                 setIsLoading(false);
                 form.resetFields();
-                router.push("/");
+                console.log(response);
+                api.success({
+                    message: "Login success",
+                    placement: "bottomRight",
+                    description:
+                        "Please check your email to verify your account!",
+                });
             })
             .catch((error) => {
                 setIsLoading(false);
@@ -103,36 +88,15 @@ export const FormLogin: React.FC<FormLogin> = ({
                             addonBefore={<MailOutlined />}
                         />
                     </Form.Item>
-                    <Form.Item<FieldType> name="password">
-                        <Input
-                            placeholder="Enter password"
-                            type="password"
-                            addonBefore={<LockOutlined />}
-                        />
-                    </Form.Item>
-                    <span
-                        onClick={onForgotPass}
-                        className="ml-auto w-fit select-none block mb-3 cursor-pointer text-orange-700 active:text-orange-800 z-20 relative"
-                    >
-                        Forget password?
-                    </span>
+
                     <Form.Item>
                         <div className="flex flex-col gap-2">
-                            <Button type="primary" htmlType="submit">
-                                Login
-                            </Button>
-                            <Button onClick={onGoToSignUp}>
-                                Go to sign up
-                            </Button>
-                            <Button className="flex justify-center items-center gap-2">
-                                <div className="w-5">
-                                    <img
-                                        src={"/images/google.png"}
-                                        className="w-full h-full"
-                                    />
-                                </div>
-                                <span>Login by Google</span>
-                            </Button>
+                            <CustomButton type="primary" htmlType="submit">
+                                Send code
+                            </CustomButton>
+                            <CustomButton onClick={onGoToLogin}>
+                                Go to login
+                            </CustomButton>
                         </div>
                     </Form.Item>
                 </Form>

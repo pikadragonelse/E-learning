@@ -5,6 +5,7 @@ import { Locale } from "antd/es/locale";
 import React, { useState } from "react";
 import { FormLogin } from "../ui/form-login";
 import { FormRegister } from "../ui/form-register";
+import { FormForgotPass } from "../ui/form-forgot-password";
 
 export default function Page({
     params: { lang },
@@ -12,6 +13,7 @@ export default function Page({
     params: { lang: Locale };
 }) {
     const [isShowLogin, setIsShowLogin] = useState(true);
+    const [isShowForgotPass, setIsShowForgotPass] = useState(false);
 
     return (
         <ConfigProvider
@@ -29,11 +31,12 @@ export default function Page({
                 <div className="absolute w-full h-full bg-black/30"></div>
                 <FormLogin
                     className={`absolute duration-500  ${
-                        isShowLogin
+                        isShowLogin && !isShowForgotPass
                             ? "translate-x-0 opacity-100 z-10 -skew-x-0 -skew-y-0"
                             : "-translate-x-[400px] opacity-0 z-0 -skew-x-6 -skew-y-6"
                     }`}
                     onGoToSignUp={() => setIsShowLogin(false)}
+                    onForgotPass={() => setIsShowForgotPass(true)}
                 />
                 <FormRegister
                     className={`absolute duration-500 ${
@@ -42,6 +45,14 @@ export default function Page({
                             : "translate-x-[400px] opacity-0 z-0 skew-x-6 skew-y-6"
                     }`}
                     onGoToLogin={() => setIsShowLogin(true)}
+                />
+                <FormForgotPass
+                    className={`absolute duration-500  ${
+                        isShowForgotPass
+                            ? "translate-x-0 opacity-100 z-10 -skew-x-0 -skew-y-0"
+                            : "-translate-x-[400px] opacity-0 z-0 -skew-x-6 -skew-y-6"
+                    }`}
+                    onGoToLogin={() => setIsShowForgotPass(false)}
                 />
             </div>
         </ConfigProvider>

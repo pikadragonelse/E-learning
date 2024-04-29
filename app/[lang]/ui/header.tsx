@@ -14,12 +14,14 @@ import clsx from "clsx";
 import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Category } from "../lib/model/categories";
+import { useRouter } from "next/navigation";
 const url = "https://api.dicebear.com/7.x/miniavs/svg?seed=1";
 
 export type Header = { onClickCategoryIcon?: (props?: any) => unknown };
 export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
     const [isScroll, setIsScroll] = useState(false);
     const [listCategory, setListCategory] = useState<Category[]>([]);
+    const router = useRouter();
 
     useEffect(() => {
         const handleScroll = (event: any) => {
@@ -113,7 +115,12 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
                         <ShoppingCartOutlined className="hidden sm:block text-2xl cursor-pointer" />
                         <BellOutlined className="hidden sm:block text-xl cursor-pointer" />
                         <GlobalOutlined className="hidden sm:block text-xl cursor-pointer" />
-                        <div className="px-4 py-1 rounded-md border border-zinc-800 cursor-pointer">
+                        <div
+                            className="px-4 py-1 rounded-md border border-zinc-800 cursor-pointer"
+                            onClick={() => {
+                                router.push("/login");
+                            }}
+                        >
                             Login
                         </div>
                         {/* <Avatar

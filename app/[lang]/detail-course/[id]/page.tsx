@@ -119,6 +119,7 @@ export default function Page({ params }: { params: { id: string } }) {
                                 className="bg-zinc-50"
                                 isSetDefault={false}
                                 dataList={courseData.topics}
+                                courseId={courseData.courseId}
                             />
                         </div>
                         <div className="mt-14">

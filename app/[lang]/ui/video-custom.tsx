@@ -7,10 +7,15 @@ import clsx from "clsx";
 import { CaretRightOutlined, LoadingOutlined } from "@ant-design/icons";
 import screenfull from "screenfull";
 
-export type VideoCustom = { refresh?: number; videoSource?: string };
+export type VideoCustom = {
+    refresh?: number;
+    videoSource?: string;
+    onProgress?: (time: number) => void;
+};
 export const VideoCustom: React.FC<VideoCustom> = ({
     refresh,
     videoSource = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
+    onProgress = () => {},
 }) => {
     const [currentTime, setCurrentTime] = useState(0);
     const [loadedSecondsVideo, setLoadedSecondsVideo] = useState(0);
@@ -111,6 +116,7 @@ export const VideoCustom: React.FC<VideoCustom> = ({
                     preload="auto"
                     onProgress={(e) => {
                         updateBuffered(e);
+                        onProgress(e.currentTarget.currentTime);
                     }}
                     onPlaying={() => {
                         setIsVideoLoading(false);

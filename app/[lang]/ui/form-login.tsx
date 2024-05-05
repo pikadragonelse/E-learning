@@ -2,13 +2,12 @@
 
 import { Button, Form, Input, Spin, notification } from "antd";
 import React, { useState } from "react";
-import { CustomButton } from "../ui/button";
-import { UserOutlined, LockOutlined, MailOutlined } from "@ant-design/icons";
+import { LockOutlined, MailOutlined } from "@ant-design/icons";
 import { useForm } from "antd/es/form/Form";
 import Image from "next/image";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useRouter } from "next/navigation";
-import { cookies } from "next/headers";
+import { setCookie } from "cookies-next";
 
 type FieldType = {
     email: string;
@@ -29,7 +28,6 @@ export const FormLogin: React.FC<FormLogin> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [api, contextHolders] = notification.useNotification();
     const router = useRouter();
-    const cookiesStore = cookies();
 
     const login = (loginData: FieldType) => {
         setIsLoading(true);
@@ -42,12 +40,10 @@ export const FormLogin: React.FC<FormLogin> = ({
                 let refreshToken = JSON.stringify(
                     response.data.result.token.refreshToken
                 );
-                cookiesStore.set("accessToken", accessToken, {
-                    expires: 1,
+                setCookie("accessToken", accessToken, {
                     secure: true,
                 });
-                cookiesStore.set("refreshToken", refreshToken, {
-                    expires: 1,
+                setCookie("refreshToken", refreshToken, {
                     secure: true,
                 });
                 setIsLoading(false);

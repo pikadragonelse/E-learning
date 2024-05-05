@@ -53,12 +53,14 @@ export const MenuLecture: React.FC<MenuLecture> = ({
     };
 
     const handleDataList = () => {
-        const newList = dataList.map((topic) => {
+        const newList = dataList.map((topic, index) => {
             const listLesson = topic.lessons.map((lesson) => {
                 return getItem(lesson.title, lesson.id, <BorderOutlined />);
             });
             return getItem(
-                <h2 className="font-medium">{topic.name}</h2>,
+                <h2 key={index} className="font-medium">
+                    {topic.name}
+                </h2>,
                 topic.id,
                 "",
                 listLesson

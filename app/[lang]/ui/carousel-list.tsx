@@ -69,11 +69,12 @@ export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
                         }
                     )}
                 >
-                    {listCourse?.map((course) => (
+                    {listCourse?.map((course, index) => (
                         <NewItemCourse
+                            key={index}
                             course={course}
                             layout="vertical"
-                            className="w-64 min-w-64 sm:w-auto sm-min-w-auto"
+                            className="w-64 min-w-64 sm:w-auto sm-min-w-auto shadow-xl"
                         />
                     ))}
                 </div>

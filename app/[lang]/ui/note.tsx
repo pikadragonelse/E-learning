@@ -55,8 +55,8 @@ export const Note: React.FC<Note> = ({ lessonId, currTime }) => {
             </Row>
             <h1 className="font-medium text-xl my-2">Note list of lesson</h1>
             <ul>
-                {noteList.map((note) => (
-                    <li>
+                {noteList.map((note, index) => (
+                    <li key={index}>
                         <h2></h2>
                     </li>
                 ))}

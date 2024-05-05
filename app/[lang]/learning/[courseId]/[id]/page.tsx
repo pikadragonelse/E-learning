@@ -15,6 +15,7 @@ import { Course, defaultCourse } from "../../../lib/model/course";
 import { OverviewLearning } from "@/app/[lang]/ui/overview-learning";
 import { Comment } from "../../../ui/comment/comment";
 import { Note } from "@/app/[lang]/ui/note";
+import { useToken } from "@/app/[lang]/lib/hooks/useToken";
 
 export default function Page({
     params: { lang, id, courseId },
@@ -24,13 +25,18 @@ export default function Page({
     const [dataLesson, setDataLesson] = useState<LessonFull>(defaultLessonFull);
     const [dataCourse, setDataCourse] = useState<Course>(defaultCourse);
     const [currentTime, setCurrentTime] = useState(0);
+    const userDataToken = useToken();
     const onChange = (key: string) => {
         console.log(key);
     };
 
     const getDataLesson = () => {
         apiInstance
-            .get(`lessons/${id}`)
+            .get(`lessons/${id}`, {
+                headers: {
+                    Authorization: "Bearer " + userDataToken?.accessToken,
+                },
+            })
             .then((data) => {
                 setDataLesson(data.data);
                 console.log(data.data);
@@ -40,7 +46,11 @@ export default function Page({
 
     const getDataCourse = () => {
         apiInstance
-            .get(`courses/${courseId}`)
+            .get(`courses/${courseId}`, {
+                headers: {
+                    Authorization: "Bearer " + userDataToken?.accessToken,
+                },
+            })
             .then((res) => {
                 setDataCourse(res.data.data.course);
             })

@@ -14,12 +14,18 @@ import clsx from "clsx";
 import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Category } from "../lib/model/categories";
+import { useRouter } from "next/navigation";
+import useToken from "antd/es/theme/useToken";
+import { Course } from "../lib/model/course";
 const url = "https://api.dicebear.com/7.x/miniavs/svg?seed=1";
 
 export type Header = { onClickCategoryIcon?: (props?: any) => unknown };
 export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
     const [isScroll, setIsScroll] = useState(false);
     const [listCategory, setListCategory] = useState<Category[]>([]);
+    const [userData, setUserData] = useState();
+    const router = useRouter();
+    const userDataToken = useToken();
 
     useEffect(() => {
         const handleScroll = (event: any) => {
@@ -45,6 +51,8 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
             console.log("Get categories failed", error);
         }
     };
+
+    const searchPage = (value: string) => {};
 
     useEffect(() => {
         getCategory();
@@ -84,9 +92,12 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
                         </Link>
                         <Popover
                             content={
-                                <ul className="flex flex-col gap-2 w-80 flex-wrap text-lg">
-                                    {listCategory.map((category) => (
-                                        <li className="cursor-pointer p-2 hover:text-orange-600">
+                                <ul className="flex flex-col gap-2 w-80 text-lg h-[600px] max-h-[600px] overflow-auto">
+                                    {listCategory.map((category, index) => (
+                                        <li
+                                            key={index}
+                                            className="cursor-pointer p-2 hover:text-orange-600"
+                                        >
                                             {category.name}
                                         </li>
                                     ))}
@@ -94,26 +105,36 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
                             }
                             title="Categories"
                             placement="bottomRight"
+                            className="hidden lg:flex"
                         >
                             <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all">
-                                <MenuOutlined
-                                    className="lg:hidden"
-                                    onClick={onClickCategoryIcon}
-                                />
                                 <MenuOutlined className="hidden lg:block" />
                                 <span className="hidden lg:block">
                                     Category
                                 </span>
                             </div>
                         </Popover>
-                    </div>
 
-                    <Search placeholder="Learning" className="max-w-xl" />
+                        <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all lg:hidden">
+                            <MenuOutlined onClick={onClickCategoryIcon} />
+                        </div>
+                    </div>
+                    <Search
+                        placeholder="Learning"
+                        className="max-w-xl"
+                        onSearch={(value) => console.log(value)}
+                    />
+
                     <div className="flex text-zinc-700 items-center gap-7">
                         <ShoppingCartOutlined className="hidden sm:block text-2xl cursor-pointer" />
                         <BellOutlined className="hidden sm:block text-xl cursor-pointer" />
                         <GlobalOutlined className="hidden sm:block text-xl cursor-pointer" />
-                        <div className="px-4 py-1 rounded-md border border-zinc-800 cursor-pointer">
+                        <div
+                            className="px-4 py-1 rounded-md border border-zinc-800 cursor-pointer"
+                            onClick={() => {
+                                router.push("/login");
+                            }}
+                        >
                             Login
                         </div>
                         {/* <Avatar

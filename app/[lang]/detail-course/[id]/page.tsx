@@ -15,6 +15,7 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { Course, defaultCourse } from "../../lib/model/course";
 import { Modal } from "antd";
 import { VideoCustom } from "../../ui/video-custom";
+import parse from "html-react-parser";
 
 export default function Page({ params }: { params: { id: string } }) {
     const [courseData, setCourseData] = useState<Course>(defaultCourse);
@@ -119,6 +120,7 @@ export default function Page({ params }: { params: { id: string } }) {
                                 className="bg-zinc-50"
                                 isSetDefault={false}
                                 dataList={courseData.topics}
+                                courseId={courseData.courseId}
                             />
                         </div>
                         <div className="mt-14">
@@ -144,7 +146,7 @@ export default function Page({ params }: { params: { id: string } }) {
                                 Description
                             </h1>
                             <p className="text-sm lg:text-base">
-                                {courseData.description}
+                                {parse(courseData.description)}
                             </p>
                         </div>
                         <div className="mt-14">

@@ -27,7 +27,6 @@ export default function Page({
     const [currentTime, setCurrentTime] = useState(0);
     const userDataToken = useToken();
     const onChange = (key: string) => {
-        console.log(key);
     };
 
     const getDataLesson = () => {
@@ -39,7 +38,6 @@ export default function Page({
             })
             .then((data) => {
                 setDataLesson(data.data);
-                console.log(data.data);
             })
             .catch((err) => console.log(err));
     };

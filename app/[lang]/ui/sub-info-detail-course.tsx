@@ -79,7 +79,7 @@ export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
             <div className="p-2 flex flex-col gap-2">
                 <div className="flex items-center gap-2 ">
                     <p className="text-2xl font-medium">
-                        ${price - (price * discount) / 100}
+                        ${(price - (price * discount) / 100).toFixed(2)}
                     </p>
                     <p className="text-sm line-through text-zinc-400">
                         ${price}

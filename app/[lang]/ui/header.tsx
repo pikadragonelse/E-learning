@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { ReactNode, useEffect, useState } from "react";
 import Image from "next/image";
 import Search from "./search";
 import {
@@ -8,24 +8,39 @@ import {
     ShoppingCartOutlined,
     BellOutlined,
     GlobalOutlined,
+    AppstoreOutlined,
+    HeartOutlined,
+    WalletOutlined,
+    UserOutlined,
+    LogoutOutlined,
 } from "@ant-design/icons";
 import { Avatar, Popover } from "antd";
 import clsx from "clsx";
 import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Category } from "../lib/model/categories";
-import { useRouter } from "next/navigation";
-import useToken from "antd/es/theme/useToken";
-import { Course } from "../lib/model/course";
-const url = "https://api.dicebear.com/7.x/miniavs/svg?seed=1";
+import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { User } from "../lib/model/user";
 
-export type Header = { onClickCategoryIcon?: (props?: any) => unknown };
-export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
+const listUserFeature: Array<{ title: string; icon: ReactNode }> = [
+    { title: "My courses", icon: <AppstoreOutlined /> },
+    { title: "Favorite list", icon: <HeartOutlined /> },
+    { title: "My payment", icon: <WalletOutlined /> },
+    { title: "My account", icon: <UserOutlined /> },
+    { title: "Logout", icon: <LogoutOutlined /> },
+];
+
+export type Header = {
+    onClickCategoryIcon?: (props?: any) => unknown;
+    userInfo?: User;
+};
+export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
     const [isScroll, setIsScroll] = useState(false);
     const [listCategory, setListCategory] = useState<Category[]>([]);
-    const [userData, setUserData] = useState();
     const router = useRouter();
-    const userDataToken = useToken();
+    const searchParams = useSearchParams();
+    const pathname = usePathname();
+    const { replace } = useRouter();
 
     useEffect(() => {
         const handleScroll = (event: any) => {
@@ -52,7 +67,19 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
         }
     };
 
-    const searchPage = (value: string) => {};
+    const searchPage = (value: string) => {
+        const params = new URLSearchParams(searchParams);
+        if (value !== "") {
+            params.set("category", value);
+        } else {
+            params.delete("category");
+        }
+        if (pathname.split("/")[2] === "search") {
+            replace(`${pathname}?${params.toString()}`);
+        } else {
+            replace(`${pathname}/search?${params.toString()}`);
+        }
+    };
 
     useEffect(() => {
         getCategory();
@@ -97,6 +124,9 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
                                         <li
                                             key={index}
                                             className="cursor-pointer p-2 hover:text-orange-600"
+                                            onClick={() =>
+                                                searchPage(category.categoryId)
+                                            }
                                         >
                                             {category.name}
                                         </li>
@@ -106,6 +136,7 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
                             title="Categories"
                             placement="bottomRight"
                             className="hidden lg:flex"
+                            trigger={"click"}
                         >
                             <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all">
                                 <MenuOutlined className="hidden lg:block" />
@@ -119,29 +150,54 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon }) => {
                             <MenuOutlined onClick={onClickCategoryIcon} />
                         </div>
                     </div>
-                    <Search
-                        placeholder="Learning"
-                        className="max-w-xl"
-                        onSearch={(value) => console.log(value)}
-                    />
+                    <Search placeholder="Learning" className="max-w-xl" />
 
                     <div className="flex text-zinc-700 items-center gap-7">
-                        <ShoppingCartOutlined className="hidden sm:block text-2xl cursor-pointer" />
+                        <ShoppingCartOutlined
+                            className="hidden sm:block text-2xl cursor-pointer"
+                            onClick={() => router.push("/cart")}
+                        />
                         <BellOutlined className="hidden sm:block text-xl cursor-pointer" />
                         <GlobalOutlined className="hidden sm:block text-xl cursor-pointer" />
-                        <div
-                            className="px-4 py-1 rounded-md border border-zinc-800 cursor-pointer"
-                            onClick={() => {
-                                router.push("/login");
-                            }}
-                        >
-                            Login
-                        </div>
-                        {/* <Avatar
-                        src={url}
-                        className="border border-zinc-600 cursor-pointer"
-                        size={40}
-                    /> */}
+                        {userInfo != null ? (
+                            <Popover
+                                content={
+                                    <ul className="flex flex-col gap-4 w-64">
+                                        {listUserFeature.map(
+                                            (feature, index) => (
+                                                <li
+                                                    key={index}
+                                                    className="p-4 hover:bg-zinc-100 transition-all cursor-pointer flex gap-4 items-center rounded-md active:bg-orange-100"
+                                                >
+                                                    <span className="text-xl">
+                                                        {feature.icon}
+                                                    </span>
+                                                    <span className="text-lg">
+                                                        {feature.title}
+                                                    </span>
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+                                }
+                                placement="bottomLeft"
+                            >
+                                <Avatar
+                                    src={userInfo.profile.avatar}
+                                    className="border border-zinc-600 cursor-pointer"
+                                    size={40}
+                                />
+                            </Popover>
+                        ) : (
+                            <div
+                                className="px-4 py-1 rounded-md border border-zinc-800 cursor-pointer"
+                                onClick={() => {
+                                    router.push("/login");
+                                }}
+                            >
+                                Login
+                            </div>
+                        )}
                     </div>
                 </div>
             </nav>

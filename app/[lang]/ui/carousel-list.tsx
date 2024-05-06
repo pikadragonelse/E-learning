@@ -8,6 +8,7 @@ import { NewItemCourse } from "./new-item-course";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Course } from "../lib/model/course";
 import { useWindowResize } from "../lib/hooks/useWindowResize";
+import { useToken } from "../lib/hooks/useToken";
 
 export type CarouselList = { byCategory?: string };
 export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
@@ -15,6 +16,31 @@ export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
     const [listCourse, setListCourse] = useState<Course[]>();
     const windowSize = useWindowResize();
     const [amountPage, setAmountPage] = useState(3);
+    const userTokenInfo = useToken();
+    const [courseInCartMap, setCourseInCartMap] = useState<
+        Record<string, boolean>
+    >({});
+
+    const getListCart = () => {
+        apiInstance
+            .get("users/carts", {
+                headers: {
+                    Authorization: "Bear " + userTokenInfo?.accessToken,
+                },
+            })
+            .then((res) => {
+                const listCourse: Course[] = res.data.data[0].carts;
+
+                const courseInCartMap: Record<string, boolean> = {};
+                listCourse.forEach((item) => {
+                    courseInCartMap[item.courseId] = true;
+                });
+                setCourseInCartMap(courseInCartMap);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
     const getListCourse = async () => {
         try {
@@ -25,6 +51,7 @@ export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
                     pageSize: 15,
                 },
             });
+
             const listCourse: Course[] = response.data.data;
             setListCourse(listCourse);
         } catch (error) {
@@ -34,6 +61,7 @@ export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
 
     useEffect(() => {
         getListCourse();
+        getListCart();
     }, []);
 
     useEffect(() => {
@@ -57,7 +85,7 @@ export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
                 )}
                 onClick={() => setCurrPage((prev) => prev - 1)}
             />
-            <div className={"overflow-hidden p-4"}>
+            <div className={"overflow-hidden px-4 py-8"}>
                 <div
                     className={clsx(
                         "carousel-list transition-all duration-300",
@@ -75,6 +103,7 @@ export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
                             course={course}
                             layout="vertical"
                             className="w-64 min-w-64 sm:w-auto sm-min-w-auto shadow-xl"
+                            isInCart={courseInCartMap[course.courseId]}
                         />
                     ))}
                 </div>

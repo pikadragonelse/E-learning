@@ -39,8 +39,6 @@ export default function Search({
             apiInstance
                 .get("courses", { params: { search: value } })
                 .then((res) => {
-                    console.log(res.data.data);
-
                     setListCourse(res.data.data);
                     setIsLoading(false);
                 })
@@ -99,7 +97,7 @@ export default function Search({
                     arrow={false}
                     trigger={"click"}
                     content={
-                        <ul className="w-[400px] max-w-[400px] md:w-[600px] md:max-w-[600px] max-h-[600px] overflow-auto">
+                        <ul className="w-[400px] max-w-[400px] md:w-[600px] md:max-w-[600px] max-h-[600px] overflow-auto flex flex-col gap-4">
                             <Skeleton loading={isLoading} active className="">
                                 {listCourse.length > 0
                                     ? listCourse.map((course) => (
@@ -109,6 +107,7 @@ export default function Search({
                                                   layout="horizontal"
                                                   isHiddenButton
                                                   isHiddenDesc
+                                                  className="h-28"
                                               />
                                           </li>
                                       ))

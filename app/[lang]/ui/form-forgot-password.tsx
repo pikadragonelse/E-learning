@@ -31,7 +31,6 @@ export const FormForgotPass: React.FC<FormForgotPass> = ({
             .then((response) => {
                 setIsLoading(false);
                 form.resetFields();
-                console.log(response);
                 api.success({
                     message: "Login success",
                     placement: "bottomRight",

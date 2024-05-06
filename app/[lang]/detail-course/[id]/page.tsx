@@ -27,7 +27,6 @@ export default function Page({ params }: { params: { id: string } }) {
             .get(`courses/${params.id}`)
             .then((res) => {
                 setCourseData(res.data.data.course);
-                console.log(res.data);
             })
             .catch((error) => {
                 console.log(error);

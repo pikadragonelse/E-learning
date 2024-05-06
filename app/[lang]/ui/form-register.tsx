@@ -33,7 +33,6 @@ export const FormRegister: React.FC<FormRegister> = ({
             .then((response) => {
                 setIsLoading(false);
                 form.resetFields();
-                console.log(response);
                 api.success({
                     message: "Register success",
                     placement: "bottomRight",

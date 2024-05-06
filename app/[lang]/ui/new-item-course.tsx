@@ -1,9 +1,13 @@
-import React from "react";
+import React, { useState } from "react";
 import { CustomButton } from "./button";
 import clsx from "clsx";
 import { Course, defaultCourse } from "../lib/model/course";
 import Link from "next/link";
-import { ConfigProvider } from "antd";
+import { Button, ConfigProvider, notification } from "antd";
+import { apiInstance } from "@/plugin/apiInstance";
+import { useToken } from "../lib/hooks/useToken";
+import { LoadingOutlined } from "@ant-design/icons";
+import { useRouter } from "next/navigation";
 
 export type NewItemCourse = {
     className?: string;
@@ -11,6 +15,8 @@ export type NewItemCourse = {
     isHiddenButton?: boolean;
     layout?: "horizontal" | "vertical";
     isHiddenDesc?: boolean;
+    onAddCart?: (courseId?: string) => void;
+    isInCart?: boolean;
 };
 export const NewItemCourse: React.FC<NewItemCourse> = ({
     className,
@@ -18,7 +24,46 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
     isHiddenButton = false,
     layout = "vertical",
     isHiddenDesc = false,
+    isInCart = false,
 }) => {
+    const userTokenData = useToken();
+    const [api, contextHolder] = notification.useNotification();
+    const [isLoadingAddCart, setIsLoadingAddCart] = useState(false);
+    const [isInCartLocal, setIsInCartLocal] = useState(false);
+    const router = useRouter();
+    const addToCart = () => {
+        setIsLoadingAddCart(true);
+        apiInstance
+            .post(
+                "users/carts",
+                {
+                    courseId: course.courseId,
+                },
+                {
+                    headers: {
+                        Authorization: "Bear " + userTokenData?.accessToken,
+                    },
+                }
+            )
+            .then((res) => {
+                api.success({
+                    message: "Add cart successful!",
+                    placement: "bottomRight",
+                });
+                setIsLoadingAddCart(false);
+                setIsInCartLocal(true);
+            })
+            .catch((error) => {
+                console.log(error);
+                api.error({
+                    message: "Add cart error!",
+                    placement: "bottomRight",
+                    description: "Please wait few seconds and try again",
+                });
+                setIsLoadingAddCart(false);
+            });
+    };
+
     return (
         <ConfigProvider
             theme={{
@@ -35,6 +80,7 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                 },
             }}
         >
+            {contextHolder}
             <div
                 className={clsx(
                     `flex items-center rounded-md overflow-hidden ${className}`,
@@ -93,12 +139,26 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                             flex: !isHiddenButton,
                         })}
                     >
-                        <CustomButton type="primary" className="px-2 py-1">
+                        <Button type="primary" className="px-2 py-1">
                             Buy now
-                        </CustomButton>
-                        <CustomButton className="px-2 py-1">
-                            Add to cart
-                        </CustomButton>
+                        </Button>
+                        <Button
+                            className="px-2 py-1"
+                            onClick={() => {
+                                isInCart === true || isInCartLocal === true
+                                    ? router.push("/cart")
+                                    : addToCart();
+                            }}
+                            icon={
+                                isLoadingAddCart ? (
+                                    <LoadingOutlined />
+                                ) : undefined
+                            }
+                        >
+                            {isInCart === true || isInCartLocal === true
+                                ? "View in cart"
+                                : "Add to cart"}
+                        </Button>
                     </div>
                 </div>
             </div>

@@ -21,7 +21,6 @@ export default function Home({
         try {
             const responseData = await apiInstance.get("categories");
             setListCategory(responseData.data);
-            console.log(responseData.data);
         } catch (error) {
             console.log("Get categories failed", error);
         }

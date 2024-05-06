@@ -10,6 +10,7 @@ import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { Avatar } from "antd";
 import React from "react";
 import { Instructor } from "../lib/model/instructor";
+import parse from "html-react-parser";
 
 const infoList = [
     { icon: <FontAwesomeIcon icon={faStar} />, info: "4.6 Instructor Rating" },
@@ -35,7 +36,7 @@ export const InstructorBriefInfo: React.FC<InstructorBriefInfo> = ({
                 <a className="text-lg font-medium cursor-pointer text-orange-500 hover:text-orange-400 hover:underline">
                     {instructor?.profile.fullName}
                 </a>
-                <h2>{instructor?.profile.description}</h2>
+                {/* <h2>{parse(instructor?.profile.description || "")}</h2> */}
             </div>
             <div className="flex gap-6 items-center">
                 <Avatar size={140} src={instructor?.profile.avatar} />
@@ -48,7 +49,9 @@ export const InstructorBriefInfo: React.FC<InstructorBriefInfo> = ({
                     ))}
                 </ul>
             </div>
-            <div className="">{instructor?.profile.description}</div>
+            <div className="">
+                {parse(instructor?.profile.description || "")}
+            </div>
         </div>
     );
 };

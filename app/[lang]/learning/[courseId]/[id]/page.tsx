@@ -16,6 +16,7 @@ import { OverviewLearning } from "@/app/[lang]/ui/overview-learning";
 import { Comment } from "../../../ui/comment/comment";
 import { Note } from "@/app/[lang]/ui/note";
 import { useToken } from "@/app/[lang]/lib/hooks/useToken";
+import { Review } from "@/app/[lang]/lib/model/review";
 
 export default function Page({
     params: { lang, id, courseId },
@@ -26,8 +27,7 @@ export default function Page({
     const [dataCourse, setDataCourse] = useState<Course>(defaultCourse);
     const [currentTime, setCurrentTime] = useState(0);
     const userDataToken = useToken();
-    const onChange = (key: string) => {
-    };
+    const onChange = (key: string) => {};
 
     const getDataLesson = () => {
         apiInstance
@@ -38,6 +38,7 @@ export default function Page({
             })
             .then((data) => {
                 setDataLesson(data.data);
+                console.log(data.data);
             })
             .catch((err) => console.log(err));
     };
@@ -90,15 +91,34 @@ export default function Page({
         },
         {
             key: "4",
-            label: "Reviews",
+            label: "Comments",
             children: (
                 <div className="h-[600px] p-6 max-h-[600px] overflow-auto">
-                    <Comment listReview={dataCourse.reviews} />,
+                    <Comment
+                        listReview={dataCourse.reviews}
+                        type="comment"
+                        itemId={dataLesson.id}
+                    />
                 </div>
             ),
         },
         {
             key: "5",
+            label: "Reviews",
+            children: (
+                <div className="h-[600px] p-6 max-h-[600px] overflow-auto">
+                    <Comment
+                        listReview={dataCourse.reviews}
+                        title="Reviews"
+                        type="review"
+                        itemId={dataCourse.courseId}
+                    />
+                    ,
+                </div>
+            ),
+        },
+        {
+            key: "6",
             label: "Reminders",
             children: "Content of Tab Pane 3",
         },

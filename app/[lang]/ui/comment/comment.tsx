@@ -7,21 +7,31 @@ export type Comment = {
     isHideCommentForm?: boolean;
     isHideAction?: boolean;
     listReview?: Review[];
+    title?: string;
+    type?: "comment" | "review";
+    itemId?: string | number;
 };
 export const Comment: React.FC<Comment> = ({
     isHideCommentForm = false,
     isHideAction = false,
     listReview = [],
+    title = "Comments",
+    type = "comment",
+    itemId,
 }) => {
     return (
         <section className="bg-white dark:bg-gray-900 antialiased text-orange-700">
             <div className="">
                 <div className="flex justify-between items-center mb-6">
                     <h2 className="text-lg lg:text-2xl font-bold text-gray-900 dark:text-white">
-                        Comments ({listReview.length})
+                        {title} ({listReview.length})
                     </h2>
                 </div>
-                <FormComment hidden={isHideCommentForm} />
+                <FormComment
+                    hidden={isHideCommentForm}
+                    type={type}
+                    itemId={itemId}
+                />
                 {listReview.map((comment, index) => (
                     <ReplySection
                         isHideAction={isHideAction}

@@ -1,28 +1,88 @@
-import React from "react";
-import { CustomButton } from "../button";
+"use client";
 
-export type FormComment = { hidden?: boolean };
-export const FormComment: React.FC<FormComment> = ({ hidden = false }) => {
+import React from "react";
+import { Button, Form, Input } from "antd";
+import { apiInstance } from "@/plugin/apiInstance";
+import { useToken } from "../../lib/hooks/useToken";
+
+type FieldType = {
+    content: string;
+};
+
+export type FormComment = {
+    hidden?: boolean;
+    type?: "comment" | "review";
+    itemId?: string | number;
+};
+export const FormComment: React.FC<FormComment> = ({
+    hidden = false,
+    type = "comment",
+    itemId,
+}) => {
+    const userDataToken = useToken();
+
+    const postItem = (
+        itemId: string | number,
+        rating: number,
+        content: string,
+        type: "comment" | "review"
+    ) => {
+        const typeMap: Record<
+            "comment" | "review",
+            { api: string; data: any }
+        > = {
+            review: {
+                api: "reviews/",
+                data: {
+                    courseId: itemId,
+                    rating: rating,
+                    review: content,
+                },
+            },
+            comment: {
+                api: "comments/",
+                data: {
+                    lessonId: itemId,
+                    content: content,
+                },
+            },
+        };
+        apiInstance
+            .post(typeMap[type].api, typeMap[type].data, {
+                headers: {
+                    Authorization: "Bear " + userDataToken?.accessToken,
+                },
+            })
+            .then((res) => console.log(res))
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     return (
-        <form className="mb-6" hidden={hidden}>
-            <div className="py-2 px-4 mb-4 bg-white rounded-lg rounded-t-lg border border-gray-200 dark:bg-gray-800 dark:border-gray-700">
-                <label htmlFor="comment" className="sr-only">
-                    Your comment
-                </label>
-                <textarea
+        <Form
+            className="mb-6"
+            hidden={hidden}
+            layout="vertical"
+            onFinish={(value) => {
+                postItem(itemId || 0, 5, value.content, type);
+            }}
+        >
+            <Form.Item<FieldType> name={"content"} label={`Your ${type}`}>
+                <Input.TextArea
                     id="comment"
                     rows={6}
-                    className="px-0 w-full text-sm text-gray-900 border-0 focus:ring-0 focus:outline-none dark:text-white dark:placeholder-gray-400 dark:bg-gray-800"
-                    placeholder="Write a comment..."
-                    required
-                ></textarea>
-            </div>
-            <CustomButton
-                htmlType="submit"
-                className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center  bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800"
-            >
-                Post comment
-            </CustomButton>
-        </form>
+                    placeholder="Write something..."
+                ></Input.TextArea>
+            </Form.Item>
+            <Form.Item>
+                <Button
+                    htmlType="submit"
+                    className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center  bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800"
+                >
+                    Post {type}
+                </Button>
+            </Form.Item>
+        </Form>
     );
 };

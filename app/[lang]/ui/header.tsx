@@ -42,6 +42,12 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
     const pathname = usePathname();
     const { replace } = useRouter();
 
+    const logout = () => {};
+
+    const userFeatureMap: Record<string, any> = {
+        Logout: "",
+    };
+
     useEffect(() => {
         const handleScroll = (event: any) => {
             if (document.getElementsByTagName("html")[0].scrollTop > 0) {

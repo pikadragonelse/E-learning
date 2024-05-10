@@ -106,6 +106,12 @@ export const VideoCustom: React.FC<VideoCustom> = ({
         }
     }, [trackMode]);
 
+    useEffect(() => {
+        if (videoRef.current != null) {
+            videoRef.current.load();
+        }
+    }, [videoSource]);
+
     return (
         <div className="text-zinc-800">
             <div className="w-full relative flex" ref={containerVideoRef}>
@@ -113,7 +119,6 @@ export const VideoCustom: React.FC<VideoCustom> = ({
                     ref={videoRef}
                     width="100%"
                     height="640"
-                    preload="auto"
                     onProgress={(e) => {
                         updateBuffered(e);
                         onProgress(e.currentTarget.currentTime);
@@ -151,7 +156,9 @@ export const VideoCustom: React.FC<VideoCustom> = ({
                     onClick={() => {
                         if (videoRef != null && videoRef.current != null) {
                             videoRef.current.paused || videoRef.current.ended
-                                ? videoRef.current.play()
+                                ? videoRef.current
+                                      .play()
+                                      .catch((error) => console.log(error))
                                 : videoRef.current.pause();
                         }
                     }}

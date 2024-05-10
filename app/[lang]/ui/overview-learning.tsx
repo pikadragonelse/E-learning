@@ -10,6 +10,7 @@ import {
 } from "@fortawesome/free-solid-svg-icons";
 import dayjs from "dayjs";
 import { InstructorBriefInfo } from "./instructor-brief-info";
+import parse from "html-react-parser";
 
 export type OverviewLearning = { courseData?: Course };
 export const OverviewLearning: React.FC<OverviewLearning> = ({
@@ -25,9 +26,7 @@ export const OverviewLearning: React.FC<OverviewLearning> = ({
                     <h1 className="text-2xl lg:text-4xl font-medium ">
                         {courseData.title}
                     </h1>
-                    <p className="text-sm lg:text-base ">
-                        {courseData.description}
-                    </p>
+
                     <div className="flex flex-col lg:flex-row gap-2 lg:items-center text-xs lg:text-base">
                         <div className="flex gap-2 items-center">
                             <span>{courseData.averageRating}</span>
@@ -36,9 +35,11 @@ export const OverviewLearning: React.FC<OverviewLearning> = ({
                         <span>(22,248 ratings)</span>
                         <span>(22,248 students)</span>
                     </div>
+
                     <p className="text-sm lg:text-base">
                         Created by: {courseData.instructor.profile.fullName}
                     </p>
+
                     <ul className="text-xs lg:text-sm mt-2 flex gap-4">
                         <li className="flex gap-1 items-center">
                             <FontAwesomeIcon
@@ -71,7 +72,11 @@ export const OverviewLearning: React.FC<OverviewLearning> = ({
                         </li>
                     </ul>
                 </div>
+                <p className="text-sm lg:text-base ">
+                    {parse(courseData.description)}
+                </p>
             </div>
+
             <InstructorBriefInfo
                 className="mb-6"
                 instructor={courseData.instructor}

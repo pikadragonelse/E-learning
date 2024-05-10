@@ -5,6 +5,7 @@ export interface LessonFull {
     lessonUrl: string;
     title: string;
     topicId: number;
+    comments: any;
 }
 
 export const defaultLessonFull = {
@@ -14,4 +15,5 @@ export const defaultLessonFull = {
     lessonUrl: "",
     title: "",
     topicId: 0,
+    comments: [],
 };

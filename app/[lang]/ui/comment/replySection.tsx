@@ -1,9 +1,13 @@
+"use client";
+
 import React, { useState } from "react";
-import { CustomButton } from "../button";
 import clsx from "clsx";
 import { FormComment } from "./form-comment";
-import { Rate } from "antd";
+import { Button, Rate } from "antd";
 import dayjs from "dayjs";
+import { DeleteOutlined } from "@ant-design/icons";
+import { apiInstance } from "@/plugin/apiInstance";
+import { useToken } from "../../lib/hooks/useToken";
 
 export type ReplySection = {
     isHideAction?: boolean;
@@ -12,6 +16,8 @@ export type ReplySection = {
     date?: string;
     content?: string;
     rating?: number;
+    id?: number;
+    onDeleteCmt?: () => void;
 };
 export const ReplySection: React.FC<ReplySection> = ({
     isHideAction = false,
@@ -20,8 +26,22 @@ export const ReplySection: React.FC<ReplySection> = ({
     date,
     content,
     rating,
+    id,
+    onDeleteCmt = () => {},
 }) => {
     const [isReplying, setIsReplying] = useState(false);
+    const userToken = useToken();
+
+    const deleteComment = () => {
+        apiInstance
+            .delete(`reviews/${id}`, {
+                headers: { Authorization: "Bear " + userToken?.accessToken },
+            })
+            .then(() => {
+                onDeleteCmt();
+            })
+            .catch((error) => console.log(error));
+    };
 
     return (
         <article className="p-6 text-base bg-white rounded-lg dark:bg-gray-900">
@@ -54,7 +74,7 @@ export const ReplySection: React.FC<ReplySection> = ({
                     hidden: isHideAction,
                 })}
             >
-                <CustomButton
+                <Button
                     onClick={() => setIsReplying(true)}
                     className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium"
                 >
@@ -74,7 +94,10 @@ export const ReplySection: React.FC<ReplySection> = ({
                         />
                     </svg>
                     Reply
-                </CustomButton>
+                </Button>
+                <Button icon={<DeleteOutlined />} onClick={deleteComment}>
+                    Delete
+                </Button>
             </div>
             <FormComment hidden={!isReplying} />
         </article>

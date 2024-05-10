@@ -26,6 +26,8 @@ export default function Page({
     const [dataLesson, setDataLesson] = useState<LessonFull>(defaultLessonFull);
     const [dataCourse, setDataCourse] = useState<Course>(defaultCourse);
     const [currentTime, setCurrentTime] = useState(0);
+    const [reloadCourse, setReloadCourse] = useState(0);
+    const [reloadLesson, setReloadLesson] = useState(0);
     const userDataToken = useToken();
     const onChange = (key: string) => {};
 
@@ -37,8 +39,7 @@ export default function Page({
                 },
             })
             .then((data) => {
-                setDataLesson(data.data);
-                console.log(data.data);
+                setDataLesson(data.data.data.lesson);
             })
             .catch((err) => console.log(err));
     };
@@ -60,8 +61,11 @@ export default function Page({
 
     useEffect(() => {
         getDataLesson();
+    }, [reloadLesson]);
+
+    useEffect(() => {
         getDataCourse();
-    }, []);
+    }, [reloadCourse]);
 
     const items: TabsProps["items"] = [
         {
@@ -87,7 +91,7 @@ export default function Page({
         {
             key: "3",
             label: "Notes",
-            children: <Note lessonId={dataLesson.id} currTime={currentTime} />,
+            children: <Note lessonId={dataLesson?.id} currTime={currentTime} />,
         },
         {
             key: "4",
@@ -95,9 +99,11 @@ export default function Page({
             children: (
                 <div className="h-[600px] p-6 max-h-[600px] overflow-auto">
                     <Comment
-                        listReview={dataCourse.reviews}
+                        listReview={dataLesson?.comments}
                         type="comment"
-                        itemId={dataLesson.id}
+                        itemId={dataLesson?.id}
+                        onPost={() => setReloadLesson((prev) => prev + 1)}
+                        onDeleteCmt={() => setReloadLesson((prev) => prev + 1)}
                     />
                 </div>
             ),
@@ -112,6 +118,8 @@ export default function Page({
                         title="Reviews"
                         type="review"
                         itemId={dataCourse.courseId}
+                        onPost={() => setReloadCourse((prev) => prev + 1)}
+                        onDeleteCmt={() => setReloadCourse((prev) => prev + 1)}
                     />
                     ,
                 </div>
@@ -133,7 +141,7 @@ export default function Page({
             <div className="text-zinc-800 flex lg:flex-row flex-col gap-8">
                 <div className="lg:w-2/3">
                     <VideoCustom
-                        videoSource={dataLesson.lessonUrl}
+                        videoSource={dataLesson?.lessonUrl}
                         onProgress={(time) => {
                             setCurrentTime(time);
                         }}

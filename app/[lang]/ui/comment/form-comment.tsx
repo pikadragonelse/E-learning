@@ -13,11 +13,13 @@ export type FormComment = {
     hidden?: boolean;
     type?: "comment" | "review";
     itemId?: string | number;
+    onPost?: (content?: string) => void;
 };
 export const FormComment: React.FC<FormComment> = ({
     hidden = false,
     type = "comment",
     itemId,
+    onPost = () => {},
 }) => {
     const userDataToken = useToken();
 
@@ -53,7 +55,9 @@ export const FormComment: React.FC<FormComment> = ({
                     Authorization: "Bear " + userDataToken?.accessToken,
                 },
             })
-            .then((res) => console.log(res))
+            .then((res) => {
+                onPost(content);
+            })
             .catch((error) => {
                 console.log(error);
             });

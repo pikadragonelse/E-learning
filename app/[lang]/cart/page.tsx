@@ -1,8 +1,7 @@
 "use client";
 
 import { Locale } from "antd/es/locale";
-import { Container } from "../ui/container";
-import React, { useEffect, useState } from "react";
+import React, { createContext, useContext, useEffect, useState } from "react";
 import { Button, Checkbox, ConfigProvider, Rate, Select } from "antd";
 import { DeleteOutlined, HeartOutlined } from "@ant-design/icons";
 import Image from "next/image";
@@ -10,8 +9,10 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../lib/hooks/useToken";
 import { Course } from "../lib/model/course";
 import { useRouter } from "next/navigation";
-
-const list = [1, 2, 3, 4, 5];
+import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
+import { BillInfo, defaultBillInfo } from "../lib/model/bill";
+import { Container } from "../ui/container";
+import { useBillStore } from "../lib/store/bill";
 
 export default function Page({
     params: { lang },
@@ -21,6 +22,9 @@ export default function Page({
     const [listCart, setListCart] = useState<Course[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
     const userDataToken = useToken();
+    const [isContinueOrder, setIsContinueOrder] = useState(false);
+    const { updateBillData, billData } = useBillStore((state) => state);
+    const [refreshCart, setRefreshCart] = useState(0);
     const router = useRouter();
 
     const getListCard = () => {
@@ -43,9 +47,70 @@ export default function Page({
             });
     };
 
+    const deleteCourse = (courseId: string) => {
+        apiInstance
+            .delete("users/carts", {
+                headers: {
+                    Authorization: "Bear " + userDataToken?.accessToken,
+                },
+                data: {
+                    courseIds: [courseId],
+                },
+            })
+            .then((res) => {
+                console.log(res);
+                setRefreshCart((prev) => prev + 1);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const createOrder = async () => {
+        const listCourseId = listCart.map((cart) => cart.courseId);
+
+        return apiInstance
+            .post(
+                "payments/create-order/",
+                {
+                    courseIds: listCourseId,
+                },
+                {
+                    headers: {
+                        Authorization: "Bear " + userDataToken?.accessToken,
+                    },
+                }
+            )
+            .then((res) => {
+                return res.data.id;
+            })
+            .catch((error) => {
+                console.log(error);
+
+                return "error";
+            });
+    };
+
+    const onApprove = async (data: any) => {
+        return apiInstance
+            .post(`payments/orders/${data.orderID}/capture`)
+            .then((res) => {
+                updateBillData(res.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     useEffect(() => {
         getListCard();
-    }, []);
+    }, [refreshCart]);
+
+    useEffect(() => {
+        if (billData.id !== 0) {
+            router.push(`bill/${billData.id}`);
+        }
+    }, [billData]);
 
     return (
         <ConfigProvider
@@ -96,7 +161,14 @@ export default function Page({
                                         </div>
                                         <div className="lg:hidden">
                                             <HeartOutlined className=" cursor-pointer text-lg active:text-red-800 mr-2" />
-                                            <DeleteOutlined className="text-red-700 cursor-pointer text-lg active:text-red-800 mr-10" />
+                                            <DeleteOutlined
+                                                className="text-red-700 cursor-pointer text-lg active:text-red-800 mr-10"
+                                                onClick={() =>
+                                                    deleteCourse(
+                                                        course.courseId
+                                                    )
+                                                }
+                                            />
                                             <span className="text-orange-600 text-lg">
                                                 ${course.price}
                                             </span>
@@ -104,7 +176,12 @@ export default function Page({
                                     </div>
                                     <div className="ml-auto  gap-4 hidden lg:flex">
                                         <HeartOutlined className=" cursor-pointer text-lg active:text-red-800 " />
-                                        <DeleteOutlined className="text-red-700 cursor-pointer text-lg active:text-red-800 mr-10" />
+                                        <DeleteOutlined
+                                            className="text-red-700 cursor-pointer text-lg active:text-red-800 mr-10"
+                                            onClick={() =>
+                                                deleteCourse(course.courseId)
+                                            }
+                                        />
                                         <span className="text-orange-600 text-2xl">
                                             ${course.price}
                                         </span>
@@ -157,10 +234,20 @@ export default function Page({
                             defaultActiveFirstOption
                             options={[{ label: "Paypal", value: "paypal" }]}
                         />
-
-                        <Button type="primary" size="large" className="my-10">
-                            Checkout
-                        </Button>
+                        {listCart.length > 0 ? (
+                            <PayPalScriptProvider
+                                options={{
+                                    clientId:
+                                        "AV548dBEnVBBu_Xwzud-2Dzs26BO5934sbxGkZhkZoHSnvQHEhfZevHpz53DIB_xn-XqAsF4fKiQVvUx",
+                                }}
+                            >
+                                <PayPalButtons
+                                    style={{ layout: "vertical" }}
+                                    createOrder={createOrder}
+                                    onApprove={onApprove}
+                                />
+                            </PayPalScriptProvider>
+                        ) : undefined}
                     </div>
                 </div>
             </Container>

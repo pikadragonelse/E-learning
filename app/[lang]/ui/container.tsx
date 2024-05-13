@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { createContext, useEffect, useState } from "react";
 import { Header } from "./header";
 import { Body } from "./body";
 import { Footer } from "./footer";
@@ -8,11 +8,13 @@ import { SidebarDrawer } from "./sidebar-drawer";
 import { ConfigProvider } from "antd";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../lib/hooks/useToken";
-import { User, defaultUser } from "../lib/model/user";
+import { User } from "../lib/model/user";
+import { BillInfo, defaultBillInfo } from "../lib/model/bill";
 
 export type Container = { children?: any };
 export const Container: React.FC<Container> = ({ children }) => {
     const [openSidebarDrawer, setOpenSidebarDrawer] = useState(false);
+    const [billData, setBillData] = useState<BillInfo>(defaultBillInfo);
     const [userInfo, setUserInfo] = useState<User>();
     const userDataToken = useToken();
     const getDataUser = () => {

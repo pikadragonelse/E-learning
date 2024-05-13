@@ -6,6 +6,9 @@ export interface LessonFull {
     title: string;
     topicId: number;
     comments: any;
+    createdAt?: string;
+    deletedAt?: null;
+    updatedAt?: string;
 }
 
 export const defaultLessonFull = {

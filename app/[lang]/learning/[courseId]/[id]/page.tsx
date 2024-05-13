@@ -40,6 +40,7 @@ export default function Page({
             })
             .then((data) => {
                 setDataLesson(data.data.data.lesson);
+                console.log(data.data.data.lesson);
             })
             .catch((err) => console.log(err));
     };

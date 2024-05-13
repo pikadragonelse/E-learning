@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { CustomButton } from "./button";
 import clsx from "clsx";
 import { Course, defaultCourse } from "../lib/model/course";
 import Link from "next/link";
@@ -83,10 +82,10 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
             {contextHolder}
             <div
                 className={clsx(
-                    `flex items-center rounded-md overflow-hidden ${className}`,
+                    `flex rounded-md overflow-hidden ${className}`,
                     {
                         "flex-col": layout === "vertical",
-                        "flex-row h-56": layout === "horizontal",
+                        "flex-row h-56 items-center": layout === "horizontal",
                     }
                 )}
             >

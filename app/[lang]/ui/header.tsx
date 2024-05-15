@@ -22,13 +22,15 @@ import { Category } from "../lib/model/categories";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { User } from "../lib/model/user";
 
-const listUserFeature: Array<{ title: string; icon: ReactNode }> = [
-    { title: "My courses", icon: <AppstoreOutlined /> },
-    { title: "Favorite list", icon: <HeartOutlined /> },
-    { title: "My payment", icon: <WalletOutlined /> },
-    { title: "My account", icon: <UserOutlined /> },
-    { title: "Logout", icon: <LogoutOutlined /> },
-];
+const listUserFeature: Array<{ title: string; icon: ReactNode; href: string }> =
+    [
+        {
+            title: "My account",
+            icon: <UserOutlined />,
+            href: "individual-info",
+        },
+        { title: "Logout", icon: <LogoutOutlined />, href: "login" },
+    ];
 
 export type Header = {
     onClickCategoryIcon?: (props?: any) => unknown;
@@ -172,6 +174,11 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
                                         {listUserFeature.map(
                                             (feature, index) => (
                                                 <li
+                                                    onClick={() =>
+                                                        router.push(
+                                                            feature.href
+                                                        )
+                                                    }
                                                     key={index}
                                                     className="p-4 hover:bg-zinc-100 transition-all cursor-pointer flex gap-4 items-center rounded-md active:bg-orange-100"
                                                 >

@@ -1,133 +1,210 @@
 "use client";
 
-import { Form, Image, Input, Row, Select, Upload, UploadProps } from "antd";
-import React, { useState } from "react";
-import { CustomButton } from "../button";
-import ReactQuill from "react-quill";
+import { Button, Col, Form, Input, Row, Select, SelectProps, Spin } from "antd";
+import React, { useEffect, useState } from "react";
 import "react-quill/dist/quill.snow.css";
-import { UploadType, beforeUpload, getBase64 } from "../../lib/utils/upload";
+import ReactQuill from "react-quill";
+import { apiInstance } from "@/plugin/apiInstance";
+import { Category } from "../../lib/model/categories";
+import { Language } from "../../lib/model/language";
+import { useToken } from "../../lib/hooks/useToken";
+import { Course } from "../../lib/model/course";
+
+type FieldType = {
+    title: string;
+    introduction: string;
+    description: string;
+    learnsDescription: string;
+    requirementsDescription: string;
+    price: number;
+    discount: number;
+    categoryId: string;
+    languageId: number;
+    levelId: number;
+};
 
 export type FormCreateOverallInfo = {
     className?: string;
-    onNext?: (...props: any) => unknown;
+    onNext?: (course: Course) => unknown;
 };
 export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
     className,
-    onNext,
+    onNext = () => {},
 }) => {
     const [loading, setLoading] = useState(false);
-    const [imageUrl, setImageUrl] = useState<any>();
-    const [fileList, setFileList] = useState<any>([]);
 
-    const handleChange: UploadProps["onChange"] = (info) => {
-        let fileList = [...info.fileList];
-        fileList = fileList.slice(-1);
-        setFileList(fileList);
-        if (info.file.status === "uploading") {
-            setLoading(true);
-            return;
-        }
-        if (info.file.status === "done") {
-            // Get this url from response in real world.
-            getBase64(info.file.originFileObj as UploadType, (url) => {
+    const [optionCategory, setOptionCategory] = useState<
+        SelectProps["options"]
+    >([]);
+    const [optionLanguage, setOptionLanguage] = useState<
+        SelectProps["options"]
+    >([]);
+    const userToken = useToken();
+
+    const createCourse = (data: FieldType) => {
+        setLoading(true);
+        console.log(data);
+
+        apiInstance
+            .post("courses", data, {
+                headers: { Authorization: "Bear " + userToken?.accessToken },
+            })
+            .then((response) => {
                 setLoading(false);
-                setImageUrl(url);
+                onNext(response.data.data);
+            })
+            .catch((error) => {
+                console.log(error);
+                setLoading(false);
             });
-        }
     };
+
+    const getCategory = () => {
+        apiInstance
+            .get("categories")
+            .then((res) => {
+                const newList = res.data.map((category: Category) => {
+                    return {
+                        label: category.name,
+                        value: category.categoryId,
+                    };
+                });
+                setOptionCategory(newList);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const getLanguage = () => {
+        apiInstance
+            .get("languages")
+            .then((res) => {
+                const newList = res.data.data.map((language: Language) => {
+                    return {
+                        label: language.languageName,
+                        value: language.id,
+                    };
+                });
+                setOptionLanguage(newList);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    useEffect(() => {
+        getCategory();
+        getLanguage();
+    }, []);
 
     return (
         <div className={`${className}`}>
-            <div className="flex gap-10 mb-6 justify-around">
-                <div className="flex flex-col items-center gap-4 ">
-                    <h1 className="font-medium text-sm">Preview video</h1>
-                    <div className="w-52 h-52 flex items-center justify-center rounded-lg overflow-hidden">
-                        {imageUrl !== "" && imageUrl != null ? (
-                            <Image src={imageUrl} />
-                        ) : (
-                            <div className="select-none text-sm w-full h-full border flex items-center justify-center bg-zinc-200 ">
-                                Preview image
-                            </div>
-                        )}
-                    </div>
-                    <Upload
-                        fileList={fileList}
-                        name="avatar"
-                        customRequest={(e) => {
-                            setImageUrl(URL.createObjectURL(e.file as any));
-                        }}
-                        beforeUpload={beforeUpload}
-                        onChange={handleChange}
-                        className="flex flex-col items-center"
-                        onRemove={() => setImageUrl("")}
-                    >
-                        <CustomButton>Upload preview video</CustomButton>
-                    </Upload>
-                </div>
-                <div className="flex flex-col items-center gap-4">
-                    <h1 className="font-medium text-sm">Preview Image</h1>
-                    <div className="w-52 h-52 flex items-center justify-center rounded-lg overflow-hidden">
-                        {imageUrl !== "" && imageUrl != null ? (
-                            <Image src={imageUrl} />
-                        ) : (
-                            <div className="select-none text-sm w-full h-full border flex items-center justify-center bg-zinc-200 ">
-                                Preview image
-                            </div>
-                        )}
-                    </div>
-                    <Upload
-                        fileList={fileList}
-                        name="avatar"
-                        customRequest={(e) => {
-                            setImageUrl(URL.createObjectURL(e.file as any));
-                        }}
-                        beforeUpload={beforeUpload}
-                        onChange={handleChange}
-                        className="flex flex-col items-center"
-                    >
-                        <CustomButton>Upload preview video</CustomButton>
-                    </Upload>
-                </div>
-            </div>
-            <Form
-                labelCol={{ span: 4 }}
-                wrapperCol={{ span: 24 }}
-                labelAlign="left"
-                layout="vertical"
-            >
-                <Form.Item label="Title">
-                    <Input
-                        size="middle"
-                        placeholder="Enter title of course"
-                        maxLength={120}
-                        showCount
-                    />
-                </Form.Item>
-                <Form.Item label="Description"></Form.Item>
-                <Form.Item label="Category">
-                    <Select
-                        size="middle"
-                        placeholder="Select category of course"
-                    />
-                </Form.Item>
-                <Form.Item label="Language">
-                    <Select
-                        size="middle"
-                        placeholder="Select language of course"
-                    />
-                </Form.Item>
-                <Form.Item>
-                    <Row justify={"end"} className="gap-4">
-                        <CustomButton
-                            type={"primary"}
-                            className="w-60 "
-                            onClick={onNext}
-                        >
-                            Next
-                        </CustomButton>
+            <Spin spinning={loading}>
+                <Form
+                    labelCol={{ span: 6 }}
+                    wrapperCol={{ span: 24 }}
+                    labelAlign="left"
+                    layout="vertical"
+                    onFinish={(value: FieldType) => {
+                        createCourse(value);
+                    }}
+                >
+                    <Form.Item<FieldType> name="title" label="Title">
+                        <Input
+                            size="middle"
+                            placeholder="Enter title of course"
+                            maxLength={120}
+                            showCount
+                        />
+                    </Form.Item>
+                    <Row>
+                        <Col span={10}>
+                            <Form.Item<FieldType>
+                                name="categoryId"
+                                label="Category"
+                            >
+                                <Select
+                                    size="middle"
+                                    placeholder="Select category of course"
+                                    options={optionCategory}
+                                />
+                            </Form.Item>
+                        </Col>
+                        <Col span={10} offset={4}>
+                            <Form.Item<FieldType>
+                                name="languageId"
+                                label="Language"
+                            >
+                                <Select
+                                    size="middle"
+                                    placeholder="Select language of course"
+                                    options={optionLanguage}
+                                />
+                            </Form.Item>
+                        </Col>
                     </Row>
-                </Form.Item>
-            </Form>
+                    <Row>
+                        <Col span={10}>
+                            <Form.Item<FieldType> name="price" label="Price">
+                                <Input prefix="$" />
+                            </Form.Item>
+                        </Col>
+                        <Col span={10} offset={4}>
+                            <Form.Item<FieldType>
+                                name="discount"
+                                label="Discount"
+                            >
+                                <Input prefix="%" />
+                            </Form.Item>
+                        </Col>
+                    </Row>
+                    <Form.Item<FieldType> name="levelId" label="Level">
+                        <Select
+                            options={[
+                                { label: "Basic", value: 1 },
+                                { label: "Medium", value: 2 },
+                                { label: "Advance", value: 3 },
+                            ]}
+                        />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                        name="introduction"
+                        label="Introduction"
+                    >
+                        <Input.TextArea />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                        name="description"
+                        label="Description"
+                    >
+                        <ReactQuill theme="snow" />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                        name="learnsDescription"
+                        label="Learn description"
+                    >
+                        <Input.TextArea />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                        name="requirementsDescription"
+                        label="Requirements description"
+                    >
+                        <Input.TextArea />
+                    </Form.Item>
+                    <Form.Item>
+                        <Row justify={"end"} className="gap-4">
+                            <Button
+                                type={"primary"}
+                                htmlType="submit"
+                                className="w-60 bg-orange-600"
+                            >
+                                Next
+                            </Button>
+                        </Row>
+                    </Form.Item>
+                </Form>
+            </Spin>
         </div>
     );
 };

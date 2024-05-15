@@ -4,6 +4,13 @@ export interface Topic {
     lessons: Lesson[];
 }
 
+export interface TopicReturnedCreate extends Topic {
+    courseId: number;
+    createdAt: string;
+    deletedAt: string;
+    updatedAt: string;
+}
+
 export interface Lesson {
     id: number;
     title: string;

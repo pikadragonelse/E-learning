@@ -8,13 +8,25 @@ import {
     Row,
     Col,
 } from "antd";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { UploadType, beforeUpload, getBase64 } from "../lib/utils/upload";
+import { User } from "../lib/model/user";
+import { useForm } from "antd/es/form/Form";
 
-export const IndividualProfile = () => {
+type FieldType = {
+    firstName: string;
+    lastName: string;
+    desc: string;
+};
+
+export type IndividualProfile = { userInfo?: User };
+export const IndividualProfile: React.FC<IndividualProfile> = ({
+    userInfo,
+}) => {
     const [loading, setLoading] = useState(false);
     const [imageUrl, setImageUrl] = useState<any>();
     const [fileList, setFileList] = useState<any>([]);
+    const [form] = useForm();
 
     const handleChange: UploadProps["onChange"] = (info) => {
         let fileList = [...info.fileList];
@@ -35,18 +47,25 @@ export const IndividualProfile = () => {
         }
     };
 
+    useEffect(() => {
+        form.setFieldsValue({
+            firstName: userInfo?.profile.firstName,
+            lastName: userInfo?.profile.lastName,
+            desc: userInfo?.profile.description,
+        });
+        setImageUrl(userInfo?.profile.avatar);
+    }, [userInfo]);
+
     return (
         <div>
             <div className="flex flex-col items-center gap-4 ">
-                <h1 className="font-medium text-sm text-orange-700">
-                    Preview video
-                </h1>
+                <h1 className="font-medium text-sm text-orange-700">Avatar</h1>
                 <div className="w-52 h-52 flex items-center justify-center rounded-lg overflow-hidden">
                     {imageUrl !== "" && imageUrl != null ? (
                         <Image src={imageUrl} />
                     ) : (
                         <div className="select-none text-sm w-full h-full border flex items-center justify-center bg-zinc-200 ">
-                            Preview image
+                            Avatar
                         </div>
                     )}
                 </div>
@@ -61,7 +80,7 @@ export const IndividualProfile = () => {
                     className="flex flex-col items-center"
                     onRemove={() => setImageUrl("")}
                 >
-                    <Button>Upload preview video</Button>
+                    <Button>Upload avatar</Button>
                 </Upload>
             </div>
             <div className="mt-6">
@@ -69,25 +88,26 @@ export const IndividualProfile = () => {
                     autoComplete="off"
                     layout="vertical"
                     wrapperCol={{ span: 24 }}
+                    form={form}
                 >
                     <Row className="flex-col md:flex-row">
                         <Col xs={{ span: 24 }} md={{ span: 11 }}>
-                            <Form.Item label={"First name"}>
+                            <Form.Item name="firstName" label={"First name"}>
                                 <Input placeholder="First Name" />
-                            </Form.Item>
-                            <Form.Item label={"Last name"}>
-                                <Input placeholder="Last Name" />
                             </Form.Item>
                         </Col>
                         <Col xs={{ span: 24 }} md={{ span: 11, offset: 2 }}>
-                            <Form.Item label={"Biography"}>
-                                <Input placeholder="Biography" />
-                            </Form.Item>
-                            <Form.Item label={"LinkedIn"}>
-                                <Input placeholder="LinkedIn" />
+                            <Form.Item name="lastName" label={"Last name"}>
+                                <Input placeholder="Last Name" />
                             </Form.Item>
                         </Col>
                     </Row>
+                    <Form.Item name="desc" label={"Description"}>
+                        <Input.TextArea placeholder="Description" />
+                    </Form.Item>
+                    <Form.Item name="linked" label={"LinkedIn"}>
+                        <Input placeholder="LinkedIn" />
+                    </Form.Item>
                 </Form>
                 <Row justify={"end"}>
                     <Button type="primary">Save</Button>

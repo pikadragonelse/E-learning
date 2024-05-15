@@ -9,10 +9,10 @@ export interface User {
         lastName: string;
         userId: number;
     };
-    username: string;
+    userName: string;
 }
 
-export const defaultUser = {
+export const defaultUser: User = {
     email: "",
     profile: {
         avatar: "",
@@ -23,5 +23,5 @@ export const defaultUser = {
         lastName: "",
         userId: 0,
     },
-    username: "",
+    userName: "",
 };

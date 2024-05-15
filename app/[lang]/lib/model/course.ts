@@ -73,3 +73,13 @@ export const defaultCourse: Course = {
     reviews: [defaultReview],
     page: 1,
 };
+
+export interface CourseInfoRes {
+    courseId: number;
+    createdAt: string;
+    deletedAt: string;
+    id: number;
+    updatedAt: string;
+    userId: number;
+    course: Course;
+}

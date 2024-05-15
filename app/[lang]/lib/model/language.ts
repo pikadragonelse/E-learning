@@ -7,10 +7,10 @@ export interface Language {
     updatedAt: string;
 }
 
-export const defaultLanguage = {
+export const defaultLanguage: Language = {
     code: "en",
     createdAt: "2024-05-05T04:36:12.746Z",
-    deletedAt: null,
+    deletedAt: "",
     id: 1,
     languageName: "English",
     updatedAt: "2024-05-05T04:36:12.746Z",

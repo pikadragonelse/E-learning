@@ -21,6 +21,7 @@ import clsx from "clsx";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../../lib/hooks/useToken";
 import { LessonFull, defaultLessonFull } from "../../lib/model/lesson";
+import axios from "axios";
 
 type FieldType = {
     title: string;
@@ -109,6 +110,27 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
             .catch((error) => console.log(error));
     };
 
+    const uploadResource = async (file: File) => {
+        const link = await apiInstance
+            .post(
+                "lessons/resources",
+                {
+                    lessonId: infoCreatedLesson.id,
+                    name: file.name,
+                },
+                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+            )
+            .then((res) => {
+                return res.data.data.url;
+            })
+            .catch((error) => {
+                console.log(error);
+                return "";
+            });
+
+        return link;
+    };
+
     useEffect(() => {
         if (infoCreatedLesson.id !== 0) {
             getLinkUploadVideo();
@@ -157,9 +179,11 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                 <div hidden={createType === "info"}>
                     <Form.Item label="Video">
                         <Upload
-                            action={linkUploadVideo}
+                            action={linkUploadVideo || ""}
                             onChange={handleChangeVideoUpload}
                             fileList={fileVideoList}
+                            method="PUT"
+                            accept=".pdf,.docx,.zip,.xlsx,.txt"
                         >
                             <Button icon={<UploadOutlined />}>
                                 Upload video
@@ -167,7 +191,43 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                         </Upload>
                     </Form.Item>
                     <Form.Item label="Document">
-                        <Upload action={`${process.env.DEVELOP_ENDPOINT}`}>
+                        <Upload
+                            customRequest={async (option) => {
+                                const link = await uploadResource(
+                                    option.file as File
+                                );
+                                const formData = new FormData();
+                                formData.append("file", option.file);
+                                apiInstance
+                                    .put(link, formData, {
+                                        headers: {
+                                            "Content-Type":
+                                                "multipart/form-data",
+                                        },
+                                        onUploadProgress: (event) => {
+                                            const percentCompleted = Math.round(
+                                                (event.loaded * 100) /
+                                                    (event.total || 1)
+                                            );
+                                            if (option.onProgress != null) {
+                                                option.onProgress({
+                                                    percent: percentCompleted,
+                                                });
+                                            }
+                                        },
+                                    })
+                                    .then((res) => {
+                                        console.log(res);
+                                        if (option.onSuccess)
+                                            option.onSuccess(res.data);
+                                    })
+                                    .catch((error) => {
+                                        console.log(error);
+                                        if (option.onError)
+                                            option.onError(error);
+                                    });
+                            }}
+                        >
                             <Button icon={<UploadOutlined />}>
                                 Upload document
                             </Button>
@@ -190,7 +250,11 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                 >
                     Add lesson
                 </Button>
-                <Button onClick={() => form.submit()} type="primary">
+                <Button
+                    onClick={() => form.submit()}
+                    type="primary"
+                    className="bg-orange-600"
+                >
                     Create lesson
                 </Button>
             </Row>

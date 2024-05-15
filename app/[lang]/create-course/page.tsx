@@ -8,15 +8,19 @@ import {
     Upload,
     UploadProps,
     Image,
+    Space,
 } from "antd";
 import { Locale } from "antd/es/locale";
-import React, { useRef, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import { FormCreateOverallInfo } from "../ui/create-course/form-create-overall-info";
 import { FormCreateSession } from "../ui/create-course/form-create-session";
 import { LeftOutlined } from "@ant-design/icons";
 import clsx from "clsx";
 import { Course, defaultCourse } from "../lib/model/course";
 import { UploadType, beforeUpload, getBase64 } from "../lib/utils/upload";
+import Link from "next/link";
+import { apiInstance } from "@/plugin/apiInstance";
+import { useToken } from "../lib/hooks/useToken";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -35,7 +39,10 @@ export default function Page({
             label: "Topic 1",
             children: (
                 <div className="h-[700px] max-h-[700px] overflow-auto">
-                    <FormCreateSession idSession={1} />
+                    <FormCreateSession
+                        idSession={1}
+                        courseId={newCourse.courseId}
+                    />
                 </div>
             ),
             key: "1",
@@ -43,6 +50,8 @@ export default function Page({
         },
     ]);
     const newTabIndex = useRef(2);
+    const userToken = useToken();
+    const [linkUploadPoster, setLinkUploadPoster] = useState("");
 
     const onChange = (newActiveKey: string) => {
         setActiveKey(newActiveKey);
@@ -55,7 +64,10 @@ export default function Page({
             label: `Topic ${newActiveKey}`,
             children: (
                 <div className="h-[700px] max-h-[700px] overflow-auto">
-                    <FormCreateSession idSession={Number(newActiveKey)} />
+                    <FormCreateSession
+                        idSession={Number(newActiveKey)}
+                        courseId={newCourse.courseId}
+                    />
                 </div>
             ),
             key: newActiveKey,
@@ -112,22 +124,66 @@ export default function Page({
         }
     };
 
+    const getLinkUploadPoster = () => {
+        apiInstance
+            .get(
+                `courses/${newCourse.courseId}/presigned-url-to-upload-poster`,
+                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+            )
+            .then((res) => {
+                setLinkUploadPoster(res.data.data);
+                console.log("Link", res.data.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const uploadImage = async (file: File) => {
+        await apiInstance
+            .put(linkUploadPoster, file, {
+                baseURL: "",
+                headers: {
+                    "Content-Type": "image/jpeg",
+                },
+            })
+            .then((res) => console.log(res))
+            .catch((error) => console.log(error));
+
+        await apiInstance
+            .get(`courses/${newCourse.courseId}/clear-cache-poster`, {
+                headers: { Authorization: "Bear " + userToken?.accessToken },
+            })
+            .then((res) => {
+                console.log(res);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    useEffect(() => {
+        getLinkUploadPoster();
+        if (newCourse.courseId !== "") {
+        }
+    }, [newCourse]);
+
     return (
         <ConfigProvider
             theme={{
-                components: {
-                    Form: {},
-                },
                 token: {
                     colorPrimary: "#E3311D",
                 },
             }}
         >
-            <div className="relative  bg-orange-600 z-10">
-                <span className="ml-10 gap-2 py-3 text-white text-xl w-fit  flex items-center hover:text-orange-100 active:text-orange-200 cursor-pointer transition-all">
+            <div className="relative bg-orange-600 z-10">
+                <Link
+                    href="/"
+                    className="ml-10 gap-2 py-3 text-white text-xl w-fit  flex items-center hover:text-orange-100 active:text-orange-200 cursor-pointer transition-all"
+                >
                     <LeftOutlined className="text-2xl " />
                     Back to home
-                </span>
+                </Link>
             </div>
             <div className="text-zinc-800 py-6 md:px-20 flex flex-col gap-4 ">
                 <div className="flex relative  overflow-hidden flex-col lg:flex-row">
@@ -206,7 +262,7 @@ export default function Page({
                                     <h1 className="font-medium text-sm">
                                         Poster
                                     </h1>
-                                    <div className="w-52 h-52 flex items-center justify-center rounded-lg overflow-hidden">
+                                    <div className="w-72 h-72 flex items-center justify-center rounded-lg overflow-hidden">
                                         {imageUrl !== "" && imageUrl != null ? (
                                             <Image src={imageUrl} />
                                         ) : (
@@ -225,20 +281,26 @@ export default function Page({
                                                     e.file as any
                                                 )
                                             );
+                                            uploadImage(e.file as File);
                                         }}
                                         beforeUpload={beforeUpload}
                                         onChange={handleChange}
                                         className="flex flex-col items-center"
                                         onRemove={() => setImageUrl("")}
                                     >
-                                        <Button>Upload preview video</Button>
+                                        <Button
+                                            type="primary"
+                                            className="bg-orange-600"
+                                        >
+                                            Upload poster
+                                        </Button>
                                     </Upload>
                                 </div>
                                 <div className="flex flex-col items-center gap-4">
                                     <h1 className="font-medium text-sm">
                                         Trailer
                                     </h1>
-                                    <div className="w-52 h-52 flex items-center justify-center rounded-lg overflow-hidden">
+                                    <div className="w-72 h-72 flex items-center justify-center rounded-lg overflow-hidden">
                                         {imageUrl !== "" && imageUrl != null ? (
                                             <Image src={imageUrl} />
                                         ) : (
@@ -261,17 +323,32 @@ export default function Page({
                                         onChange={handleChange}
                                         className="flex flex-col items-center"
                                     >
-                                        <Button>Upload preview video</Button>
+                                        <Button
+                                            type="primary"
+                                            className="bg-orange-600"
+                                        >
+                                            Upload preview video
+                                        </Button>
                                     </Upload>
                                 </div>
                             </div>
                             <Row justify={"end"}>
-                                <Button
-                                    type="primary"
-                                    onClick={() => setCurrentStep(3)}
-                                >
-                                    Next
-                                </Button>
+                                <Space>
+                                    <Button
+                                        onClick={() =>
+                                            setCurrentStep((prev) => prev - 1)
+                                        }
+                                    >
+                                        Back
+                                    </Button>
+                                    <Button
+                                        type="primary"
+                                        onClick={() => setCurrentStep(3)}
+                                        className="bg-orange-600"
+                                    >
+                                        Next
+                                    </Button>
+                                </Space>
                             </Row>
                         </div>
                         <div
@@ -305,7 +382,12 @@ export default function Page({
                                 </p>
                             </div>
                             <Row justify={"start"} className="gap-2 mb-2">
-                                <Button type="primary">Done</Button>
+                                <Button
+                                    type="primary"
+                                    className="bg-orange-600"
+                                >
+                                    Done
+                                </Button>
                             </Row>
                             <Tabs
                                 type="editable-card"

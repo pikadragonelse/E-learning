@@ -16,10 +16,12 @@ type FieldType = {
 export type FormCreateSession = {
     className?: string;
     idSession?: number;
+    courseId?: string;
 };
 export const FormCreateSession: React.FC<FormCreateSession> = ({
     className,
     idSession,
+    courseId,
 }) => {
     const [form] = useForm();
     const [listLesson, setListLesson] = useState<number[]>([1]);
@@ -30,7 +32,7 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
     const createTopic = (name: string) => {
         apiInstance
             .post(
-                `courses/${"nothing-to-said-7bba80b0"}/topics`,
+                `courses/${courseId}/topics`,
                 {
                     names: [name],
                 },
@@ -72,7 +74,11 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
                 </Form.Item>
             </Form>
             <Row justify={"end"} hidden={!isHiddenLesson}>
-                <Button type="primary" onClick={() => form.submit()}>
+                <Button
+                    type="primary"
+                    onClick={() => form.submit()}
+                    className="bg-orange-600"
+                >
                     Create session
                 </Button>
             </Row>

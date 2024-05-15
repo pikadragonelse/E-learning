@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useContext, useEffect } from "react";
+import React from "react";
 import { Container } from "../../ui/container";
 import { Locale } from "antd/es/locale";
 import Image from "next/image";

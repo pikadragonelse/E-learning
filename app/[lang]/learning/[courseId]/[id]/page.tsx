@@ -1,14 +1,11 @@
 "use client";
 
-import { getDictionary } from "@/get-dictionary";
 import { Locale } from "@/i18n.config";
-import React, { useEffect, useRef, useState } from "react";
-import LocaleSwitcher from "../../../ui/local-swithcher";
+import React, { useEffect, useState } from "react";
 import { VideoCustom } from "../../../ui/video-custom";
 import { MenuLecture } from "../../../ui/menu-lecture";
 import { ConfigProvider, Tabs, TabsProps } from "antd";
 import { Container } from "../../../ui/container";
-import axios from "axios";
 import { apiInstance } from "@/plugin/apiInstance";
 import { LessonFull, defaultLessonFull } from "../../../lib/model/lesson";
 import { Course, defaultCourse } from "../../../lib/model/course";
@@ -16,7 +13,6 @@ import { OverviewLearning } from "@/app/[lang]/ui/overview-learning";
 import { Comment } from "../../../ui/comment/comment";
 import { Note } from "@/app/[lang]/ui/note";
 import { useToken } from "@/app/[lang]/lib/hooks/useToken";
-import { Review } from "@/app/[lang]/lib/model/review";
 
 export default function Page({
     params: { lang, id, courseId },

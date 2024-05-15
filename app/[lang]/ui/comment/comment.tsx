@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { FormComment } from "./form-comment";
 import { ReplySection } from "./replySection";

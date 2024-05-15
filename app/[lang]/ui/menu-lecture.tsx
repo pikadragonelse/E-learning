@@ -9,6 +9,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Resource } from "../lib/model/resource";
 import { DownOutlined } from "@ant-design/icons";
+import clsx from "clsx";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -45,7 +46,6 @@ export const MenuLecture: React.FC<MenuLecture> = ({
     const [resourceMap, setResourceMap] = useState<Record<number, Resource[]>>(
         {}
     );
-    const [countLesson, setCountLesson] = useState(0);
     const router = useRouter();
     const pathname = usePathname();
 
@@ -84,10 +84,10 @@ export const MenuLecture: React.FC<MenuLecture> = ({
                             content={
                                 <ul className="w-40">
                                     {resourceMap[lesson.id]?.map((resource) => (
-                                        <li className="cursor-pointer w-full hover:text-orange-600">
+                                        <li className="cursor-pointer w-full group">
                                             <a
                                                 href={resource.url}
-                                                className="hover:text-orange-600 "
+                                                className="group-hover:text-orange-600 text-zinc-800"
                                                 onClick={(event) => {
                                                     event.stopPropagation();
                                                 }}
@@ -103,7 +103,15 @@ export const MenuLecture: React.FC<MenuLecture> = ({
                         >
                             <Button
                                 icon={<DownOutlined />}
-                                className="absolute right-0 w-40"
+                                className={clsx(
+                                    "absolute right-0 w-40  justify-around items-center",
+                                    {
+                                        hidden:
+                                            resourceMap[lesson.id]?.length < 1,
+                                        flex:
+                                            resourceMap[lesson.id]?.length > 1,
+                                    }
+                                )}
                             >
                                 Resource
                             </Button>

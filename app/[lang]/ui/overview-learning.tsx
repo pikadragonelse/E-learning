@@ -1,3 +1,5 @@
+"use client";
+
 import React from "react";
 import { Course, defaultCourse } from "../lib/model/course";
 import { DetailOverviewInfo } from "./detail-overview-info";

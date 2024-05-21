@@ -16,7 +16,7 @@ import {
     RunnableSequence,
 } from "@langchain/core/runnables";
 import { formatDocumentsAsString } from "langchain/util/document";
-import { Button, Row, Spin } from "antd";
+import { Button, Form, Row, Select, Spin, Upload } from "antd";
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
@@ -24,13 +24,19 @@ import { Course } from "../lib/model/course";
 import { Container } from "../ui/container";
 import Search from "antd/es/input/Search";
 import { GridCourse } from "../ui/grid-course";
+import { useForm } from "antd/es/form/Form";
 
+type FieldType = {
+    document: any;
+    quantity: number;
+};
 export default function Page({}: { params: { lang: string } }) {
     const [listRecommendedCourse, setListRecommendedCourse] = useState<
         Course[]
     >([]);
     const [retrieverInstance, setRetrieverInstance] = useState<any>();
     const [isLoading, setIsLoading] = useState(false);
+    const [form] = useForm();
 
     const convertObjectToString: any = (obj: any, parentKey = "") => {
         let result = [];
@@ -145,31 +151,40 @@ export default function Page({}: { params: { lang: string } }) {
     return (
         <Container>
             <div className="ml-16  mb-10">
-                <h1 className="text-zinc-800 ">Recommend course</h1>
+                <h1 className="text-zinc-800 ">Create quote course</h1>
                 <p className="text-xl font-medium text-orange-600 ">
-                    We will recommend for you 20 courses that is closest with
-                    your idea!
+                    Based on the documents you provide, we will create a list of
+                    extremely diverse and interesting multiple choice questions.
                 </p>
             </div>
-            <div className="m-14 mt-6 text-zinc-800">
-                <Row className="mx-40">
-                    <Search
-                        size="large"
-                        placeholder="Type something to find your course"
-                        onSearch={(value) => {
-                            request(value);
-                        }}
-                        className="shadow-md"
-                    />
-                </Row>
+            <div className="m-14 mt-6 text-zinc-800 w-96">
+                <Form form={form}>
+                    <Form.Item<FieldType> name="quantity" label="Quantity">
+                        <Select
+                            options={[
+                                { label: 5, value: 5 },
+                                { label: 10, value: 10 },
+                                { label: 20, value: 20 },
+                            ]}
+                            className="w-32"
+                        />
+                    </Form.Item>
+                    <Form.Item<FieldType> name="document" label="Document">
+                        <Upload>
+                            <Button>Upload document</Button>
+                        </Upload>
+                    </Form.Item>
+                    <Button type="primary" onClick={() => form.submit()}>
+                        Create
+                    </Button>
+                </Form>
             </div>
             <Spin spinning={isLoading}>
                 <div className="text-zinc-800">
                     {listRecommendedCourse.length < 1 ? (
                         <Row justify={"center"}>
                             <p className="text-2xl">
-                                Give us your idea to find your interested
-                                course!
+                                Give us your document to create your quote!
                             </p>
                         </Row>
                     ) : (

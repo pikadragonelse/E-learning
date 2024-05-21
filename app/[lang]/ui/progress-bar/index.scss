@@ -1,6 +1,5 @@
 .progress-bar-container {
     padding: 12px 0;
-    width: 100%;
 
     &:hover .progress-bar {
         transform: scaleY(3);
@@ -9,7 +8,6 @@
     .progress-bar {
         height: 4px;
         transform: scaleY(1);
-        width: 100%;
         background-color: #e0e0de75;
         transition: all ease 0.1s;
         cursor: pointer;

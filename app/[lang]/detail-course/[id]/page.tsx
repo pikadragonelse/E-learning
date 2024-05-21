@@ -6,21 +6,27 @@ import { DetailOverviewInfo } from "../../ui/detail-overview-info";
 import { CheckList } from "../../ui/check-list";
 import { MenuLecture } from "../../ui/menu-lecture";
 import { CaretRightOutlined } from "@ant-design/icons";
-import { CustomButton } from "../../ui/button";
 import { Comment } from "../../ui/comment/comment";
 import { InstructorBriefInfo } from "../../ui/instructor-brief-info";
 import { ItemCourseSub } from "../../ui/item-course-sub";
 import { Container } from "../../ui/container";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Course, defaultCourse } from "../../lib/model/course";
-import { Modal } from "antd";
+import { Button, Modal, notification } from "antd";
 import { VideoCustom } from "../../ui/video-custom";
 import parse from "html-react-parser";
+import { useToken } from "../../lib/hooks/useToken";
 
 export default function Page({ params }: { params: { id: string } }) {
     const [courseData, setCourseData] = useState<Course>(defaultCourse);
     const [openModalPreview, setOpenModalPreview] = useState(false);
     const [refreshVideo, setRefreshVideo] = useState(0);
+    const userToken = useToken();
+    const [api, contextHolder] = notification.useNotification();
+    const [listFavoriteCourseId, setListFavoriteCourseId] = useState<string[]>(
+        []
+    );
+    const [refreshFavoriteList, setRefreshFavoriteList] = useState(0);
 
     const getCourseData = () => {
         apiInstance
@@ -33,12 +39,91 @@ export default function Page({ params }: { params: { id: string } }) {
             });
     };
 
+    const addFavoriteCourse = () => {
+        apiInstance
+            .post(
+                "users/favorite-courses",
+                {
+                    courseId: courseData.courseId,
+                },
+                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+            )
+            .then((res) => {
+                console.log(res);
+                api.success({
+                    message: "Add favorite course successful!",
+                    placement: "bottomRight",
+                });
+                setRefreshFavoriteList((prev) => prev + 1);
+            })
+            .catch((error) => {
+                console.log(error);
+                api.error({
+                    message: "Add favorite course fail!",
+                    placement: "bottomRight",
+                    description: "Please wait few seconds and try again!",
+                });
+            });
+    };
+
+    const removeFavoriteCourse = () => {
+        apiInstance
+            .delete(
+                "users/favorite-courses",
+
+                {
+                    headers: {
+                        Authorization: "Bear " + userToken?.accessToken,
+                    },
+                    params: {
+                        courseId: courseData.courseId,
+                    },
+                }
+            )
+            .then((res) => {
+                api.success({
+                    message: "Remove favorite course successful!",
+                    placement: "bottomRight",
+                });
+                setRefreshFavoriteList((prev) => prev + 1);
+            })
+            .catch((error) => {
+                console.log(error);
+                api.error({
+                    message: "Remove favorite course fail!",
+                    placement: "bottomRight",
+                    description: "Please wait few seconds and try again!",
+                });
+            });
+    };
+
+    const getFavoriteCourse = () => {
+        apiInstance
+            .get("users/favorite-courses", {
+                headers: { Authorization: "Bear " + userToken?.accessToken },
+            })
+            .then((res) => {
+                setListFavoriteCourseId(
+                    res.data.data[0].favorites.map(
+                        (item: Course) => item.courseId
+                    )
+                );
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
     useEffect(() => {
         getCourseData();
     }, []);
 
+    useEffect(() => {
+        getFavoriteCourse();
+    }, [refreshFavoriteList]);
+
     return (
         <Container>
+            {contextHolder}
             <Modal
                 title="Preview course"
                 open={openModalPreview}
@@ -76,6 +161,14 @@ export default function Page({ params }: { params: { id: string } }) {
                     duration={courseData.duration}
                     onClickPreview={() => setOpenModalPreview(true)}
                     poster={courseData.posterUrl}
+                    onAddFavorite={
+                        listFavoriteCourseId.indexOf(courseData.courseId) !== -1
+                            ? addFavoriteCourse
+                            : removeFavoriteCourse
+                    }
+                    isFavoriteCourse={
+                        listFavoriteCourseId.indexOf(courseData.courseId) !== -1
+                    }
                 />
                 <div className="h-3 hidden lg:block"></div>
                 <DetailOverviewInfo
@@ -92,16 +185,16 @@ export default function Page({ params }: { params: { id: string } }) {
                             $200
                         </p>
                         <div className="mt-2 flex flex-col">
-                            <CustomButton type="primary" className="mb-2 h-10">
+                            <Button type="primary" className="mb-2 h-10">
                                 Add to cart
-                            </CustomButton>
-                            <CustomButton type="dashed" className=" h-10">
+                            </Button>
+                            <Button type="dashed" className=" h-10">
                                 Buy now
-                            </CustomButton>
+                            </Button>
                         </div>
                     </div>
                     <div className=" mx-2 mt-10 text-zinc-800">
-                        <div className="p-5 border border-zinc-400">
+                        <div className="p-5 border border-zinc-400 border-solid">
                             <h1 className="font-medium text-2xl mb-4">
                                 What you'll learn
                             </h1>
@@ -144,9 +237,9 @@ export default function Page({ params }: { params: { id: string } }) {
                             <h1 className="font-medium text-2xl mb-4">
                                 Description
                             </h1>
-                            <p className="text-sm lg:text-base">
+                            <div className="text-sm lg:text-base">
                                 {parse(courseData.description)}
-                            </p>
+                            </div>
                         </div>
                         <div className="mt-14">
                             <h1 className="font-medium text-2xl mb-4">

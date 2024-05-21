@@ -14,7 +14,7 @@ import {
     UserOutlined,
     LogoutOutlined,
 } from "@ant-design/icons";
-import { Avatar, Popover } from "antd";
+import { Avatar, Button, ConfigProvider, Popover } from "antd";
 import clsx from "clsx";
 import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
@@ -94,126 +94,136 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
     }, []);
 
     return (
-        <header
-            className={clsx(
-                " fixed w-full bg-white transition-all mb-1 top-0 z-20"
-            )}
+        <ConfigProvider
+            theme={{
+                token: {
+                    colorPrimary: "#E3311D",
+                },
+            }}
         >
-            <nav className=" border-gray-200 px-4 lg:px-6 py-1 border-b">
-                <div className="flex flex-wrap items-center gap-3 justify-between">
-                    <div className="flex items-center gap-3">
-                        <Link href={"/"}>
-                            <Image
-                                src="/images/logo-main.png"
-                                width={80}
-                                height={80}
-                                className="hidden lg:block cursor-pointer"
-                                alt="Alpha logo"
-                            />
-                            <Image
-                                src="/images/logo-text.png"
-                                width={100}
-                                height={100}
-                                className="hidden sm:block lg:hidden cursor-pointer"
-                                alt="Alpha logo"
-                            />
-                            <Image
-                                src="/images/logo-icon.png"
-                                width={30}
-                                height={30}
-                                className="block sm:hidden cursor-pointer"
-                                alt="Alpha logo"
-                            />
-                        </Link>
-                        <Popover
-                            content={
-                                <ul className="flex flex-col gap-2 w-80 text-lg h-[600px] max-h-[600px] overflow-auto">
-                                    {listCategory.map((category, index) => (
-                                        <li
-                                            key={index}
-                                            className="cursor-pointer p-2 hover:text-orange-600"
-                                            onClick={() =>
-                                                searchPage(category.categoryId)
-                                            }
-                                        >
-                                            {category.name}
-                                        </li>
-                                    ))}
-                                </ul>
-                            }
-                            title="Categories"
-                            placement="bottomRight"
-                            className="hidden lg:flex"
-                            trigger={"click"}
-                        >
-                            <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all">
-                                <MenuOutlined className="hidden lg:block" />
-                                <span className="hidden lg:block">
-                                    Category
-                                </span>
-                            </div>
-                        </Popover>
-
-                        <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all lg:hidden">
-                            <MenuOutlined onClick={onClickCategoryIcon} />
-                        </div>
-                    </div>
-                    <Search placeholder="Learning" className="max-w-xl" />
-
-                    <div className="flex text-zinc-700 items-center gap-7">
-                        <ShoppingCartOutlined
-                            className="hidden sm:block text-2xl cursor-pointer"
-                            onClick={() => router.push("/cart")}
-                        />
-                        <BellOutlined className="hidden sm:block text-xl cursor-pointer" />
-                        <GlobalOutlined className="hidden sm:block text-xl cursor-pointer" />
-                        {userInfo != null ? (
+            <header
+                className={clsx(
+                    " fixed w-full bg-white transition-all mb-1 top-0 z-20"
+                )}
+            >
+                <nav className=" border-gray-200 px-4 lg:px-6 py-1 border-b border-solid">
+                    <div className="flex flex-wrap items-center gap-3 justify-between">
+                        <div className="flex items-center gap-3">
+                            <Link href={"/"}>
+                                <Image
+                                    src="/images/logo-main.png"
+                                    width={80}
+                                    height={80}
+                                    className="hidden lg:block cursor-pointer"
+                                    alt="Alpha logo"
+                                />
+                                <Image
+                                    src="/images/logo-text.png"
+                                    width={100}
+                                    height={100}
+                                    className="hidden sm:block lg:hidden cursor-pointer"
+                                    alt="Alpha logo"
+                                />
+                                <Image
+                                    src="/images/logo-icon.png"
+                                    width={30}
+                                    height={30}
+                                    className="block sm:hidden cursor-pointer"
+                                    alt="Alpha logo"
+                                />
+                            </Link>
                             <Popover
                                 content={
-                                    <ul className="flex flex-col gap-4 w-64">
-                                        {listUserFeature.map(
-                                            (feature, index) => (
-                                                <li
-                                                    onClick={() =>
-                                                        router.push(
-                                                            feature.href
-                                                        )
-                                                    }
-                                                    key={index}
-                                                    className="p-4 hover:bg-zinc-100 transition-all cursor-pointer flex gap-4 items-center rounded-md active:bg-orange-100"
-                                                >
-                                                    <span className="text-xl">
-                                                        {feature.icon}
-                                                    </span>
-                                                    <span className="text-lg">
-                                                        {feature.title}
-                                                    </span>
-                                                </li>
-                                            )
-                                        )}
+                                    <ul className="flex flex-col gap-2 w-80 text-lg h-[600px] max-h-[600px] overflow-auto">
+                                        {listCategory.map((category, index) => (
+                                            <li
+                                                key={index}
+                                                className="cursor-pointer p-2 hover:text-orange-600"
+                                                onClick={() =>
+                                                    searchPage(
+                                                        category.categoryId
+                                                    )
+                                                }
+                                            >
+                                                {category.name}
+                                            </li>
+                                        ))}
                                     </ul>
                                 }
-                                placement="bottomLeft"
+                                title="Categories"
+                                placement="bottomRight"
+                                className="hidden lg:flex"
+                                trigger={"click"}
                             >
-                                <Avatar
-                                    src={userInfo.profile.avatar}
-                                    className="border border-zinc-600 cursor-pointer"
-                                    size={40}
-                                />
+                                <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all">
+                                    <MenuOutlined className="hidden lg:block" />
+                                    <span className="hidden lg:block">
+                                        Category
+                                    </span>
+                                </div>
                             </Popover>
-                        ) : (
-                            <div
-                                className="px-4 py-1 rounded-md border border-zinc-800 cursor-pointer"
-                                onClick={() => {
-                                    router.push("/login");
-                                }}
-                            >
-                                Login
+
+                            <div className="flex text-zinc-700 gap-1 items-center cursor-pointer hover:bg-zinc-500/20 rounded-md px-2 py-1 transition-all lg:hidden">
+                                <MenuOutlined onClick={onClickCategoryIcon} />
                             </div>
-                        )}
+                        </div>
+                        <Search placeholder="Learning" className="max-w-xl" />
+
+                        <div className="flex text-zinc-700 items-center gap-7">
+                            <ShoppingCartOutlined
+                                className="hidden sm:block text-2xl cursor-pointer"
+                                onClick={() => router.push("/cart")}
+                            />
+                            <BellOutlined className="hidden sm:block text-xl cursor-pointer" />
+                            <GlobalOutlined className="hidden sm:block text-xl cursor-pointer" />
+                            {userInfo != null ? (
+                                <Popover
+                                    content={
+                                        <ul className="flex flex-col gap-4 w-64">
+                                            {listUserFeature.map(
+                                                (feature, index) => (
+                                                    <li
+                                                        onClick={() =>
+                                                            router.push(
+                                                                feature.href
+                                                            )
+                                                        }
+                                                        key={index}
+                                                        className="p-4 hover:bg-zinc-100 transition-all cursor-pointer flex gap-4 items-center rounded-md active:bg-orange-100"
+                                                    >
+                                                        <span className="text-xl">
+                                                            {feature.icon}
+                                                        </span>
+                                                        <span className="text-lg">
+                                                            {feature.title}
+                                                        </span>
+                                                    </li>
+                                                )
+                                            )}
+                                        </ul>
+                                    }
+                                    placement="bottomLeft"
+                                >
+                                    <Avatar
+                                        src={userInfo.profile.avatar}
+                                        className="border border-zinc-600 cursor-pointer"
+                                        size={40}
+                                    />
+                                </Popover>
+                            ) : (
+                                <Button
+                                    className=""
+                                    onClick={() => {
+                                        router.push("/login");
+                                    }}
+                                >
+                                    Login
+                                </Button>
+                            )}
+                        </div>
                     </div>
-                </div>
-            </nav>
-        </header>
+                </nav>
+            </header>
+        </ConfigProvider>
     );
 };

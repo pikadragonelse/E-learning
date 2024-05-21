@@ -117,12 +117,12 @@ export const VideoCustom: React.FC<VideoCustom> = ({
     }, [videoSource]);
 
     return (
-        <div className="text-zinc-800">
-            <div className="w-full relative flex" ref={containerVideoRef}>
+        <div className="text-zinc-800 w-full">
+            <div className="relative w-full flex" ref={containerVideoRef}>
                 <video
                     ref={videoRef}
                     width="100%"
-                    height="640"
+                    height="100%"
                     onProgress={(e) => {
                         updateBuffered(e);
                     }}
@@ -184,12 +184,11 @@ export const VideoCustom: React.FC<VideoCustom> = ({
                 </div>
                 <div
                     className={clsx(
-                        "absolute bottom-0 w-full px-4 py-4",
+                        "absolute bottom-0 left-0 right-0 mx-4 py-4",
                         {
                             "opacity-100": isShowControl,
                             "opacity-0": !isShowControl,
-                        },
-                        "opacity-100"
+                        }
                     )}
                 >
                     <div className="video-progress relative flex items-center">

@@ -13,6 +13,7 @@ import { OverviewLearning } from "@/app/[lang]/ui/overview-learning";
 import { Comment } from "../../../ui/comment/comment";
 import { Note } from "@/app/[lang]/ui/note";
 import { useToken } from "@/app/[lang]/lib/hooks/useToken";
+import { Reminder } from "@/app/[lang]/ui/reminder";
 
 export default function Page({
     params: { lang, id, courseId },
@@ -125,7 +126,7 @@ export default function Page({
         {
             key: "6",
             label: "Reminders",
-            children: "Content of Tab Pane 3",
+            children: <Reminder lessonId={dataLesson.id} />,
         },
     ];
 

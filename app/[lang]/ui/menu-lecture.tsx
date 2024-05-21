@@ -79,15 +79,17 @@ export const MenuLecture: React.FC<MenuLecture> = ({
             const listLesson = topic.lessons.map((lesson) => {
                 return getItem(
                     <div className="flex relative items-center">
-                        <h2>{lesson.title}</h2>
+                        <h2 className="w-auto overflow-hidden truncate">
+                            {lesson.title}
+                        </h2>
                         <Popover
                             content={
                                 <ul className="w-40">
                                     {resourceMap[lesson.id]?.map((resource) => (
-                                        <li className="cursor-pointer w-full group">
+                                        <li className="cursor-pointer group ">
                                             <a
                                                 href={resource.url}
-                                                className="group-hover:text-orange-600 text-zinc-800"
+                                                className="group-hover:text-orange-600 text-zinc-800 "
                                                 onClick={(event) => {
                                                     event.stopPropagation();
                                                 }}
@@ -123,7 +125,10 @@ export const MenuLecture: React.FC<MenuLecture> = ({
             });
 
             return getItem(
-                <h2 key={index} className="font-medium">
+                <h2
+                    key={index}
+                    className="font-medium w-auto overflow-hidden truncate"
+                >
                     {topic.name}
                 </h2>,
                 topic.id,

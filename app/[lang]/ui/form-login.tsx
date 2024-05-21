@@ -71,7 +71,7 @@ export const FormLogin: React.FC<FormLogin> = ({
                     src="/images/logo-main.png"
                     width={200}
                     height={200}
-                    className="mx-auto"
+                    className="block mx-auto"
                     alt="Alpha logo"
                 />
                 <Form

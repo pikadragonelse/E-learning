@@ -89,7 +89,7 @@ export const ProgressBar = ({
     return (
         <>
             <p
-                className={`absolute top-[-2rem] text-sm text-zinc-50 py-1 px-2 bg-zinc-800/70`}
+                className={`absolute top-[-2rem] text-sm text-zinc-50 py-1 bg-zinc-800/70`}
                 style={{
                     left: positionTime - 24,
                 }}

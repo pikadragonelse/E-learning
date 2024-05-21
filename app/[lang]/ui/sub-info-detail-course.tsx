@@ -1,8 +1,11 @@
 "use client";
 
 import React, { useEffect, useState } from "react";
-import { CaretRightOutlined, HeartOutlined } from "@ant-design/icons";
-import { CustomButton } from "./button";
+import {
+    CaretRightOutlined,
+    HeartOutlined,
+    HeartFilled,
+} from "@ant-design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
     faDownload,
@@ -12,6 +15,7 @@ import {
     faTv,
 } from "@fortawesome/free-solid-svg-icons";
 import clsx from "clsx";
+import { Button } from "antd";
 
 export type SubInfoDetailCourse = {
     price?: number;
@@ -19,12 +23,17 @@ export type SubInfoDetailCourse = {
     duration?: number;
     onClickPreview?: (...props: any) => unknown;
     poster?: string;
+    onAddFavorite?: (...props: any) => void;
+    isFavoriteCourse?: boolean;
 };
 export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
     price = 0,
     discount = 0,
     duration = 0,
     onClickPreview = () => {},
+    onAddFavorite = () => {},
+    isFavoriteCourse,
+
     poster = "https://coolwallpapers.me/picsup/3058990-book_computer_design_development_electronics_html_keyboard_laptop_macbook_notebook_pencil_technology_web_web-design_website.jpg",
 }) => {
     const [isAbsolute, setIsAbsolute] = useState(false);
@@ -88,12 +97,21 @@ export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
                 <div className="">{discount}% off</div>
                 <div className="">
                     <div className="flex gap-2">
-                        <CustomButton type="primary" className="w-36 flex-1">
+                        <Button type="primary" className="w-36 flex-1">
                             Add to cart
-                        </CustomButton>
-                        <CustomButton icon={<HeartOutlined />}></CustomButton>
+                        </Button>
+                        <Button
+                            icon={
+                                isFavoriteCourse ? (
+                                    <HeartFilled className="text-orange-600" />
+                                ) : (
+                                    <HeartOutlined />
+                                )
+                            }
+                            onClick={onAddFavorite}
+                        ></Button>
                     </div>
-                    <CustomButton className="mt-1 w-full">Buy Now</CustomButton>
+                    <Button className="mt-1 w-full">Buy Now</Button>
                 </div>
             </div>
             <div className="p-2 mb-4">

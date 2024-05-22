@@ -31,6 +31,7 @@ export default function Page({}: { params: { lang: string } }) {
     >([]);
     const [retrieverInstance, setRetrieverInstance] = useState<any>();
     const [isLoading, setIsLoading] = useState(false);
+    const [listCourseId, setListCourseId] = useState<string[]>([]);
 
     const convertObjectToString: any = (obj: any, parentKey = "") => {
         let result = [];
@@ -62,12 +63,16 @@ export default function Page({}: { params: { lang: string } }) {
                     return {
                         courseId: course.courseId,
                         title: course.title,
-                        description: course.description,
+                        category: course.category.name,
+                        updatedAt: course.updatedAt,
                     };
                 });
+
                 const newData: string = data
                     .map((course: Course) => convertObjectToString(course))
                     .join(", ");
+
+                console.log(newData);
 
                 const document = new Document({ pageContent: newData });
 
@@ -117,7 +122,19 @@ export default function Page({}: { params: { lang: string } }) {
             apiKey: process.env.OPEN_AI_API_KEY,
         });
 
-        const template = `You are an advanced AI model designed to provide course information from a given dataset. Whenever a user asks a question, your primary task is to extract and present at least 20 courseId fields from the dataset, regardless of the nature of the query. If the user’s query is not directly related to courses, you should still provide 20 course IDs as part of your response. The dataset you have is an array where each element is a string containing the details of a course. Use the course data to fulfill this requirement. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+        const template = `You are an advanced AI model designed to provide course information from a given dataset, with each course's information separated by ";". Your primary task is to:
+
+        Field courseId in dataset is the id of the course, Field title is the name of the course, field category is the category of the course, field updatedAt is the latest update date of the course.
+
+        1. Identify the course category the user is interested in from their query.
+        2. Extract and present at least 10 unique course IDs from that category in the dataset, ensuring that no duplicate course IDs are included in your response. If no courses from the specified category are found, default to presenting 10 unique course IDs from any category in the dataset.
+        
+        The dataset you have is an array where each element is a string containing the details of a course. Use the course data to fulfill this requirement. If the user's query is not directly related to courses, you should still provide 10 unique course IDs from any category as part of your response. If you don't know the answer, just say that you don't know, and do not try to make up an answer. Find all of your dataset and return the closest answer.
+        
+        result format example:
+        1. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
+        2. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
+        ...
 
         {context}
 
@@ -139,15 +156,46 @@ export default function Page({}: { params: { lang: string } }) {
             context,
         });
         setIsLoading(false);
-        console.log(result);
+        const listId = result.split("\n");
+        console.log(listId);
+
+        const finalResult = listId.map((id) => {
+            return id.trim().split(".")[1];
+        });
+        console.log(finalResult);
+
+        setListCourseId(finalResult);
     };
+
+    const getListCourse = () => {
+        console.log(listCourseId);
+
+        apiInstance
+            .get("courses/others/get-courses-by-courseIds", {
+                params: {
+                    courseIds: listCourseId.join(","),
+                },
+            })
+            .then((res) => {
+                setListRecommendedCourse(res.data.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    useEffect(() => {
+        if (listCourseId.length > 1) {
+            getListCourse();
+        }
+    }, [listCourseId]);
 
     return (
         <Container>
             <div className="ml-16  mb-10">
                 <h1 className="text-zinc-800 ">Recommend course</h1>
                 <p className="text-xl font-medium text-orange-600 ">
-                    We will recommend for you 20 courses that is closest with
+                    We will recommend for you 10 courses that is closest with
                     your idea!
                 </p>
             </div>
@@ -164,7 +212,7 @@ export default function Page({}: { params: { lang: string } }) {
                 </Row>
             </div>
             <Spin spinning={isLoading}>
-                <div className="text-zinc-800">
+                <div className="text-zinc-800 ">
                     {listRecommendedCourse.length < 1 ? (
                         <Row justify={"center"}>
                             <p className="text-2xl">
@@ -176,6 +224,7 @@ export default function Page({}: { params: { lang: string } }) {
                         <GridCourse
                             listCourseFull={listRecommendedCourse}
                             type="full"
+                            isHiddenButton={false}
                         />
                     )}
                 </div>

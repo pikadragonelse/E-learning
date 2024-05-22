@@ -107,6 +107,7 @@ export default function Page({}: { params: { lang: string } }) {
             })
             .catch((error) => {
                 console.log(error);
+                setIsLoading(false);
             });
     };
 
@@ -170,7 +171,7 @@ export default function Page({}: { params: { lang: string } }) {
                         />
                     </Form.Item>
                     <Form.Item<FieldType> name="document" label="Document">
-                        <Upload>
+                        <Upload accept=".txt">
                             <Button>Upload document</Button>
                         </Upload>
                     </Form.Item>
@@ -180,7 +181,7 @@ export default function Page({}: { params: { lang: string } }) {
                 </Form>
             </div>
             <Spin spinning={isLoading}>
-                <div className="text-zinc-800">
+                <div className="text-zinc-800 mx-32">
                     {listRecommendedCourse.length < 1 ? (
                         <Row justify={"center"}>
                             <p className="text-2xl">
@@ -191,6 +192,7 @@ export default function Page({}: { params: { lang: string } }) {
                         <GridCourse
                             listCourseFull={listRecommendedCourse}
                             type="full"
+                            isHiddenButton={false}
                         />
                     )}
                 </div>

@@ -15,7 +15,7 @@ export const GridCourse: React.FC<GridCourse> = ({
     type = "basic",
 }) => {
     return (
-        <div className="flex flex-wrap justify-between">
+        <div className="flex flex-wrap gap-8 justify-center">
             {type === "basic"
                 ? listCourse?.map((courseInfo, index) => (
                       <NewItemCourse
@@ -27,7 +27,7 @@ export const GridCourse: React.FC<GridCourse> = ({
                   ))
                 : listCourseFull?.map((course, index) => (
                       <NewItemCourse
-                          className="flex-col w-60 min-w-60 mb-6"
+                          className="flex-col w-60 min-w-60 mb-6 shadow-xl"
                           isHiddenButton={isHiddenButton}
                           course={course}
                           key={index}

@@ -38,7 +38,6 @@ export default function Page({
     const newTabIndex = useRef(2);
     const userToken = useToken();
     const [linkUploadPoster, setLinkUploadPoster] = useState("");
-    console.log(newCourse);
 
     useEffect(() => {
         setItems([

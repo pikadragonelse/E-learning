@@ -7,17 +7,10 @@ import { Document } from "langchain/document";
 
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
-import { pull } from "langchain/hub";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
 import { apiInstance } from "@/plugin/apiInstance";
-import {
-    RunnablePassthrough,
-    RunnableSequence,
-} from "@langchain/core/runnables";
-import { formatDocumentsAsString } from "langchain/util/document";
+
 import { Button, Row, Spin } from "antd";
-import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { Course } from "../lib/model/course";

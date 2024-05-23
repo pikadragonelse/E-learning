@@ -163,8 +163,8 @@ export default function Page({ params }: { params: { id: string } }) {
                     poster={courseData.posterUrl}
                     onAddFavorite={
                         listFavoriteCourseId.indexOf(courseData.courseId) !== -1
-                            ? addFavoriteCourse
-                            : removeFavoriteCourse
+                            ? removeFavoriteCourse
+                            : addFavoriteCourse
                     }
                     isFavoriteCourse={
                         listFavoriteCourseId.indexOf(courseData.courseId) !== -1

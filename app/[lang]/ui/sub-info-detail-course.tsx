@@ -38,6 +38,8 @@ export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
 }) => {
     const [isAbsolute, setIsAbsolute] = useState(false);
 
+    console.log(isFavoriteCourse);
+
     useEffect(() => {
         const handleScroll = (event: any) => {
             if (

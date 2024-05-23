@@ -30,28 +30,33 @@ export default function Page({
     params: { lang: Locale };
 }) {
     const [newCourse, setNewCourse] = useState<Course>(defaultCourse);
-    const [currentStep, setCurrentStep] = useState(3);
+    const [currentStep, setCurrentStep] = useState(1);
     const [activeKey, setActiveKey] = useState("1");
     const [imageUrl, setImageUrl] = useState<any>();
     const [fileList, setFileList] = useState<any>([]);
-    const [items, setItems] = useState([
-        {
-            label: "Topic 1",
-            children: (
-                <div className="h-[700px] max-h-[700px] overflow-auto">
-                    <FormCreateSession
-                        idSession={1}
-                        courseId={newCourse.courseId}
-                    />
-                </div>
-            ),
-            key: "1",
-            closable: false,
-        },
-    ]);
+    const [items, setItems] = useState<any>([]);
     const newTabIndex = useRef(2);
     const userToken = useToken();
     const [linkUploadPoster, setLinkUploadPoster] = useState("");
+    console.log(newCourse);
+
+    useEffect(() => {
+        setItems([
+            {
+                label: "Topic 1",
+                children: (
+                    <div className="h-[700px] max-h-[700px] overflow-auto">
+                        <FormCreateSession
+                            idSession={1}
+                            courseId={newCourse.courseId}
+                        />
+                    </div>
+                ),
+                key: "1",
+                closable: false,
+            },
+        ]);
+    }, [newCourse]);
 
     const onChange = (newActiveKey: string) => {
         setActiveKey(newActiveKey);
@@ -81,12 +86,12 @@ export default function Page({
         newTabIndex.current--;
         let newActiveKey = activeKey;
         let lastIndex = -1;
-        items.forEach((item, i) => {
+        items.forEach((item: any, i: any) => {
             if (item.key === targetKey) {
                 lastIndex = i - 1;
             }
         });
-        const newPanes = items.filter((item) => item.key !== targetKey);
+        const newPanes = items.filter((item: any) => item.key !== targetKey);
         if (newPanes.length && newActiveKey === targetKey) {
             if (lastIndex >= 0) {
                 newActiveKey = newPanes[lastIndex].key;

@@ -10,8 +10,19 @@ import { Course } from "../lib/model/course";
 import { useWindowResize } from "../lib/hooks/useWindowResize";
 import { useToken } from "../lib/hooks/useToken";
 
-export type CarouselList = { byCategory?: string };
-export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
+const urlMap: Record<"category" | "rcm", string> = {
+    category: "courses",
+    rcm: "courses/recommends/recommend-courses",
+};
+
+export type CarouselList = {
+    byCategory?: string;
+    typeList?: "rcm" | "category";
+};
+export const CarouselList: React.FC<CarouselList> = ({
+    byCategory = "",
+    typeList = "category",
+}) => {
     const [currPage, setCurrPage] = useState(1);
     const [listCourse, setListCourse] = useState<Course[]>();
     const windowSize = useWindowResize();
@@ -44,11 +55,20 @@ export const CarouselList: React.FC<CarouselList> = ({ byCategory = "" }) => {
 
     const getListCourse = async () => {
         try {
-            const response = await apiInstance.get("courses", {
-                params: {
-                    category: byCategory,
-                    page: 1,
-                    pageSize: 15,
+            const response = await apiInstance.get(urlMap[typeList], {
+                params:
+                    typeList === "category"
+                        ? {
+                              category: byCategory,
+                              page: 1,
+                              pageSize: 15,
+                          }
+                        : {
+                              page: 1,
+                              pageSize: 15,
+                          },
+                headers: {
+                    Authorization: "Bear " + userTokenInfo?.accessToken,
                 },
             });
 

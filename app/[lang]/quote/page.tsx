@@ -34,89 +34,36 @@ export default function Page({}: { params: { lang: string } }) {
     const [listRecommendedCourse, setListRecommendedCourse] = useState<
         Course[]
     >([]);
-    const [retrieverInstance, setRetrieverInstance] = useState<any>();
     const [isLoading, setIsLoading] = useState(false);
     const [form] = useForm();
-
-    const convertObjectToString: any = (obj: any, parentKey = "") => {
-        let result = [];
-        for (let [key, value] of Object.entries(obj)) {
-            const fullKey = parentKey ? `${parentKey}.${key}` : key;
-            if (
-                typeof value === "object" &&
-                value !== null &&
-                !Array.isArray(value)
-            ) {
-                result.push(convertObjectToString(value, fullKey));
-            } else {
-                result.push(`${fullKey}: ${value}`);
-            }
-        }
-        return result.join(", ");
-    };
-
-    const getDataLearn = () => {
-        setIsLoading(true);
-        apiInstance
-            .get("courses", {
-                params: {
-                    pageSize: 1000,
-                },
-            })
-            .then(async (res) => {
-                const data = res.data.data.map((course: Course) => {
-                    return {
-                        courseId: course.courseId,
-                        title: course.title,
-                        description: course.description,
-                    };
-                });
-                const newData: string = data
-                    .map((course: Course) => convertObjectToString(course))
-                    .join(", ");
-
-                const document = new Document({ pageContent: newData });
-
-                const textSplitter = new RecursiveCharacterTextSplitter({
-                    chunkSize: 2000,
-                    chunkOverlap: 0,
-                });
-                const allSplits = await textSplitter.splitDocuments([
-                    document || new Document({ pageContent: "" }),
-                ]);
-
-                const vectorStore = await MemoryVectorStore.fromDocuments(
-                    allSplits,
-                    new OpenAIEmbeddings({
-                        apiKey: process.env.OPEN_AI_API_KEY,
-                    })
-                );
-
-                // Retrieve and generate using the relevant snippets of the blog.
-                const retriever = vectorStore.asRetriever({
-                    k: 6,
-                    searchType: "similarity",
-                });
-                setRetrieverInstance(retriever);
-                setIsLoading(false);
-                // for await (const chunk of await executeWithRetry(() =>
-                //     ragChain.stream("How many development course are there?")
-                // )) {
-                //     console.log(chunk);
-                // }
-            })
-            .catch((error) => {
-                console.log(error);
-                setIsLoading(false);
-            });
-    };
-
-    useEffect(() => {
-        getDataLearn();
-    }, []);
+    const [dataTrain, setDataTrain] = useState("");
+    const [quantity, setQuantity] = useState(10);
 
     const request = async (value: string) => {
         setIsLoading(true);
+
+        const document = new Document({ pageContent: dataTrain });
+
+        const textSplitter = new RecursiveCharacterTextSplitter({
+            chunkSize: 2000,
+            chunkOverlap: 0,
+        });
+        const allSplits = await textSplitter.splitDocuments([
+            document || new Document({ pageContent: "" }),
+        ]);
+
+        const vectorStore = await MemoryVectorStore.fromDocuments(
+            allSplits,
+            new OpenAIEmbeddings({
+                apiKey: process.env.OPEN_AI_API_KEY,
+            })
+        );
+
+        // Retrieve and generate using the relevant snippets of the blog.
+        const retriever = vectorStore.asRetriever({
+            k: 6,
+            searchType: "similarity",
+        });
 
         const llm = new ChatOpenAI({
             model: "gpt-3.5-turbo",
@@ -124,7 +71,33 @@ export default function Page({}: { params: { lang: string } }) {
             apiKey: process.env.OPEN_AI_API_KEY,
         });
 
-        const template = `You are an advanced AI model designed to provide course information from a given dataset. Whenever a user asks a question, your primary task is to extract and present at least 20 courseId fields from the dataset, regardless of the nature of the query. If the user’s query is not directly related to courses, you should still provide 20 course IDs as part of your response. The dataset you have is an array where each element is a string containing the details of a course. Use the course data to fulfill this requirement. If you don't know the answer, just say that you don't know, don't try to make up an answer.
+        const template = `You are an advanced AI model designed to generate multiple-choice questions based on a given document. Your task is to create a list of ${quantity} unique multiple-choice questions with answers from the dataset provided. Each question should have at least 4 answer options, with one correct answer clearly marked. Ensure the questions cover different parts of the document to provide a comprehensive assessment.
+
+        Your output should follow this format:
+
+    1. Question 1?
+       a) Option 1
+       b) Option 2
+       c) Option 3
+       d) Option 4
+       Correct answer: c
+
+    2. Question 2?
+       a) Option 1
+       b) Option 2
+       c) Option 3
+       d) Option 4
+       Correct answer: a
+
+    3. Question 3?
+       a) Option 1
+       b) Option 2
+       c) Option 3
+       d) Option 4
+       Correct answer: b
+
+    ... and so on until ${quantity} questions.
+
 
         {context}
 
@@ -139,15 +112,23 @@ export default function Page({}: { params: { lang: string } }) {
             prompt: customRagPrompt as any,
             outputParser: new StringOutputParser(),
         });
-        const context = await retrieverInstance.getRelevantDocuments(value);
+        const context = await retriever.getRelevantDocuments(value);
 
         const result = await ragChain.invoke({
             question: value,
             context,
         });
-        setIsLoading(false);
         console.log(result);
+        setIsLoading(false);
     };
+
+    useEffect(() => {
+        if (dataTrain !== "") {
+            request(
+                `Please generate ${quantity} multiple-choice questions from the provided document with at least 2 answer options for each question, including the correct answer.`
+            );
+        }
+    }, [dataTrain]);
 
     return (
         <Container>
@@ -159,7 +140,20 @@ export default function Page({}: { params: { lang: string } }) {
                 </p>
             </div>
             <div className="m-14 mt-6 text-zinc-800 w-96">
-                <Form form={form}>
+                <Form
+                    form={form}
+                    onFinish={(value) => {
+                        console.log(value.document);
+                        const file = value.document.file.originFileObj;
+                        const reader = new FileReader();
+                        reader.onload = (e) => {
+                            if (e != null && e.target != null) {
+                                setDataTrain(e.target.result as any);
+                            }
+                        };
+                        reader.readAsText(file);
+                    }}
+                >
                     <Form.Item<FieldType> name="quantity" label="Quantity">
                         <Select
                             options={[
@@ -168,10 +162,11 @@ export default function Page({}: { params: { lang: string } }) {
                                 { label: 20, value: 20 },
                             ]}
                             className="w-32"
+                            onChange={(value) => setQuantity(value)}
                         />
                     </Form.Item>
                     <Form.Item<FieldType> name="document" label="Document">
-                        <Upload accept=".txt">
+                        <Upload accept=".txt" customRequest={() => {}}>
                             <Button>Upload document</Button>
                         </Upload>
                     </Form.Item>

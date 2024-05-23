@@ -39,7 +39,7 @@ export default function Home({
                     <h2 className="text-2xl text-orange-700 font-medium cursor-pointer w-fit mb-3">
                         Recommended courses
                     </h2>
-                    <CarouselList />
+                    <CarouselList typeList="rcm" />
                 </div>
                 <div className="">
                     <h2 className="text-2xl text-orange-700 font-medium cursor-pointer w-fit mb-3">

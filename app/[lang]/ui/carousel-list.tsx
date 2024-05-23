@@ -10,18 +10,21 @@ import { Course } from "../lib/model/course";
 import { useWindowResize } from "../lib/hooks/useWindowResize";
 import { useToken } from "../lib/hooks/useToken";
 
-const urlMap: Record<"category" | "rcm", string> = {
+const urlMap: Record<"category" | "rcm" | "rcmColab", string> = {
     category: "courses",
-    rcm: "courses/recommends/recommend-courses",
+    rcm: "courses/recommends/recommend-courses-based-on-tags",
+    rcmColab: "courses/recommends/collaborative-filtering",
 };
 
 export type CarouselList = {
     byCategory?: string;
-    typeList?: "rcm" | "category";
+    typeList?: "rcm" | "category" | "rcmColab";
+    setHiddenList?: (categoryId: string) => void;
 };
 export const CarouselList: React.FC<CarouselList> = ({
     byCategory = "",
     typeList = "category",
+    setHiddenList = () => {},
 }) => {
     const [currPage, setCurrPage] = useState(1);
     const [listCourse, setListCourse] = useState<Course[]>();
@@ -35,9 +38,7 @@ export const CarouselList: React.FC<CarouselList> = ({
     const getListCart = () => {
         apiInstance
             .get("users/carts", {
-                headers: {
-                    Authorization: "Bear " + userTokenInfo?.accessToken,
-                },
+                headers: {},
             })
             .then((res) => {
                 const listCourse: Course[] = res.data.data[0].carts;
@@ -67,12 +68,18 @@ export const CarouselList: React.FC<CarouselList> = ({
                               page: 1,
                               pageSize: 15,
                           },
-                headers: {
-                    Authorization: "Bear " + userTokenInfo?.accessToken,
-                },
+                headers: userTokenInfo?.accessToken
+                    ? {
+                          Authorization: "Bear " + userTokenInfo?.accessToken,
+                      }
+                    : {},
             });
 
             const listCourse: Course[] = response.data.data;
+            if (listCourse.length < 1) {
+                setHiddenList(byCategory);
+                return;
+            }
             setListCourse(listCourse);
         } catch (error) {
             console.log("Get list courses failed", error);

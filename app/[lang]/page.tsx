@@ -16,14 +16,29 @@ export default function Home({
     params: { lang: Locale };
 }) {
     const [listCategory, setListCategory] = useState<Category[]>([]);
+    const [isShowMap, setIsShowMap] = useState<Record<any, boolean>>({});
 
     const getCategory = async () => {
         try {
             const responseData = await apiInstance.get("categories");
             setListCategory(responseData.data);
+            const tempMap: Record<any, boolean> = {};
+            responseData.data.forEach((category: Category) => {
+                tempMap[category.categoryId] = true;
+            });
+            setIsShowMap(tempMap);
         } catch (error) {
             console.log("Get categories failed", error);
         }
+    };
+
+    const setHiddenList = (categoryId: string) => {
+        setIsShowMap((prev) => {
+            return {
+                ...prev,
+                [categoryId]: false,
+            };
+        });
     };
 
     useEffect(() => {
@@ -43,6 +58,12 @@ export default function Home({
                 </div>
                 <div className="">
                     <h2 className="text-2xl text-orange-700 font-medium cursor-pointer w-fit mb-3">
+                        What to learn next
+                    </h2>
+                    <CarouselList typeList="rcmColab" />
+                </div>
+                <div className="">
+                    <h2 className="text-2xl text-orange-700 font-medium cursor-pointer w-fit mb-3">
                         Trending courses
                     </h2>
                     <CarouselList />
@@ -53,14 +74,19 @@ export default function Home({
                     </h2>
                     <ListInstructor />
                 </div>
-                {listCategory.map((category, index) => (
-                    <div className="" key={index}>
-                        <h2 className="text-2xl text-orange-700 font-medium cursor-pointer w-fit mb-3">
-                            {category.name}
-                        </h2>
-                        <CarouselList byCategory={category.categoryId} />
-                    </div>
-                ))}
+                {listCategory.map((category, index) =>
+                    isShowMap[category.categoryId] ? (
+                        <div className="" key={index}>
+                            <h2 className="text-2xl text-orange-700 font-medium cursor-pointer w-fit mb-3">
+                                {category.name}
+                            </h2>
+                            <CarouselList
+                                byCategory={category.categoryId}
+                                setHiddenList={setHiddenList}
+                            />
+                        </div>
+                    ) : undefined
+                )}
             </div>
         </Container>
     );

@@ -16,7 +16,7 @@ import {
     RunnableSequence,
 } from "@langchain/core/runnables";
 import { formatDocumentsAsString } from "langchain/util/document";
-import { Button, Form, Row, Select, Spin, Upload } from "antd";
+import { Button, Form, Modal, Row, Select, Space, Spin, Upload } from "antd";
 import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
@@ -30,6 +30,44 @@ type FieldType = {
     document: any;
     quantity: number;
 };
+
+interface Question {
+    question: string;
+    options: string[];
+    answer: string;
+}
+
+const formatString = (input: string): Question[] => {
+    const questions: Question[] = [];
+    input.split("\n\n").forEach((questionSet) => {
+        const question = questionSet.split("\n");
+        questions.push({
+            question: question[0],
+            options: question.slice(1, -1),
+            answer: question[question.length - 1],
+        });
+    });
+    console.log(questions);
+
+    return questions;
+};
+
+const handleDownload = (value: string) => {
+    const blob = new Blob([value], { type: "text/plain" });
+    const url = window.URL.createObjectURL(blob);
+
+    const a = document.createElement("a");
+    a.style.display = "none";
+    a.href = url;
+    a.download = "quiz.txt";
+
+    document.body.appendChild(a);
+    a.click();
+
+    window.URL.revokeObjectURL(url);
+    document.body.removeChild(a);
+};
+
 export default function Page({}: { params: { lang: string } }) {
     const [listRecommendedCourse, setListRecommendedCourse] = useState<
         Course[]
@@ -38,6 +76,9 @@ export default function Page({}: { params: { lang: string } }) {
     const [form] = useForm();
     const [dataTrain, setDataTrain] = useState("");
     const [quantity, setQuantity] = useState(10);
+    const [resultQuote, setResultQuote] = useState<Question[]>([]);
+    const [nameFile, setNameFile] = useState("");
+    const [resultText, setResultText] = useState("");
 
     const request = async (value: string) => {
         setIsLoading(true);
@@ -118,7 +159,9 @@ export default function Page({}: { params: { lang: string } }) {
             question: value,
             context,
         });
-        console.log(result);
+        setResultText(result);
+
+        setResultQuote(formatString(result));
         setIsLoading(false);
     };
 
@@ -130,10 +173,35 @@ export default function Page({}: { params: { lang: string } }) {
         }
     }, [dataTrain]);
 
+    const [formModal] = useForm();
+    const [isOpenModal, setIsOpenModal] = useState(false);
+
     return (
         <Container>
+            <Modal
+                open={isOpenModal}
+                onCancel={() => setIsOpenModal(false)}
+                title="Save quiz to topic of course"
+                footer={() => <></>}
+            >
+                <Form
+                    form={formModal}
+                    labelCol={{ span: 4 }}
+                    className="mt-6 mr-4"
+                >
+                    <Form.Item label="Course">
+                        <Select placeholder="Select your course" />
+                    </Form.Item>
+                    <Form.Item label="Topic">
+                        <Select placeholder="Select your topic of course" />
+                    </Form.Item>
+                    <Row justify={"end"}>
+                        <Button type="primary">Add quote</Button>
+                    </Row>
+                </Form>
+            </Modal>
             <div className="ml-16  mb-10">
-                <h1 className="text-zinc-800 ">Create quote course</h1>
+                <h1 className="text-zinc-800 ">Create course quiz </h1>
                 <p className="text-xl font-medium text-orange-600 ">
                     Based on the documents you provide, we will create a list of
                     extremely diverse and interesting multiple choice questions.
@@ -143,7 +211,6 @@ export default function Page({}: { params: { lang: string } }) {
                 <Form
                     form={form}
                     onFinish={(value) => {
-                        console.log(value.document);
                         const file = value.document.file.originFileObj;
                         const reader = new FileReader();
                         reader.onload = (e) => {
@@ -154,7 +221,11 @@ export default function Page({}: { params: { lang: string } }) {
                         reader.readAsText(file);
                     }}
                 >
-                    <Form.Item<FieldType> name="quantity" label="Quantity">
+                    <Form.Item<FieldType>
+                        name="quantity"
+                        label="Quantity"
+                        rules={[{ required: true }]}
+                    >
                         <Select
                             options={[
                                 { label: 5, value: 5 },
@@ -165,11 +236,24 @@ export default function Page({}: { params: { lang: string } }) {
                             onChange={(value) => setQuantity(value)}
                         />
                     </Form.Item>
-                    <Form.Item<FieldType> name="document" label="Document">
-                        <Upload accept=".txt" customRequest={() => {}}>
-                            <Button>Upload document</Button>
-                        </Upload>
-                    </Form.Item>
+                    <div className="flex gap-4">
+                        <Form.Item<FieldType>
+                            name="document"
+                            label="Document"
+                            rules={[{ required: true }]}
+                        >
+                            <Upload
+                                accept=".txt"
+                                customRequest={() => {}}
+                                showUploadList={false}
+                                onChange={(file) => setNameFile(file.file.name)}
+                            >
+                                <Button>Upload document</Button>
+                            </Upload>
+                        </Form.Item>
+                        <div className="text-lg">{nameFile}</div>
+                    </div>
+
                     <Button type="primary" onClick={() => form.submit()}>
                         Create
                     </Button>
@@ -177,18 +261,47 @@ export default function Page({}: { params: { lang: string } }) {
             </div>
             <Spin spinning={isLoading}>
                 <div className="text-zinc-800 mx-32">
-                    {listRecommendedCourse.length < 1 ? (
+                    {resultQuote.length < 1 ? (
                         <Row justify={"center"}>
                             <p className="text-2xl">
-                                Give us your document to create your quote!
+                                Give us your document to create your quiz!
                             </p>
                         </Row>
                     ) : (
-                        <GridCourse
-                            listCourseFull={listRecommendedCourse}
-                            type="full"
-                            isHiddenButton={false}
-                        />
+                        <>
+                            <Row justify={"center"}>
+                                <Space>
+                                    <Button
+                                        onClick={() =>
+                                            handleDownload(resultText)
+                                        }
+                                    >
+                                        Save file
+                                    </Button>
+                                    <Button
+                                        type="primary"
+                                        onClick={() => setIsOpenModal(true)}
+                                    >
+                                        Save in topic of course
+                                    </Button>
+                                </Space>
+                            </Row>
+                            <div className="mt-4">
+                                {resultQuote.map((q, index) => (
+                                    <div key={index} className="question mb-4">
+                                        <p className="font-medium">
+                                            {q.question}
+                                        </p>
+                                        <ul>
+                                            {q.options.map((option, i) => (
+                                                <li key={i}>{option}</li>
+                                            ))}
+                                        </ul>
+                                        <p>{q.answer}</p>
+                                    </div>
+                                ))}
+                            </div>
+                        </>
                     )}
                 </div>
             </Spin>

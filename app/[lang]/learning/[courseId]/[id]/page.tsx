@@ -126,7 +126,7 @@ export default function Page({
         {
             key: "6",
             label: "Reminders",
-            children: <Reminder lessonId={dataLesson.id} />,
+            children: <Reminder lessonId={dataLesson?.id} />,
         },
     ];
 

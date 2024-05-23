@@ -16,6 +16,7 @@ import { Button, Modal, notification } from "antd";
 import { VideoCustom } from "../../ui/video-custom";
 import parse from "html-react-parser";
 import { useToken } from "../../lib/hooks/useToken";
+import { useRouter } from "next/navigation";
 
 export default function Page({ params }: { params: { id: string } }) {
     const [courseData, setCourseData] = useState<Course>(defaultCourse);
@@ -23,16 +24,34 @@ export default function Page({ params }: { params: { id: string } }) {
     const [refreshVideo, setRefreshVideo] = useState(0);
     const userToken = useToken();
     const [api, contextHolder] = notification.useNotification();
-    const [listFavoriteCourseId, setListFavoriteCourseId] = useState<string[]>(
-        []
-    );
-    const [refreshFavoriteList, setRefreshFavoriteList] = useState(0);
+    const [stateCourse, setStateCourse] = useState<{
+        isCourseFavorite: boolean;
+        percentCompleteCourse: number;
+        isAddedToCart: boolean;
+        isUserEnrollmentCourse: boolean;
+    }>({
+        isCourseFavorite: false,
+        percentCompleteCourse: 0,
+        isAddedToCart: false,
+        isUserEnrollmentCourse: false,
+    });
+    const [isLoadingAddCart, setIsLoadingAddCart] = useState(false);
+    const route = useRouter();
 
     const getCourseData = () => {
         apiInstance
             .get(`courses/${params.id}`)
             .then((res) => {
                 setCourseData(res.data.data.course);
+                console.log(res);
+
+                setStateCourse({
+                    isCourseFavorite: res.data.data.isCourseFavorite,
+                    percentCompleteCourse: res.data.data.percentCompleteCourse,
+                    isAddedToCart: res.data.data.isAddedToCart,
+                    isUserEnrollmentCourse:
+                        res.data.data.isUserEnrollmentCourse,
+                });
             })
             .catch((error) => {
                 console.log(error);
@@ -40,6 +59,12 @@ export default function Page({ params }: { params: { id: string } }) {
     };
 
     const addFavoriteCourse = () => {
+        setStateCourse((prev) => {
+            return {
+                ...prev,
+                isCourseFavorite: true,
+            };
+        });
         apiInstance
             .post(
                 "users/favorite-courses",
@@ -49,12 +74,10 @@ export default function Page({ params }: { params: { id: string } }) {
                 { headers: { Authorization: "Bear " + userToken?.accessToken } }
             )
             .then((res) => {
-                console.log(res);
                 api.success({
                     message: "Add favorite course successful!",
                     placement: "bottomRight",
                 });
-                setRefreshFavoriteList((prev) => prev + 1);
             })
             .catch((error) => {
                 console.log(error);
@@ -63,10 +86,22 @@ export default function Page({ params }: { params: { id: string } }) {
                     placement: "bottomRight",
                     description: "Please wait few seconds and try again!",
                 });
+                setStateCourse((prev) => {
+                    return {
+                        ...prev,
+                        isCourseFavorite: false,
+                    };
+                });
             });
     };
 
     const removeFavoriteCourse = () => {
+        setStateCourse((prev) => {
+            return {
+                ...prev,
+                isCourseFavorite: false,
+            };
+        });
         apiInstance
             .delete(
                 "users/favorite-courses",
@@ -85,7 +120,6 @@ export default function Page({ params }: { params: { id: string } }) {
                     message: "Remove favorite course successful!",
                     placement: "bottomRight",
                 });
-                setRefreshFavoriteList((prev) => prev + 1);
             })
             .catch((error) => {
                 console.log(error);
@@ -94,32 +128,56 @@ export default function Page({ params }: { params: { id: string } }) {
                     placement: "bottomRight",
                     description: "Please wait few seconds and try again!",
                 });
+                setStateCourse((prev) => {
+                    return {
+                        ...prev,
+                        isCourseFavorite: true,
+                    };
+                });
             });
     };
 
-    const getFavoriteCourse = () => {
+    const addToCart = () => {
+        setIsLoadingAddCart(true);
         apiInstance
-            .get("users/favorite-courses", {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
-            })
+            .post(
+                "users/carts",
+                {
+                    courseId: courseData.courseId,
+                },
+                {
+                    headers: {
+                        Authorization: "Bear " + userToken?.accessToken,
+                    },
+                }
+            )
             .then((res) => {
-                setListFavoriteCourseId(
-                    res.data.data[0].favorites.map(
-                        (item: Course) => item.courseId
-                    )
-                );
+                api.success({
+                    message: "Add cart successful!",
+                    placement: "bottomRight",
+                });
+                setIsLoadingAddCart(false);
+                setStateCourse((prev) => {
+                    return {
+                        ...prev,
+                        isAddedToCart: true,
+                    };
+                });
             })
             .catch((error) => {
                 console.log(error);
+                api.error({
+                    message: "Add cart error!",
+                    placement: "bottomRight",
+                    description: "Please wait few seconds and try again",
+                });
+                setIsLoadingAddCart(false);
             });
     };
+
     useEffect(() => {
         getCourseData();
     }, []);
-
-    useEffect(() => {
-        getFavoriteCourse();
-    }, [refreshFavoriteList]);
 
     return (
         <Container>
@@ -162,13 +220,19 @@ export default function Page({ params }: { params: { id: string } }) {
                     onClickPreview={() => setOpenModalPreview(true)}
                     poster={courseData.posterUrl}
                     onAddFavorite={
-                        listFavoriteCourseId.indexOf(courseData.courseId) !== -1
+                        stateCourse.isCourseFavorite === true
                             ? removeFavoriteCourse
                             : addFavoriteCourse
                     }
-                    isFavoriteCourse={
-                        listFavoriteCourseId.indexOf(courseData.courseId) !== -1
+                    isFavoriteCourse={stateCourse.isCourseFavorite}
+                    onClickCartBtn={() =>
+                        stateCourse.isAddedToCart
+                            ? route.push("/cart")
+                            : addToCart()
                     }
+                    isBought={stateCourse.isUserEnrollmentCourse}
+                    isLoadingCart={isLoadingAddCart}
+                    isHaveInCart={stateCourse.isAddedToCart}
                 />
                 <div className="h-3 hidden lg:block"></div>
                 <DetailOverviewInfo

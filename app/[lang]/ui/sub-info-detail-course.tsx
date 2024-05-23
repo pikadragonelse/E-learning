@@ -5,6 +5,7 @@ import {
     CaretRightOutlined,
     HeartOutlined,
     HeartFilled,
+    LoadingOutlined,
 } from "@ant-design/icons";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import {
@@ -25,6 +26,10 @@ export type SubInfoDetailCourse = {
     poster?: string;
     onAddFavorite?: (...props: any) => void;
     isFavoriteCourse?: boolean;
+    isLoadingCart?: boolean;
+    isBought?: boolean;
+    onClickCartBtn?: (...props: any) => void;
+    isHaveInCart?: boolean;
 };
 export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
     price = 0,
@@ -32,13 +37,14 @@ export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
     duration = 0,
     onClickPreview = () => {},
     onAddFavorite = () => {},
+    onClickCartBtn,
     isFavoriteCourse,
-
+    isLoadingCart = false,
+    isBought = false,
+    isHaveInCart = false,
     poster = "https://coolwallpapers.me/picsup/3058990-book_computer_design_development_electronics_html_keyboard_laptop_macbook_notebook_pencil_technology_web_web-design_website.jpg",
 }) => {
     const [isAbsolute, setIsAbsolute] = useState(false);
-
-    console.log(isFavoriteCourse);
 
     useEffect(() => {
         const handleScroll = (event: any) => {
@@ -99,8 +105,20 @@ export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
                 <div className="">{discount}% off</div>
                 <div className="">
                     <div className="flex gap-2">
-                        <Button type="primary" className="w-36 flex-1">
-                            Add to cart
+                        <Button
+                            type="primary"
+                            className="w-36 flex-1"
+                            icon={
+                                isLoadingCart ? <LoadingOutlined /> : undefined
+                            }
+                            onClick={onClickCartBtn}
+                            disabled={isBought}
+                        >
+                            {isBought
+                                ? "Already bought"
+                                : isHaveInCart
+                                ? "View in cart"
+                                : "Add to cart"}
                         </Button>
                         <Button
                             icon={
@@ -113,7 +131,9 @@ export const SubInfoDetailCourse: React.FC<SubInfoDetailCourse> = ({
                             onClick={onAddFavorite}
                         ></Button>
                     </div>
-                    <Button className="mt-1 w-full">Buy Now</Button>
+                    <Button className="mt-1 w-full" disabled={isBought}>
+                        Buy Now
+                    </Button>
                 </div>
             </div>
             <div className="p-2 mb-4">

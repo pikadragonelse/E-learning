@@ -68,6 +68,7 @@ export default function Page({
 
     const createOrder = async () => {
         const listCourseId = listCart.map((cart) => cart.courseId);
+        console.log(listCourseId);
 
         return apiInstance
             .post(
@@ -82,6 +83,8 @@ export default function Page({
                 }
             )
             .then((res) => {
+                console.log(res);
+
                 return res.data.id;
             })
             .catch((error) => {
@@ -92,8 +95,12 @@ export default function Page({
     };
 
     const onApprove = async (data: any) => {
+        console.log(data);
+
         return apiInstance
-            .post(`payments/orders/${data.orderID}/capture`)
+            .post(`payments/orders/${data.orderID}/capture`, {
+                orderID: data.orderID,
+            })
             .then((res) => {
                 updateBillData(res.data);
             })
@@ -230,10 +237,10 @@ export default function Page({
                             <h2 className="text-lg text-orange-600">$160</h2>
                         </div>
 
-                        <Select
+                        {/* <Select
                             defaultActiveFirstOption
                             options={[{ label: "Paypal", value: "paypal" }]}
-                        />
+                        /> */}
                         {listCart.length > 0 ? (
                             <PayPalScriptProvider
                                 options={{

@@ -29,7 +29,6 @@ export default function Page({}: { params: { lang: string } }) {
     const [listRecommendedCourse, setListRecommendedCourse] = useState<
         Course[]
     >([]);
-    const [retrieverInstance, setRetrieverInstance] = useState<any>();
     const [isLoading, setIsLoading] = useState(false);
     const [listCourseId, setListCourseId] = useState<string[]>([]);
 
@@ -50,12 +49,12 @@ export default function Page({}: { params: { lang: string } }) {
         return result.join(", ");
     };
 
-    const getDataLearn = () => {
+    const getDataLearn = (value: string) => {
         setIsLoading(true);
         apiInstance
-            .get("courses", {
+            .get("courses/recommends/get-courses-by-query", {
                 params: {
-                    pageSize: 1000,
+                    query: value,
                 },
             })
             .then(async (res) => {
@@ -63,7 +62,7 @@ export default function Page({}: { params: { lang: string } }) {
                     return {
                         courseId: course.courseId,
                         title: course.title,
-                        category: course.category.name,
+                        // category: course.category.name,
                         updatedAt: course.updatedAt,
                     };
                 });
@@ -96,7 +95,56 @@ export default function Page({}: { params: { lang: string } }) {
                     k: 6,
                     searchType: "similarity",
                 });
-                setRetrieverInstance(retriever);
+
+                const llm = new ChatOpenAI({
+                    model: "gpt-3.5-turbo",
+                    temperature: 0,
+                    apiKey: process.env.OPEN_AI_API_KEY,
+                });
+
+                const template = `You are an advanced AI model designed to provide course information from a given dataset, with each course's information separated by ";". Your primary task is to:
+        
+                Field courseId in dataset is the id of the course, Field title is the name of the course, field category is the category of the course, field updatedAt is the latest update date of the course.
+        
+                1. Identify the course category the user is interested in from their query.
+                2. Extract and present at least 10 unique course IDs from that category in the dataset, ensuring that no duplicate course IDs are included in your response. If no courses from the specified category are found, default to presenting 10 unique course IDs from any category in the dataset.
+                
+                The dataset you have is an array where each element is a string containing the details of a course. Use the course data to fulfill this requirement. If the user's query is not directly related to courses, you should still provide 10 unique course IDs from any category as part of your response. If you don't know the answer, just say that you don't know, and do not try to make up an answer. Find all of your dataset and return the closest answer.
+                
+                result format example:
+                1. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
+                2. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
+                ...
+        
+                {context}
+        
+                Question: {question}
+        
+                Helpful Answer:`;
+
+                const customRagPrompt = PromptTemplate.fromTemplate(template);
+
+                const ragChain = await createStuffDocumentsChain({
+                    llm,
+                    prompt: customRagPrompt as any,
+                    outputParser: new StringOutputParser(),
+                });
+                const context = await retriever.getRelevantDocuments(value);
+
+                const result = await ragChain.invoke({
+                    question: value,
+                    context,
+                });
+                setIsLoading(false);
+                const listId = result.split("\n");
+                console.log(listId);
+
+                const finalResult = listId.map((id) => {
+                    return id.trim().split(".")[1];
+                });
+                console.log(finalResult);
+
+                setListCourseId(finalResult);
                 setIsLoading(false);
                 // for await (const chunk of await executeWithRetry(() =>
                 //     ragChain.stream("How many development course are there?")
@@ -109,67 +157,7 @@ export default function Page({}: { params: { lang: string } }) {
             });
     };
 
-    useEffect(() => {
-        getDataLearn();
-    }, []);
-
-    const request = async (value: string) => {
-        setIsLoading(true);
-
-        const llm = new ChatOpenAI({
-            model: "gpt-3.5-turbo",
-            temperature: 0,
-            apiKey: process.env.OPEN_AI_API_KEY,
-        });
-
-        const template = `You are an advanced AI model designed to provide course information from a given dataset, with each course's information separated by ";". Your primary task is to:
-
-        Field courseId in dataset is the id of the course, Field title is the name of the course, field category is the category of the course, field updatedAt is the latest update date of the course.
-
-        1. Identify the course category the user is interested in from their query.
-        2. Extract and present at least 10 unique course IDs from that category in the dataset, ensuring that no duplicate course IDs are included in your response. If no courses from the specified category are found, default to presenting 10 unique course IDs from any category in the dataset.
-        
-        The dataset you have is an array where each element is a string containing the details of a course. Use the course data to fulfill this requirement. If the user's query is not directly related to courses, you should still provide 10 unique course IDs from any category as part of your response. If you don't know the answer, just say that you don't know, and do not try to make up an answer. Find all of your dataset and return the closest answer.
-        
-        result format example:
-        1. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
-        2. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
-        ...
-
-        {context}
-
-        Question: {question}
-
-        Helpful Answer:`;
-
-        const customRagPrompt = PromptTemplate.fromTemplate(template);
-
-        const ragChain = await createStuffDocumentsChain({
-            llm,
-            prompt: customRagPrompt as any,
-            outputParser: new StringOutputParser(),
-        });
-        const context = await retrieverInstance.getRelevantDocuments(value);
-
-        const result = await ragChain.invoke({
-            question: value,
-            context,
-        });
-        setIsLoading(false);
-        const listId = result.split("\n");
-        console.log(listId);
-
-        const finalResult = listId.map((id) => {
-            return id.trim().split(".")[1];
-        });
-        console.log(finalResult);
-
-        setListCourseId(finalResult);
-    };
-
     const getListCourse = () => {
-        console.log(listCourseId);
-
         apiInstance
             .get("courses/others/get-courses-by-courseIds", {
                 params: {
@@ -205,7 +193,7 @@ export default function Page({}: { params: { lang: string } }) {
                         size="large"
                         placeholder="Type something to find your course"
                         onSearch={(value) => {
-                            request(value);
+                            getDataLearn(value);
                         }}
                         className="shadow-md"
                     />

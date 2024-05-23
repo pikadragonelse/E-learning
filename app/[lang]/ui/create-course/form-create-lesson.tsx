@@ -121,6 +121,8 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                 { headers: { Authorization: "Bear " + userToken?.accessToken } }
             )
             .then((res) => {
+                console.log(res);
+
                 return res.data.data.url;
             })
             .catch((error) => {
@@ -183,14 +185,14 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                             onChange={handleChangeVideoUpload}
                             fileList={fileVideoList}
                             method="PUT"
-                            accept=".pdf,.docx,.zip,.xlsx,.txt"
+                            // accept=".pdf,.docx,.zip,.xlsx,.txt"
                         >
                             <Button icon={<UploadOutlined />}>
                                 Upload video
                             </Button>
                         </Upload>
                     </Form.Item>
-                    <Form.Item label="Document">
+                    <Form.Item label="Resource">
                         <Upload
                             customRequest={async (option) => {
                                 const link = await uploadResource(

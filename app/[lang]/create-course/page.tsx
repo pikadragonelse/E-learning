@@ -21,6 +21,7 @@ import { UploadType, beforeUpload, getBase64 } from "../lib/utils/upload";
 import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../lib/hooks/useToken";
+import { useRouter } from "next/navigation";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -38,6 +39,7 @@ export default function Page({
     const newTabIndex = useRef(2);
     const userToken = useToken();
     const [linkUploadPoster, setLinkUploadPoster] = useState("");
+    const route = useRouter();
 
     useEffect(() => {
         setItems([
@@ -143,28 +145,28 @@ export default function Page({
             });
     };
 
-    const uploadImage = async (file: File) => {
-        await apiInstance
-            .put(linkUploadPoster, file, {
-                baseURL: "",
-                headers: {
-                    "Content-Type": "image/jpeg",
-                },
-            })
-            .then((res) => console.log(res))
-            .catch((error) => console.log(error));
+    // const uploadImage = async (file: File) => {
+    //     await apiInstance
+    //         .put(linkUploadPoster, file, {
+    //             baseURL: "",
+    //             headers: {
+    //                 "Content-Type": "image/jpeg",
+    //             },
+    //         })
+    //         .then((res) => console.log(res))
+    //         .catch((error) => console.log(error));
 
-        await apiInstance
-            .get(`courses/${newCourse.courseId}/clear-cache-poster`, {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
-            })
-            .then((res) => {
-                console.log(res);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
+    //     await apiInstance
+    //         .get(`courses/${newCourse.courseId}/clear-cache-poster`, {
+    //             headers: { Authorization: "Bear " + userToken?.accessToken },
+    //         })
+    //         .then((res) => {
+    //             console.log(res);
+    //         })
+    //         .catch((error) => {
+    //             console.log(error);
+    //         });
+    // };
 
     useEffect(() => {
         getLinkUploadPoster();
@@ -263,9 +265,7 @@ export default function Page({
                             </div>
                             <div className="flex gap-10 mb-6 justify-around flex-wrap">
                                 <div className="flex flex-col items-center gap-4 ">
-                                    <h1 className="font-medium text-sm">
-                                        Poster
-                                    </h1>
+                                    <h1 className="font-medium">Poster</h1>
                                     <div className="w-72 h-72 flex items-center justify-center rounded-lg overflow-hidden">
                                         {imageUrl !== "" && imageUrl != null ? (
                                             <Image src={imageUrl} />
@@ -277,20 +277,12 @@ export default function Page({
                                     </div>
                                     <Upload
                                         fileList={fileList}
-                                        action={`${process.env.DEVELOP_ENDPOINT}`}
-                                        name="avatar"
-                                        customRequest={(e) => {
-                                            setImageUrl(
-                                                URL.createObjectURL(
-                                                    e.file as any
-                                                )
-                                            );
-                                            uploadImage(e.file as File);
-                                        }}
-                                        beforeUpload={beforeUpload}
+                                        action={linkUploadPoster}
+                                        name="poster"
                                         onChange={handleChange}
                                         className="flex flex-col items-center"
                                         onRemove={() => setImageUrl("")}
+                                        method="PUT"
                                     >
                                         <Button
                                             type="primary"
@@ -301,12 +293,10 @@ export default function Page({
                                     </Upload>
                                 </div>
                                 <div className="flex flex-col items-center gap-4">
-                                    <h1 className="font-medium text-sm">
-                                        Trailer
-                                    </h1>
+                                    <h1 className="font-medium ">Trailer</h1>
                                     <div className="w-72 h-72 flex items-center justify-center rounded-lg overflow-hidden">
                                         {imageUrl !== "" && imageUrl != null ? (
-                                            <Image src={imageUrl} />
+                                            <Image src={""} />
                                         ) : (
                                             <div className="select-none text-sm w-full h-full border flex items-center justify-center bg-zinc-200 ">
                                                 Trailer
@@ -315,14 +305,7 @@ export default function Page({
                                     </div>
                                     <Upload
                                         fileList={fileList}
-                                        name="avatar"
-                                        customRequest={(e) => {
-                                            setImageUrl(
-                                                URL.createObjectURL(
-                                                    e.file as any
-                                                )
-                                            );
-                                        }}
+                                        name="trailer"
                                         beforeUpload={beforeUpload}
                                         onChange={handleChange}
                                         className="flex flex-col items-center"
@@ -389,6 +372,11 @@ export default function Page({
                                 <Button
                                     type="primary"
                                     className="bg-orange-600"
+                                    onClick={() => {
+                                        route.push(
+                                            `detail-course/${newCourse.courseId}`
+                                        );
+                                    }}
                                 >
                                     Done
                                 </Button>

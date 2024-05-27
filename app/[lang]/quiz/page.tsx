@@ -168,7 +168,7 @@ export default function Page({}: { params: { lang: string } }) {
     useEffect(() => {
         if (dataTrain !== "") {
             request(
-                `Please generate ${quantity} multiple-choice questions from the provided document with at least 2 answer options for each question, including the correct answer.`
+                `Please generate ${quantity} multiple-choice questions from the provided document with 4 answer options for each question, including the correct answer.`
             );
         }
     }, [dataTrain]);
@@ -243,7 +243,6 @@ export default function Page({}: { params: { lang: string } }) {
                             rules={[{ required: true }]}
                         >
                             <Upload
-                                accept=".txt"
                                 customRequest={() => {}}
                                 showUploadList={false}
                                 onChange={(file) => setNameFile(file.file.name)}

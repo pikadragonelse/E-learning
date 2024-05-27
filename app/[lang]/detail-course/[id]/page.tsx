@@ -40,7 +40,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
     const getCourseData = () => {
         apiInstance
-            .get(`courses/${params.id}`)
+            .get(`courses/${params.id}`, {headers: userToken?.accessToken ? {Authorization: 'Bearer ' + userToken?.accessToken} : {}})
             .then((res) => {
                 setCourseData(res.data.data.course);
                 console.log(res);

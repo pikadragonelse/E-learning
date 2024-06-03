@@ -32,6 +32,7 @@
         "file-saver": "^2.0.5",
         "fluent-ffmpeg": "^2.1.2",
         "fs": "^0.0.1-security",
+        "gapi-script": "^1.2.0",
         "html-react-parser": "^5.1.10",
         "langchain": "^0.1.37",
         "negotiator": "^0.6.3",

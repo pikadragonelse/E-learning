@@ -44,7 +44,7 @@ export const ReplySection: React.FC<ReplySection> = ({
     };
 
     return (
-        <article className="p-6 text-base bg-white rounded-lg dark:bg-gray-900">
+        <article className="p-6 text-base bg-white rounded-lg ">
             <footer className="flex justify-between items-center mb-2">
                 <div className="flex items-center">
                     <div className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
@@ -54,9 +54,13 @@ export const ReplySection: React.FC<ReplySection> = ({
                             alt={name}
                         />
                         <div className="flex flex-col items-start ml-2">
-                            <span className="text-base mb-1">{name}</span>
+                            <span className="text-base mb-1 text-zinc-800">
+                                {name}
+                            </span>
                             <div className="">
-                                <span className="mr-2">{rating}</span>
+                                <span className="mr-2 text-zinc-800">
+                                    {rating}
+                                </span>
                                 <Rate className="" value={rating} disabled />
                             </div>
                         </div>

@@ -81,6 +81,7 @@ export const FormComment: React.FC<FormComment> = ({
             </Form.Item>
             <Form.Item>
                 <Button
+                    type="primary"
                     htmlType="submit"
                     className="inline-flex items-center py-2.5 px-4 text-xs font-medium text-center  bg-primary-700 rounded-lg focus:ring-4 focus:ring-primary-200 dark:focus:ring-primary-900 hover:bg-primary-800"
                 >

@@ -11,8 +11,8 @@ import { useToken } from "../lib/hooks/useToken";
 import { User } from "../lib/model/user";
 import { BillInfo, defaultBillInfo } from "../lib/model/bill";
 
-export type Container = { children?: any };
-export const Container: React.FC<Container> = ({ children }) => {
+export type Container = { children?: any; className?: string };
+export const Container: React.FC<Container> = ({ children, className }) => {
     const [openSidebarDrawer, setOpenSidebarDrawer] = useState(false);
     const [billData, setBillData] = useState<BillInfo>(defaultBillInfo);
     const [userInfo, setUserInfo] = useState<User>();
@@ -54,7 +54,7 @@ export const Container: React.FC<Container> = ({ children }) => {
                     },
                 }}
             >
-                <Body className="">{children}</Body>
+                <Body className={className}>{children}</Body>
             </ConfigProvider>
             <Footer />
         </main>

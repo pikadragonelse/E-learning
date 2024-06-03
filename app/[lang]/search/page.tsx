@@ -82,12 +82,19 @@ export default function Page({
     const [listCourse, setListCourse] = useState<Course[]>([]);
     const [isLoading, setIsLoading] = useState(false);
     const pathname = usePathname();
+    const searchParamsLocal = useSearchParams();
     const { replace } = useRouter();
 
     const searchCourse = () => {
         setIsLoading(true);
         apiInstance
-            .get("courses", { params: { search: search, page: currentPage } })
+            .get("courses", {
+                params: {
+                    search: search,
+                    page: currentPage,
+                    category: searchParamsLocal.get("category"),
+                },
+            })
             .then((res) => {
                 setListCourse(res.data.data);
                 setIsLoading(false);
@@ -100,7 +107,8 @@ export default function Page({
 
     useEffect(() => {
         searchCourse();
-    }, [search, currentPage]);
+        console.log(searchParamsLocal.get("category"));
+    }, [search, currentPage, searchParamsLocal]);
 
     const changePage = (page: number) => {
         const params = new URLSearchParams(searchParams);

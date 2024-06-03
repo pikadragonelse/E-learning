@@ -8,13 +8,12 @@ import {
     ShoppingCartOutlined,
     BellOutlined,
     GlobalOutlined,
-    AppstoreOutlined,
-    HeartOutlined,
-    WalletOutlined,
     UserOutlined,
     LogoutOutlined,
+    AppstoreOutlined,
+    FileAddOutlined,
 } from "@ant-design/icons";
-import { Avatar, Button, ConfigProvider, Popover } from "antd";
+import { Avatar, Button, ConfigProvider, Popover, Tooltip } from "antd";
 import clsx from "clsx";
 import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
@@ -28,6 +27,16 @@ const listUserFeature: Array<{ title: string; icon: ReactNode; href: string }> =
             title: "My account",
             icon: <UserOutlined />,
             href: "individual-info",
+        },
+        {
+            title: "Recommend course",
+            icon: <AppstoreOutlined />,
+            href: "recommendation",
+        },
+        {
+            title: "Create quiz",
+            icon: <FileAddOutlined />,
+            href: "quiz",
         },
         { title: "Logout", icon: <LogoutOutlined />, href: "login" },
     ];
@@ -43,12 +52,6 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
-
-    const logout = () => {};
-
-    const userFeatureMap: Record<string, any> = {
-        Logout: "",
-    };
 
     useEffect(() => {
         const handleScroll = (event: any) => {
@@ -82,10 +85,12 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
         } else {
             params.delete("category");
         }
+        console.log(pathname);
+
         if (pathname.split("/")[2] === "search") {
-            replace(`${pathname}?${params.toString()}`);
+            replace(`/en/?${params.toString()}`);
         } else {
-            replace(`${pathname}/search?${params.toString()}`);
+            replace(`/en/search?${params.toString()}`);
         }
     };
 
@@ -170,12 +175,18 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
                         <Search placeholder="Learning" className="max-w-xl" />
 
                         <div className="flex text-zinc-700 items-center gap-7">
-                            <ShoppingCartOutlined
-                                className="hidden sm:block text-2xl cursor-pointer"
-                                onClick={() => router.push("/cart")}
-                            />
-                            <BellOutlined className="hidden sm:block text-xl cursor-pointer" />
-                            <GlobalOutlined className="hidden sm:block text-xl cursor-pointer" />
+                            <Tooltip title="Your cart">
+                                <ShoppingCartOutlined
+                                    className="hidden sm:block text-2xl cursor-pointer"
+                                    onClick={() => router.push("/cart")}
+                                />
+                            </Tooltip>
+                            <Tooltip title="Notification">
+                                <BellOutlined className="hidden sm:block text-xl cursor-pointer" />
+                            </Tooltip>
+                            <Tooltip title="Languages">
+                                <GlobalOutlined className="hidden sm:block text-xl cursor-pointer" />
+                            </Tooltip>
                             {userInfo != null ? (
                                 <Popover
                                     content={
@@ -185,7 +196,7 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
                                                     <li
                                                         onClick={() =>
                                                             router.push(
-                                                                feature.href
+                                                                `/${feature.href}`
                                                             )
                                                         }
                                                         key={index}

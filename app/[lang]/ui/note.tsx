@@ -56,7 +56,7 @@ export const Note: React.FC<Note> = ({ lessonId, currTime }) => {
     };
 
     return (
-        <div>
+        <div className="px-16">
             <h1 className="font-medium text-xl mb-2">Note for current time</h1>
             <ReactQuill theme="snow" value={value} onChange={setValue} />
             <Row justify={"end"} className="mt-4">

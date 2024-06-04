@@ -1,10 +1,10 @@
 "use client";
 
 import { Locale } from "@/i18n.config";
-import React, { useEffect, useState } from "react";
-import { VideoCustom } from "../../../ui/video-custom";
+import React, { Suspense, useEffect, useState } from "react";
+const VideoCustom = React.lazy(() => import("../../../ui/video-custom"));
 import { MenuLecture } from "../../../ui/menu-lecture";
-import { ConfigProvider, Tabs, TabsProps } from "antd";
+import { ConfigProvider, MenuProps, Skeleton, Tabs, TabsProps } from "antd";
 import { Container } from "../../../ui/container";
 import { apiInstance } from "@/plugin/apiInstance";
 import { LessonFull, defaultLessonFull } from "../../../lib/model/lesson";
@@ -14,6 +14,8 @@ import { Comment } from "../../../ui/comment/comment";
 import { Note } from "@/app/[lang]/ui/note";
 import { useToken } from "@/app/[lang]/lib/hooks/useToken";
 import { Reminder } from "@/app/[lang]/ui/reminder";
+import { useWindowResize } from "@/app/[lang]/lib/hooks/useWindowResize";
+import { usePathname, useSearchParams } from "next/navigation";
 
 export default function Page({
     params: { lang, id, courseId },
@@ -25,24 +27,39 @@ export default function Page({
     const [currentTime, setCurrentTime] = useState(0);
     const [reloadCourse, setReloadCourse] = useState(0);
     const [reloadLesson, setReloadLesson] = useState(0);
+    const [isLoading, setIsLoading] = useState(false);
+
     const userDataToken = useToken();
+    const windowSize = useWindowResize();
     const onChange = (key: string) => {};
 
+    const [currLessonKey, setCurrLessonKey] = useState(id);
+
+    const onClick: MenuProps["onClick"] = (e) => {
+        window.history.pushState(null, "", `/en/learning/${courseId}/${e.key}`);
+        setCurrLessonKey(e.key);
+    };
+
     const getDataLesson = () => {
+        setIsLoading(true);
         apiInstance
-            .get(`lessons/${id}`, {
+            .get(`lessons/${currLessonKey}`, {
                 headers: {
                     Authorization: "Bearer " + userDataToken?.accessToken,
                 },
             })
             .then((data) => {
                 setDataLesson(data.data.data.lesson);
-                console.log(data.data.data.lesson);
+                setIsLoading(false);
             })
-            .catch((err) => console.log(err));
+            .catch((err) => {
+                console.log(err);
+                setIsLoading(false);
+            });
     };
 
     const getDataCourse = () => {
+        setIsLoading(true);
         apiInstance
             .get(`courses/${courseId}`, {
                 headers: {
@@ -51,15 +68,17 @@ export default function Page({
             })
             .then((res) => {
                 setDataCourse(res.data.data.course);
+                setIsLoading(false);
             })
             .catch((error) => {
                 console.log(error);
+                setIsLoading(false);
             });
     };
 
     useEffect(() => {
         getDataLesson();
-    }, [reloadLesson]);
+    }, [reloadLesson, currLessonKey]);
 
     useEffect(() => {
         getDataCourse();
@@ -73,7 +92,8 @@ export default function Page({
                 <MenuLecture
                     className="w-full"
                     dataList={dataCourse.topics}
-                    courseId={dataCourse.courseId}
+                    onItemClick={onClick}
+                    currentKey={currLessonKey}
                 />
             ),
         },
@@ -81,7 +101,7 @@ export default function Page({
             key: "2",
             label: "Overview",
             children: (
-                <div className="h-[600px] p-6 max-h-[600px] overflow-auto">
+                <div className="">
                     <OverviewLearning courseData={dataCourse} />,
                 </div>
             ),
@@ -95,7 +115,7 @@ export default function Page({
             key: "4",
             label: "Comments",
             children: (
-                <div className="h-[600px] p-6 max-h-[600px] overflow-auto">
+                <div className="">
                     <Comment
                         listReview={dataLesson?.comments}
                         type="comment"
@@ -110,7 +130,7 @@ export default function Page({
             key: "5",
             label: "Reviews",
             children: (
-                <div className="h-[600px] p-6 max-h-[600px] overflow-auto">
+                <div className="">
                     <Comment
                         listReview={dataCourse.reviews}
                         title="Reviews"
@@ -135,51 +155,70 @@ export default function Page({
     }) as TabsProps["items"];
 
     return (
-        <Container>
-            <div className="text-zinc-800 flex lg:flex-row flex-col gap-8">
+        <Container className="">
+            <div className="text-zinc-800 flex lg:flex-row flex-col gap-8 ">
                 <div className="lg:w-2/3">
-                    <VideoCustom
-                        videoSource={dataLesson?.lessonUrl}
-                        onProgress={(time) => {
-                            setCurrentTime(time);
-                        }}
-                    />
-                    <ConfigProvider
-                        theme={{
-                            components: {
-                                Tabs: {
-                                    inkBarColor: "rgb(255 97 15)",
-                                    itemHoverColor: "rgb(255 145 88)",
-                                    itemSelectedColor: "rgb(255 97 15)",
-                                    itemActiveColor: "rgb(255 87 0)",
-                                },
-                            },
-                        }}
+                    <Suspense
+                        fallback={
+                            <Skeleton
+                                active
+                                paragraph={{ rows: 12 }}
+                                className="my-auto"
+                            />
+                        }
                     >
-                        <Tabs
-                            defaultActiveKey="1"
-                            items={items}
-                            onChange={onChange}
-                            className="lg:hidden"
-                        />
-                        <Tabs
-                            defaultActiveKey="1"
-                            items={itemsDesktop}
-                            onChange={onChange}
-                            className="hidden lg:flex"
-                        />
-                    </ConfigProvider>
+                        {isLoading === true ? (
+                            <Skeleton
+                                active
+                                paragraph={{ rows: 12 }}
+                                className="my-auto"
+                            />
+                        ) : (
+                            <VideoCustom
+                                videoSource={dataLesson?.lessonUrl}
+                                onProgress={(time) => {
+                                    setCurrentTime(time);
+                                }}
+                            />
+                        )}
+                    </Suspense>
                 </div>
                 <div className="hidden lg:block w-1/3">
-                    <h1 className="text-2xl text-orange-600 font-medium">
+                    <h1 className="text-2xl text-orange-600 font-medium mb-5">
                         Course structure
                     </h1>
-                    <MenuLecture
-                        dataList={dataCourse.topics}
-                        courseId={dataCourse.courseId}
-                    />
+                    <div className="max-h-[450px] overflow-auto">
+                        <MenuLecture
+                            dataList={dataCourse.topics}
+                            onItemClick={onClick}
+                            currentKey={currLessonKey}
+                        />
+                    </div>
                 </div>
             </div>
+            <ConfigProvider
+                theme={{
+                    components: {
+                        Tabs: {
+                            inkBarColor: "rgb(255 97 15)",
+                            itemHoverColor: "rgb(255 145 88)",
+                            itemSelectedColor: "rgb(255 97 15)",
+                            itemActiveColor: "rgb(255 87 0)",
+                        },
+                    },
+                }}
+            >
+                <Tabs
+                    defaultActiveKey="1"
+                    items={
+                        windowSize > 1024 || windowSize === 0
+                            ? itemsDesktop
+                            : items
+                    }
+                    onChange={onChange}
+                    centered
+                />
+            </ConfigProvider>
         </Container>
     );
 }

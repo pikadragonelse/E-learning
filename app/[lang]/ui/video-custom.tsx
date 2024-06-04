@@ -12,7 +12,7 @@ export type VideoCustom = {
     videoSource?: string;
     onProgress?: (time: number) => void;
 };
-export const VideoCustom: React.FC<VideoCustom> = ({
+const VideoCustom: React.FC<VideoCustom> = ({
     refresh,
     videoSource = "https://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4",
     onProgress = () => {},
@@ -214,3 +214,5 @@ export const VideoCustom: React.FC<VideoCustom> = ({
         </div>
     );
 };
+
+export default VideoCustom;

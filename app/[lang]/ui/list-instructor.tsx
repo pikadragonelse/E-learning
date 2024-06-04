@@ -28,6 +28,7 @@ export const ListInstructor = () => {
                 {listInstructor.map((instructor, index) =>
                     index < 8 ? (
                         <ItemInstructor
+                            key={index}
                             srcAvt={instructor.profile.avatar}
                             name={instructor.profile.fullName}
                         />

@@ -15,12 +15,21 @@ import {
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import dayjs, { Dayjs } from "dayjs";
-import React from "react";
+import React, { useEffect, useState } from "react";
 import { useToken } from "../lib/hooks/useToken";
 import { RangePickerProps } from "antd/es/date-picker";
+import { gapi } from "gapi-script";
+import { GoogleOutlined } from "@ant-design/icons";
+import clsx from "clsx";
+
+const CLIENT_ID =
+    "875062300763-f2u53vslbvulf9lrnf5424b0b22f38ra.apps.googleusercontent.com";
+const API_KEY = "AIzaSyDsfOLefBTx0A3rFvi5kkZ4bpkPA9u_Pfg";
+const SCOPES = "https://www.googleapis.com/auth/calendar";
 
 type FieldType = {
-    time: any;
+    timeStart: any;
+    timeEnd: any;
     date: any;
 };
 
@@ -29,67 +38,110 @@ const disabledDate: RangePickerProps["disabledDate"] = (current) => {
     return current && current < dayjs().startOf("day");
 };
 
-const getListData = (value: Dayjs) => {
-    let listData;
-    switch (value.date()) {
-        case 8:
-            listData = [
-                { type: "warning", content: "This is warning event." },
-                { type: "success", content: "This is usual event." },
-            ];
-            break;
-        case 10:
-            listData = [
-                { type: "warning", content: "This is warning event." },
-                { type: "success", content: "This is usual event." },
-                { type: "error", content: "This is error event." },
-            ];
-            break;
-        case 15:
-            listData = [
-                { type: "warning", content: "This is warning event" },
-                {
-                    type: "success",
-                    content: "This is very long usual event......",
-                },
-                { type: "error", content: "This is error event 1." },
-                { type: "error", content: "This is error event 2." },
-                { type: "error", content: "This is error event 3." },
-                { type: "error", content: "This is error event 4." },
-            ];
-            break;
-        default:
-    }
-    return listData || [];
-};
-
-const getMonthData = (value: Dayjs) => {
-    if (value.month() === 8) {
-        return 1394;
-    }
-};
-
 export type Reminder = { lessonId?: number };
 export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
     const [form] = useForm();
     const [api, contextHolder] = notification.useNotification();
+    const [linkEvent, setLinkEvent] = useState("");
+    const [isSignIn, setIsSignIn] = useState(false);
     const userToken = useToken();
+    const [listEvent, setListEvent] = useState<any>([]);
+    const [reloadCalendar, setReloadCalendar] = useState(0);
+
+    useEffect(() => {
+        const initClient = () => {
+            gapi.client
+                .init({
+                    apiKey: API_KEY,
+                    clientId: CLIENT_ID,
+                    discoveryDocs: [
+                        "https://www.googleapis.com/discovery/v1/apis/calendar/v3/rest",
+                    ],
+                    scope: SCOPES,
+                })
+                .then(() => {
+                    console.log("Google API initialized");
+                    listUpcomingEvents();
+                });
+        };
+
+        gapi.load("client:auth2", initClient);
+    }, []);
+
+    const handleAuthClick = () => {
+        gapi.auth2
+            .getAuthInstance()
+            .signIn()
+            .then(() => {
+                setIsSignIn(true);
+                console.log("User signed in");
+            })
+            .catch((error: any) => {
+                console.log(error);
+            });
+    };
 
     const setReminder = (value: FieldType) => {
         let dateArr = dayjs(value.date)
             .format("YYYY-MM-DDTHH:mm:ss.sssZ")
             .split("T");
-        dateArr[1] = dayjs(value.time)
+        dateArr[1] = dayjs(value.timeStart)
             .format("YYYY-MM-DDTHH:mm:ss.sssZ")
             .split("T")[1];
-        const date = dateArr.join("T");
+        const timeStart = dateArr.join("T");
+
+        let tomorrowArr = dayjs(value.date)
+            .format("YYYY-MM-DDTHH:mm:ss.sssZ")
+            .split("T");
+        tomorrowArr[1] = dayjs(value.timeEnd)
+            .format("YYYY-MM-DDTHH:mm:ss.sssZ")
+            .split("T")[1];
+        const timeEnd = dateArr.join("T");
+
+        const event = {
+            summary: "Learn",
+            // location: "800 Howard St., San Francisco, CA 94103",
+            // description:
+            //     "A chance to hear more about Google's developer products.",
+            start: {
+                dateTime: timeStart,
+                timeZone: "Asia/Ho_Chi_Minh",
+            },
+            end: {
+                dateTime: timeEnd,
+                timeZone: "Asia/Ho_Chi_Minh",
+            },
+            // recurrence: ["RRULE:FREQ=DAILY;COUNT=2"],
+            // attendees: [
+            //     { email: "lpage@example.com" },
+            //     { email: "sbrin@example.com" },
+            // ],
+            reminders: {
+                useDefault: false,
+                overrides: [
+                    { method: "email", minutes: 24 * 60 },
+                    { method: "popup", minutes: 10 },
+                ],
+            },
+        };
+
+        const request = gapi.client.calendar.events.insert({
+            calendarId: "primary",
+            resource: event,
+        });
+
+        request.execute((event: any) => {
+            console.log("Event created: ", event.htmlLink);
+            setLinkEvent(event.htmlLink);
+            listUpcomingEvents();
+        });
 
         apiInstance
             .post(
                 "reminds",
                 {
                     lessonId: lessonId,
-                    time: date,
+                    time: timeStart,
                 },
                 {
                     headers: {
@@ -114,58 +166,92 @@ export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
             });
     };
 
-    const onPanelChange = (
-        value: Dayjs,
-        mode: CalendarProps<Dayjs>["mode"]
-    ) => {
-        console.log(value.format("YYYY-MM-DD"), mode);
+    const listUpcomingEvents = () => {
+        gapi.client.calendar.events
+            .list({
+                calendarId: "primary",
+                timeMin: new Date().toISOString(),
+                showDeleted: false,
+                singleEvents: true,
+                maxResults: 10,
+                orderBy: "startTime",
+            })
+            .then((response: any) => {
+                const events = response.result.items.map((event: any) => ({
+                    id: event.id,
+                    title: event.summary,
+                    start: event.start.dateTime || event.start.date,
+                    end: event.end.dateTime || event.end.date,
+                }));
+                setListEvent(events);
+                setReloadCalendar((prev) => prev + 1);
+            })
+            .catch((error: any) => {
+                console.error("Error fetching events", error);
+            });
     };
 
-    const monthCellRender = (value: Dayjs) => {
-        const num = getMonthData(value);
-        return num ? (
-            <div className="notes-month">
-                <section>{num}</section>
-                <span>Backlog number</span>
-            </div>
-        ) : null;
-    };
-
-    const dateCellRender = (value: Dayjs) => {
-        const listData = getListData(value);
+    const dateCellRender = (value: any) => {
+        const dayEvents = listEvent.filter((event: any) =>
+            dayjs(event.start).isSame(value, "day")
+        );
         return (
             <ul className="events">
-                {listData.map((item) => (
-                    <li key={item.content}>
-                        <Badge
-                            status={item.type as BadgeProps["status"]}
-                            text={item.content}
-                        />
+                {dayEvents.map((event: any) => (
+                    <li key={event.id}>
+                        <Badge status="success" text={event.title} />
                     </li>
                 ))}
             </ul>
         );
     };
 
-    const cellRender: CalendarProps<Dayjs>["cellRender"] = (current, info) => {
-        if (info.type === "date") return dateCellRender(current);
-        if (info.type === "month") return monthCellRender(current);
-        return info.originNode;
-    };
+    useEffect(() => {
+        if (reloadCalendar > 1) {
+            listUpcomingEvents();
+        }
+    }, [reloadCalendar]);
 
     return (
-        <>
-            <div className="w-80 mx-auto mt-20">
+        <div className="px-16">
+            <Button
+                icon={<GoogleOutlined />}
+                className={clsx("w-32 m-auto", {
+                    hidden: isSignIn,
+                })}
+                hidden={isSignIn}
+                onClick={handleAuthClick}
+            >
+                Sign in
+            </Button>
+            <div
+                className={clsx("w-[450px] mx-auto mt-20", {
+                    hidden: !isSignIn,
+                })}
+            >
                 {contextHolder}
                 <Form
                     form={form}
                     onFinish={(value: FieldType) => {
                         setReminder(value);
                     }}
+                    labelCol={{ span: 8 }}
                 >
-                    <Form.Item<FieldType> name="time" label="Time for learning">
+                    <Form.Item<FieldType>
+                        name="timeStart"
+                        label="Time start for learning"
+                    >
                         <TimePicker
-                            placeholder="Select time for learning"
+                            placeholder="Select time start for learning"
+                            className="w-full"
+                        />
+                    </Form.Item>
+                    <Form.Item<FieldType>
+                        name="timeEnd"
+                        label="Time end for learning"
+                    >
+                        <TimePicker
+                            placeholder="Select time end for learning"
                             className="w-full"
                         />
                     </Form.Item>
@@ -189,7 +275,28 @@ export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
                     </Form.Item>
                 </Form>
             </div>
-            <Calendar onPanelChange={onPanelChange} cellRender={cellRender} />;
-        </>
+            <div
+                className={clsx("gap-2 flex-wrap items-center", {
+                    flex: isSignIn,
+                    hidden: !isSignIn,
+                })}
+            >
+                <span>Link event: </span>
+                <Button
+                    type="link"
+                    href={linkEvent}
+                    className=""
+                    target="_blank"
+                >
+                    {linkEvent}
+                </Button>
+            </div>
+            <Calendar
+                className={clsx({
+                    hidden: !isSignIn,
+                })}
+                cellRender={dateCellRender}
+            />
+        </div>
     );
 };

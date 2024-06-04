@@ -38,7 +38,9 @@ export const CarouselList: React.FC<CarouselList> = ({
     const getListCart = () => {
         apiInstance
             .get("users/carts", {
-                headers: {},
+                headers: {
+                    Authorization: "Bear " + userTokenInfo?.accessToken,
+                },
             })
             .then((res) => {
                 const listCourse: Course[] = res.data.data[0].carts;

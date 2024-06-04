@@ -19,11 +19,11 @@ export const OverviewLearning: React.FC<OverviewLearning> = ({
     courseData = defaultCourse,
 }) => {
     return (
-        <div>
+        <div className="px-16">
+            <div className="flex justify-center">
+                <img src={courseData.posterUrl} alt="" className="w-2/3" />
+            </div>
             <div className="">
-                <div className="w-2/3 m-auto">
-                    <img src={courseData.posterUrl} alt="" />
-                </div>
                 <div className=" my-6 flex flex-col gap-4">
                     <h1 className="text-2xl lg:text-4xl font-medium ">
                         {courseData.title}

@@ -2,13 +2,14 @@
 
 import React, { useEffect, useState } from "react";
 import type { MenuProps } from "antd";
-import { Button, ConfigProvider, Menu, Popover } from "antd";
+import { Button, ConfigProvider, Menu, Popover, Tooltip } from "antd";
 import { BorderOutlined } from "@ant-design/icons";
 import { Topic } from "../lib/model/topic";
-import { usePathname, useRouter } from "next/navigation";
+import { usePathname } from "next/navigation";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Resource } from "../lib/model/resource";
 import { DownOutlined } from "@ant-design/icons";
+import { useRouter } from "next/router";
 import clsx from "clsx";
 
 type MenuItem = Required<MenuProps>["items"][number];
@@ -33,31 +34,20 @@ export type MenuLecture = {
     className?: string;
     isSetDefault?: boolean;
     dataList?: Topic[];
-    courseId?: string;
+    onItemClick?: MenuProps["onClick"];
+    currentKey?: string;
 };
 export const MenuLecture: React.FC<MenuLecture> = ({
     className,
     isSetDefault = true,
     dataList = [],
-    courseId,
+    onItemClick,
+    currentKey,
 }) => {
     const [officialData, setOfficialData] = useState<MenuProps["items"]>();
-    const [currLessonKey, setCurrLessonKey] = useState("");
     const [resourceMap, setResourceMap] = useState<Record<number, Resource[]>>(
         {}
     );
-    const router = useRouter();
-    const pathname = usePathname();
-
-    useEffect(() => {
-        const listPathname = pathname.split("/");
-        const lessonKey = listPathname[listPathname.length - 1];
-        setCurrLessonKey(lessonKey);
-    }, [pathname]);
-
-    const onClick: MenuProps["onClick"] = (e) => {
-        router.push(`/learning/${courseId}/${e.key}`);
-    };
 
     const resourceLesson = async (lessonId: number) => {
         const data = await apiInstance
@@ -79,9 +69,12 @@ export const MenuLecture: React.FC<MenuLecture> = ({
             const listLesson = topic.lessons.map((lesson) => {
                 return getItem(
                     <div className="flex relative items-center">
-                        <h2 className="w-auto overflow-hidden truncate">
-                            {lesson.title}
-                        </h2>
+                        <Tooltip title={lesson.title}>
+                            <h2 className="w-auto overflow-hidden truncate">
+                                {lesson.title}
+                            </h2>
+                        </Tooltip>
+
                         <Popover
                             content={
                                 <ul className="w-40">
@@ -125,12 +118,14 @@ export const MenuLecture: React.FC<MenuLecture> = ({
             });
 
             return getItem(
-                <h2
-                    key={index}
-                    className="font-medium w-auto overflow-hidden truncate"
-                >
-                    {topic.name}
-                </h2>,
+                <Tooltip title={topic.name}>
+                    <h2
+                        key={index}
+                        className="font-medium w-auto overflow-hidden truncate"
+                    >
+                        {topic.name}
+                    </h2>
+                </Tooltip>,
                 topic.id,
                 "",
                 listLesson
@@ -173,18 +168,20 @@ export const MenuLecture: React.FC<MenuLecture> = ({
                         itemActiveBg: "rgb(255 208 183)",
                         itemSelectedBg: "rgb(255 232 219)",
                         itemSelectedColor: "rgb(255 97 15)",
-                        itemBorderRadius: 0,
+                        // colorText: "#fefefe",
+                        colorBgContainer: "#00000",
+                        itemBg: "",
                     },
                 },
             }}
         >
             <Menu
-                onClick={onClick}
+                onClick={onItemClick}
                 defaultOpenKeys={["sub1"]}
                 mode="inline"
                 items={officialData}
-                className={className}
-                selectedKeys={[currLessonKey]}
+                className={` rounded-lg text-xs py-4 ${className} `}
+                selectedKeys={[currentKey || ""]}
             />
         </ConfigProvider>
     );

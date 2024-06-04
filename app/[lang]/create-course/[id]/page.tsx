@@ -12,25 +12,25 @@ import {
 } from "antd";
 import { Locale } from "antd/es/locale";
 import React, { useEffect, useRef, useState } from "react";
-import { FormCreateOverallInfo } from "../ui/create-course/form-create-overall-info";
-import { FormCreateSession } from "../ui/create-course/form-create-session";
 import { LeftOutlined } from "@ant-design/icons";
 import clsx from "clsx";
-import { Course, defaultCourse } from "../lib/model/course";
-import { UploadType, beforeUpload, getBase64 } from "../lib/utils/upload";
 import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../lib/hooks/useToken";
 import { useRouter } from "next/navigation";
+import { Course, defaultCourse } from "../../lib/model/course";
+import { useToken } from "../../lib/hooks/useToken";
+import { FormCreateSession } from "../../ui/create-course/form-create-session";
+import { UploadType, beforeUpload, getBase64 } from "../../lib/utils/upload";
+import { FormCreateOverallInfo } from "../../ui/create-course/form-create-overall-info";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
 export default function Page({
-    params: { lang },
+    params: { lang, id },
 }: {
-    params: { lang: Locale };
+    params: { lang: Locale; id: string };
 }) {
-    const [newCourse, setNewCourse] = useState<Course>(defaultCourse);
+    const [course, setCourse] = useState<Course>(defaultCourse);
     const [currentStep, setCurrentStep] = useState(1);
     const [activeKey, setActiveKey] = useState("1");
     const [imageUrl, setImageUrl] = useState<any>();
@@ -43,23 +43,64 @@ export default function Page({
     const [linkUploadPoster, setLinkUploadPoster] = useState("");
     const route = useRouter();
 
+    const getDataCourse = () => {
+        apiInstance
+            .get(`courses/${id}`)
+            .then((res) => {
+                setCourse(res.data.data.course);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     useEffect(() => {
-        setItems([
-            {
-                label: "Topic 1",
-                children: (
-                    <div className="h-[700px] max-h-[700px] overflow-auto">
-                        <FormCreateSession
-                            idSession={1}
-                            courseId={newCourse.courseId}
-                        />
-                    </div>
-                ),
-                key: "1",
-                closable: false,
-            },
-        ]);
-    }, [newCourse]);
+        getDataCourse();
+    }, [id]);
+
+    useEffect(() => {
+        if (currentStep === 3) {
+            if (course.topics.length > 0) {
+                newTabIndex.current = course.topics.length;
+                const listTopicTab = course.topics.map((topic, index) => {
+                    return {
+                        label: `Topic ${index + 1}`,
+                        children: (
+                            <div className="h-[700px] max-h-[700px] overflow-auto">
+                                <FormCreateSession
+                                    idSession={index + 1}
+                                    courseId={course.courseId}
+                                />
+                            </div>
+                        ),
+                        key: `${index + 1}`,
+                        closable: false,
+                    };
+                });
+
+                setItems(listTopicTab);
+            } else {
+                setItems([
+                    {
+                        label: `Topic 1`,
+                        children: (
+                            <div className="h-[700px] max-h-[700px] overflow-auto">
+                                <FormCreateSession
+                                    idSession={1}
+                                    courseId={course.courseId}
+                                />
+                            </div>
+                        ),
+                        key: `${1}`,
+                        closable: false,
+                    },
+                ]);
+            }
+        }
+        if (currentStep === 2) {
+            setImageUrl(course.posterUrl);
+        }
+    }, [course, currentStep]);
 
     const onChange = (newActiveKey: string) => {
         setActiveKey(newActiveKey);
@@ -74,7 +115,7 @@ export default function Page({
                 <div className="h-[700px] max-h-[700px] overflow-auto">
                     <FormCreateSession
                         idSession={Number(newActiveKey)}
-                        courseId={newCourse.courseId}
+                        courseId={course.courseId}
                     />
                 </div>
             ),
@@ -134,47 +175,22 @@ export default function Page({
 
     const getLinkUploadPoster = () => {
         apiInstance
-            .get(
-                `courses/${newCourse.courseId}/presigned-url-to-upload-poster`,
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
-            )
+            .get(`courses/${course.courseId}/presigned-url-to-upload-poster`, {
+                headers: { Authorization: "Bear " + userToken?.accessToken },
+            })
             .then((res) => {
                 setLinkUploadPoster(res.data.data);
-                console.log("Link", res.data.data);
             })
             .catch((error) => {
                 console.log(error);
             });
     };
 
-    // const uploadImage = async (file: File) => {
-    //     await apiInstance
-    //         .put(linkUploadPoster, file, {
-    //             baseURL: "",
-    //             headers: {
-    //                 "Content-Type": "image/jpeg",
-    //             },
-    //         })
-    //         .then((res) => console.log(res))
-    //         .catch((error) => console.log(error));
-
-    //     await apiInstance
-    //         .get(`courses/${newCourse.courseId}/clear-cache-poster`, {
-    //             headers: { Authorization: "Bear " + userToken?.accessToken },
-    //         })
-    //         .then((res) => {
-    //             console.log(res);
-    //         })
-    //         .catch((error) => {
-    //             console.log(error);
-    //         });
-    // };
-
     useEffect(() => {
         getLinkUploadPoster();
-        if (newCourse.courseId !== "") {
+        if (course.courseId !== "") {
         }
-    }, [newCourse]);
+    }, [course]);
 
     return (
         <ConfigProvider
@@ -229,10 +245,10 @@ export default function Page({
 
                             <FormCreateOverallInfo
                                 className="w-full"
-                                onNext={(course) => {
-                                    setNewCourse(course);
+                                onNext={() => {
                                     setCurrentStep(2);
                                 }}
+                                course={course}
                             />
                         </div>
                         <div
@@ -372,7 +388,7 @@ export default function Page({
                                     type="primary"
                                     onClick={() => {
                                         route.push(
-                                            `detail-course/${newCourse.courseId}`
+                                            `/detail-course/${course.courseId}`
                                         );
                                     }}
                                 >

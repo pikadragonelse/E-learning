@@ -8,6 +8,7 @@ import clsx from "clsx";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../../lib/hooks/useToken";
 import { Topic, TopicReturnedCreate } from "../../lib/model/topic";
+import { Course } from "../../lib/model/course";
 
 type FieldType = {
     name: string;
@@ -17,11 +18,13 @@ export type FormCreateSession = {
     className?: string;
     idSession?: number;
     courseId?: string;
+    course?: Course;
 };
 export const FormCreateSession: React.FC<FormCreateSession> = ({
     className,
     idSession,
     courseId,
+    course,
 }) => {
     const [form] = useForm();
     const [listLesson, setListLesson] = useState<number[]>([1]);
@@ -74,12 +77,8 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
                 </Form.Item>
             </Form>
             <Row justify={"end"} hidden={!isHiddenLesson}>
-                <Button
-                    type="primary"
-                    onClick={() => form.submit()}
-                    className="bg-orange-600"
-                >
-                    Create session
+                <Button type="primary" onClick={() => form.submit()}>
+                    Create topic
                 </Button>
             </Row>
             <div

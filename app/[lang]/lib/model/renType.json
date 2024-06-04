@@ -1,0 +1,14 @@
+{
+    "Instructor": {
+        "fullName": "John Doe",
+        "id": 1,
+        "userId": 1,
+        "firstName": "John",
+        "lastName": "Doe",
+        "avatar": "https://d3lil866y4zpm5.cloudfront.net/users/1/avatar.jpg?Expires=1717595289&Key-Pair-Id=K1T3GDGJTSYTYG&Signature=Rfezm~BbqxsJKSzXDov9UoChKoBWpfeHgZk3Q-aJ6RfKuyTEXeaU9KxWx4Fn8Ckr1jcScQ966JJ4bOWa9Y0G342l9Q0CxyI~fqjJHgL-C2wDDq-irfWv8u-xqVybTR2BQzyd-lgCLyZjUW0ZptQs7GWMbA2ht0mCYwDsd7wRYm0CxYnoUrPjkK0pQmbJMc1hR8-k4FBUSx1KiLb5tZmlUBwFs8O7J10PImBK9BWvp3OQlW5Ahc1kENq98BmZuFOcnmYaT8vd3mScP~J4qGLIOjF-JIAoxyolaesVv7pkjsoYU7rdZ8gOj54yrLe5h0zMyOtaZc9d87LF-p~pKvxZ-A__",
+        "description": "Lorem ipsum dolor sit amet, consectetur adipiscing elit.",
+        "createdAt": "2024-05-05T04:36:16.259Z",
+        "updatedAt": "2024-05-05T04:36:16.259Z",
+        "deletedAt": null
+    }
+}

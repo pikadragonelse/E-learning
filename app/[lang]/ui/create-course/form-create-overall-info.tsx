@@ -9,6 +9,7 @@ import { Category } from "../../lib/model/categories";
 import { Language } from "../../lib/model/language";
 import { useToken } from "../../lib/hooks/useToken";
 import { Course } from "../../lib/model/course";
+import { useForm } from "antd/es/form/Form";
 
 type FieldType = {
     title: string;
@@ -26,12 +27,15 @@ type FieldType = {
 export type FormCreateOverallInfo = {
     className?: string;
     onNext?: (course: Course) => unknown;
+    course?: Course;
 };
 export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
     className,
     onNext = () => {},
+    course,
 }) => {
     const [loading, setLoading] = useState(false);
+    const [form] = useForm();
 
     const [optionCategory, setOptionCategory] = useState<
         SelectProps["options"]
@@ -43,7 +47,6 @@ export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
 
     const createCourse = (data: FieldType) => {
         setLoading(true);
-        console.log(data);
 
         apiInstance
             .post("courses", data, {
@@ -58,6 +61,46 @@ export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
                 setLoading(false);
             });
     };
+
+    const editCourse = (data: FieldType) => {
+        setLoading(true);
+
+        apiInstance
+            .put(
+                `courses/${course?.courseId}`,
+                { ...course, ...data },
+                {
+                    headers: {
+                        Authorization: "Bear " + userToken?.accessToken,
+                    },
+                }
+            )
+            .then((res) => {
+                onNext(res.data.data);
+                setLoading(false);
+            })
+            .catch((error) => {
+                console.log(error);
+                setLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        if (course != null) {
+            form.setFieldsValue({
+                title: course.title,
+                introduction: course.introduction,
+                description: course.description,
+                learnsDescription: course.learnsDescription,
+                requirementsDescription: course.requirementsDescription,
+                price: course.price,
+                discount: course.discount,
+                categoryId: course.category?.categoryId,
+                languageId: course.languageId,
+                levelId: course.levelId,
+            });
+        }
+    }, [course]);
 
     const getCategory = () => {
         apiInstance
@@ -102,12 +145,15 @@ export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
         <div className={`${className}`}>
             <Spin spinning={loading}>
                 <Form
+                    form={form}
                     labelCol={{ span: 6 }}
                     wrapperCol={{ span: 24 }}
                     labelAlign="left"
                     layout="vertical"
                     onFinish={(value: FieldType) => {
-                        createCourse(value);
+                        course != null
+                            ? editCourse(value)
+                            : createCourse(value);
                     }}
                 >
                     <Form.Item<FieldType> name="title" label="Title">
@@ -197,7 +243,7 @@ export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
                             <Button
                                 type={"primary"}
                                 htmlType="submit"
-                                className="w-60 bg-orange-600"
+                                className="w-60"
                             >
                                 Next
                             </Button>

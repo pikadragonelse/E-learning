@@ -1,6 +1,6 @@
 "use client";
 
-import React, { useEffect, useState } from "react";
+import React, { Suspense, useEffect, useState } from "react";
 import { SubInfoDetailCourse } from "../../ui/sub-info-detail-course";
 import { DetailOverviewInfo } from "../../ui/detail-overview-info";
 import { CheckList } from "../../ui/check-list";
@@ -199,10 +199,12 @@ export default function Page({ params }: { params: { id: string } }) {
                 footer={<></>}
                 className="w-[800px]"
             >
-                <VideoCustom
-                    refresh={refreshVideo}
-                    videoSource={courseData.trailerUrl}
-                />
+                <Suspense fallback={<div>Loading...</div>}>
+                    <VideoCustom
+                        refresh={refreshVideo}
+                        videoSource={courseData.trailerUrl}
+                    />
+                </Suspense>
             </Modal>
             <div className="relative">
                 <div className="h-64 md:h-96 lg:hidden relative group overflow-hidden">

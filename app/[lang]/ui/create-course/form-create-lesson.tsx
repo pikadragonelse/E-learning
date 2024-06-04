@@ -252,11 +252,7 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                 >
                     Add lesson
                 </Button>
-                <Button
-                    onClick={() => form.submit()}
-                    type="primary"
-                    className="bg-orange-600"
-                >
+                <Button onClick={() => form.submit()} type="primary">
                     Create lesson
                 </Button>
             </Row>

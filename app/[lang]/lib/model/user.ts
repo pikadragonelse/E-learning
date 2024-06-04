@@ -25,3 +25,16 @@ export const defaultUser: User = {
     },
     userName: "",
 };
+
+export interface Instructor {
+    fullName: string;
+    id: number;
+    userId: number;
+    firstName: string;
+    lastName: string;
+    avatar: string;
+    description: string;
+    createdAt: string;
+    updatedAt: string;
+    deletedAt: null;
+}

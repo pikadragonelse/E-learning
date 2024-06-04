@@ -50,6 +50,7 @@ export default function Page({
             })
             .then((data) => {
                 setDataLesson(data.data.data.lesson);
+
                 setIsLoading(false);
             })
             .catch((err) => {

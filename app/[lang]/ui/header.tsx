@@ -12,6 +12,7 @@ import {
     LogoutOutlined,
     AppstoreOutlined,
     FileAddOutlined,
+    ContainerOutlined,
 } from "@ant-design/icons";
 import { Avatar, Button, ConfigProvider, Popover, Tooltip } from "antd";
 import clsx from "clsx";
@@ -20,13 +21,17 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { Category } from "../lib/model/categories";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { User } from "../lib/model/user";
-
 const listUserFeature: Array<{ title: string; icon: ReactNode; href: string }> =
     [
         {
             title: "My account",
             icon: <UserOutlined />,
             href: "individual-info",
+        },
+        {
+            title: "Instructor",
+            icon: <ContainerOutlined />,
+            href: "manage-course",
         },
         {
             title: "Recommend course",
@@ -85,7 +90,6 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
         } else {
             params.delete("category");
         }
-        console.log(pathname);
 
         if (pathname.split("/")[2] === "search") {
             replace(`/en/?${params.toString()}`);

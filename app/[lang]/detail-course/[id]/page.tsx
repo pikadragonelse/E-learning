@@ -8,15 +8,15 @@ import { MenuLecture } from "../../ui/menu-lecture";
 import { CaretRightOutlined } from "@ant-design/icons";
 import { Comment } from "../../ui/comment/comment";
 import { InstructorBriefInfo } from "../../ui/instructor-brief-info";
-import { ItemCourseSub } from "../../ui/item-course-sub";
 import { Container } from "../../ui/container";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Course, defaultCourse } from "../../lib/model/course";
-import { Button, Modal, notification } from "antd";
-import { VideoCustom } from "../../ui/video-custom";
+import { Button, MenuProps, Modal, notification } from "antd";
+const VideoCustom = React.lazy(() => import("../../ui/video-custom"));
 import parse from "html-react-parser";
 import { useToken } from "../../lib/hooks/useToken";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export default function Page({ params }: { params: { id: string } }) {
     const [courseData, setCourseData] = useState<Course>(defaultCourse);
@@ -37,10 +37,17 @@ export default function Page({ params }: { params: { id: string } }) {
     });
     const [isLoadingAddCart, setIsLoadingAddCart] = useState(false);
     const route = useRouter();
+    const onClickMenuItem: MenuProps["onClick"] = (e) => {
+        route.push(`/en/learning/${courseData.courseId}/${e.key}`);
+    };
 
     const getCourseData = () => {
         apiInstance
-            .get(`courses/${params.id}`, {headers: userToken?.accessToken ? {Authorization: 'Bearer ' + userToken?.accessToken} : {}})
+            .get(`courses/${params.id}`, {
+                headers: userToken?.accessToken
+                    ? { Authorization: "Bearer " + userToken?.accessToken }
+                    : {},
+            })
             .then((res) => {
                 setCourseData(res.data.data.course);
                 console.log(res);
@@ -207,10 +214,12 @@ export default function Page({ params }: { params: { id: string } }) {
                         />
                         Preview this course
                     </div>
-                    <img
-                        src="https://coolwallpapers.me/picsup/3058990-book_computer_design_development_electronics_html_keyboard_laptop_macbook_notebook_pencil_technology_web_web-design_website.jpg"
+                    <Image
+                        src={courseData.posterUrl || ""}
                         alt=""
                         className="w-full h-full object-cover "
+                        width={1920}
+                        height={1080}
                     />
                 </div>
                 <SubInfoDetailCourse
@@ -252,7 +261,7 @@ export default function Page({ params }: { params: { id: string } }) {
                             <Button type="primary" className="mb-2 h-10">
                                 Add to cart
                             </Button>
-                            <Button type="dashed" className=" h-10">
+                            <Button type="dashed" className="h-10">
                                 Buy now
                             </Button>
                         </div>
@@ -260,7 +269,7 @@ export default function Page({ params }: { params: { id: string } }) {
                     <div className=" mx-2 mt-10 text-zinc-800">
                         <div className="p-5 border border-zinc-400 border-solid">
                             <h1 className="font-medium text-2xl mb-4">
-                                What you'll learn
+                                What you&apos;ll learn
                             </h1>
                             <CheckList
                                 dataList={courseData.learnsDescription
@@ -276,7 +285,7 @@ export default function Page({ params }: { params: { id: string } }) {
                                 className="bg-zinc-50"
                                 isSetDefault={false}
                                 dataList={courseData.topics}
-                                courseId={courseData.courseId}
+                                onItemClick={onClickMenuItem}
                             />
                         </div>
                         <div className="mt-14">
@@ -338,12 +347,6 @@ export default function Page({ params }: { params: { id: string } }) {
                             isHideAction
                             listReview={courseData.reviews}
                         />
-                        <div className="">
-                            <h1 className="font-medium text-2xl mb-4">
-                                Recommended course
-                            </h1>
-                            <ItemCourseSub />
-                        </div>
                     </div>
                 </div>
             </div>

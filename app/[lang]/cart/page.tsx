@@ -117,7 +117,7 @@ export default function Page({
         if (billData.id !== 0) {
             router.push(`bill/${billData.id}`);
         }
-    }, [billData]);
+    }, [billData, router]);
 
     return (
         <ConfigProvider
@@ -137,10 +137,12 @@ export default function Page({
                                     key={index}
                                     className="flex gap-4 mb-4 items-center border rounded-md p-4 shadow-md bg-white "
                                 >
-                                    <img
-                                        src={course.posterUrl}
+                                    <Image
+                                        src={course.posterUrl || ""}
                                         alt=""
                                         className="w-20 h-20 lg:w-32 lg:h-32 rounded-md object-cover"
+                                        width={1920}
+                                        height={1080}
                                     />
                                     <div
                                         className="flex flex-col cursor-pointer"

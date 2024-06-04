@@ -3,6 +3,7 @@ import { Container } from "../ui/container";
 import { Locale } from "antd/es/locale";
 import { Button, Rate, Row } from "antd";
 import { EditOutlined, DeleteOutlined, PlusOutlined } from "@ant-design/icons";
+import Image from "next/image";
 
 const list = [1, 2, 3, 4, 5];
 
@@ -30,10 +31,12 @@ export default function Page({
                             key={index}
                             className="flex gap-4 mb-4 items-center border rounded-md p-4 shadow-md bg-white "
                         >
-                            <img
-                                src="https://t4.ftcdn.net/jpg/05/64/99/95/360_F_564999540_XdTvqLGDpneB3v4ifz0SZgzxMOFmfoVo.jpg"
+                            <Image
+                                src=""
                                 alt=""
                                 className="w-20 h-20 lg:w-32 lg:h-32 rounded-md"
+                                width={1920}
+                                height={1080}
                             />
                             <div className="flex flex-col cursor-pointer">
                                 <h2 className="lg:text-lg ">Name product</h2>

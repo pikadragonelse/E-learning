@@ -1,6 +1,7 @@
 import React from "react";
 import Link from "next/link";
 import { PlayCircleOutlined } from "@ant-design/icons";
+import Image from "next/image";
 
 export const HeroMainSector = () => {
     return (
@@ -14,27 +15,24 @@ export const HeroMainSector = () => {
                     <p className="font-medium text-2xl sm:text-5xl">
                         Build your future with 1000+ courses
                     </p>
-                    {/* <Link
-                        href=""
-                        className="text-xs sm:text-2xl flex gap-1 items-center mt-2 text-orange-700"
-                    >
-                        <PlayCircleOutlined />
-                        <span>Start Now</span>
-                    </Link> */}
                 </div>
-                <img
+                <Image
                     src={`/images/main2.jpg`}
-                    alt=""
+                    alt="image"
                     className="w-full h-full object-cover"
+                    width={1920}
+                    height={1080}
                 />
             </div>
             <div className="h-[280px] sm:h-[500px] flex gap-2 mt-2">
                 <div className="bg-zinc-200 h-full w-1/2 relative rounded-xl overflow-hidden">
                     <div className="absolute w-full h-full bg-zinc-800/70"></div>
-                    <img
+                    <Image
                         src="/images/sub1.jpg"
                         alt=""
                         className=" w-full h-full object-cover"
+                        width={1920}
+                        height={1080}
                     />
                     <div className="absolute top-2 left-2 sm:top-10 sm:left-10 text-zinc-50">
                         <h1 className="text-xs sm:text-lg text-orange-600">
@@ -66,20 +64,24 @@ export const HeroMainSector = () => {
                                 Build your future
                             </p>
                         </div>
-                        <img
+                        <Image
                             src="/images/sub2.jpg"
                             alt=""
                             className=" w-full h-full object-cover"
+                            width={1920}
+                            height={1080}
                         />
                     </div>
                     <div className=" h-1/2 flex gap-2 ">
                         <div className="w-1/2  text-zinc-50 flex flex-col items-center justify-center text-center relative rounded-xl overflow-hidden">
                             <div className="absolute w-full h-full bg-zinc-900/80"></div>
 
-                            <img
+                            <Image
                                 src="/images/sub3.jpg"
                                 alt=""
                                 className=" w-full h-full object-cover"
+                                width={1920}
+                                height={1080}
                             />
                             <div className="absolute">
                                 <h1 className=" text-sm sm:text-xl sm:mt-2 font-medium">
@@ -94,10 +96,12 @@ export const HeroMainSector = () => {
                         <div className="w-1/2  text-zinc-50 flex flex-col items-center justify-center text-center relative rounded-xl overflow-hidden">
                             <div className="absolute w-full h-full bg-zinc-900/80"></div>
 
-                            <img
+                            <Image
                                 src="/images/sub4.jpg"
                                 alt=""
                                 className=" w-full h-full object-cover"
+                                width={1920}
+                                height={1080}
                             />
                             <div className="absolute">
                                 <h1 className=" text-sm sm:text-xl sm:mt-2 font-medium">

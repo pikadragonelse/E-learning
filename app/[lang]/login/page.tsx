@@ -6,6 +6,7 @@ import React, { useState } from "react";
 import { FormLogin } from "../ui/form-login";
 import { FormRegister } from "../ui/form-register";
 import { FormForgotPass } from "../ui/form-forgot-password";
+import Image from "next/image";
 
 export default function Page({
     params: { lang },
@@ -24,9 +25,12 @@ export default function Page({
             }}
         >
             <div className="flex flex-col gap-4 justify-center h-full items-center relative overflow-hidden">
-                <img
+                <Image
                     className="absolute w-full h-full object-cover"
                     src="/images/bg-login.webp"
+                    alt="bg-image"
+                    width={1920}
+                    height={1080}
                 />
                 <div className="absolute w-full h-full bg-black/30"></div>
                 <FormLogin

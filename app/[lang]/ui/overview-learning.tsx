@@ -13,6 +13,7 @@ import {
 import dayjs from "dayjs";
 import { InstructorBriefInfo } from "./instructor-brief-info";
 import parse from "html-react-parser";
+import Image from "next/image";
 
 export type OverviewLearning = { courseData?: Course };
 export const OverviewLearning: React.FC<OverviewLearning> = ({
@@ -20,8 +21,14 @@ export const OverviewLearning: React.FC<OverviewLearning> = ({
 }) => {
     return (
         <div className="px-16">
-            <div className="flex justify-center">
-                <img src={courseData.posterUrl} alt="" className="w-2/3" />
+            <div className="w-2/3 mx-auto">
+                <Image
+                    src={courseData.posterUrl || ""}
+                    alt=""
+                    className="w-full h-full object-cover"
+                    width={1920}
+                    height={1080}
+                />
             </div>
             <div className="">
                 <div className=" my-6 flex flex-col gap-4">

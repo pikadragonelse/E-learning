@@ -102,6 +102,7 @@ export default function Page() {
                             size={64}
                             icon={<UserOutlined />}
                             src={userInfo.profile.avatar}
+                            alt=""
                         />
                         <div className="">
                             <h1 className="text-xl">{userInfo.userName}</h1>

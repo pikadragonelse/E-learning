@@ -7,23 +7,13 @@ import { Document } from "langchain/document";
 
 import { MemoryVectorStore } from "langchain/vectorstores/memory";
 import { OpenAIEmbeddings, ChatOpenAI } from "@langchain/openai";
-import { pull } from "langchain/hub";
-import { ChatPromptTemplate } from "@langchain/core/prompts";
 import { StringOutputParser } from "@langchain/core/output_parsers";
-import { apiInstance } from "@/plugin/apiInstance";
-import {
-    RunnablePassthrough,
-    RunnableSequence,
-} from "@langchain/core/runnables";
-import { formatDocumentsAsString } from "langchain/util/document";
+
 import { Button, Form, Modal, Row, Select, Space, Spin, Upload } from "antd";
-import { CheerioWebBaseLoader } from "langchain/document_loaders/web/cheerio";
 import { PromptTemplate } from "@langchain/core/prompts";
 import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { Course } from "../lib/model/course";
 import { Container } from "../ui/container";
-import Search from "antd/es/input/Search";
-import { GridCourse } from "../ui/grid-course";
 import { useForm } from "antd/es/form/Form";
 
 type FieldType = {
@@ -171,7 +161,7 @@ export default function Page({}: { params: { lang: string } }) {
                 `Please generate ${quantity} multiple-choice questions from the provided document with 4 answer options for each question, including the correct answer.`
             );
         }
-    }, [dataTrain]);
+    }, [dataTrain, quantity]);
 
     const [formModal] = useForm();
     const [isOpenModal, setIsOpenModal] = useState(false);

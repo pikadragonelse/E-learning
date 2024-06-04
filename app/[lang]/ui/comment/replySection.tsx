@@ -8,6 +8,7 @@ import dayjs from "dayjs";
 import { DeleteOutlined } from "@ant-design/icons";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../../lib/hooks/useToken";
+import Image from "next/image";
 
 export type ReplySection = {
     isHideAction?: boolean;
@@ -48,10 +49,12 @@ export const ReplySection: React.FC<ReplySection> = ({
             <footer className="flex justify-between items-center mb-2">
                 <div className="flex items-center">
                     <div className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
-                        <img
-                            className="mr-2 w-10 h-10 rounded-full"
-                            src={avt}
-                            alt={name}
+                        <Image
+                            className="mr-2 w-10 h-10 rounded-full object-cover"
+                            src={avt || ""}
+                            alt={name || ""}
+                            width={1920}
+                            height={1080}
                         />
                         <div className="flex flex-col items-start ml-2">
                             <span className="text-base mb-1 text-zinc-800">

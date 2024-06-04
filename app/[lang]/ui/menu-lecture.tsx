@@ -78,19 +78,24 @@ export const MenuLecture: React.FC<MenuLecture> = ({
                         <Popover
                             content={
                                 <ul className="w-40">
-                                    {resourceMap[lesson.id]?.map((resource) => (
-                                        <li className="cursor-pointer group ">
-                                            <a
-                                                href={resource.url}
-                                                className="group-hover:text-orange-600 text-zinc-800 "
-                                                onClick={(event) => {
-                                                    event.stopPropagation();
-                                                }}
+                                    {resourceMap[lesson.id]?.map(
+                                        (resource, index) => (
+                                            <li
+                                                className="cursor-pointer group "
+                                                key={index}
                                             >
-                                                {resource.name}
-                                            </a>
-                                        </li>
-                                    ))}
+                                                <a
+                                                    href={resource.url}
+                                                    className="group-hover:text-orange-600 text-zinc-800 "
+                                                    onClick={(event) => {
+                                                        event.stopPropagation();
+                                                    }}
+                                                >
+                                                    {resource.name}
+                                                </a>
+                                            </li>
+                                        )
+                                    )}
                                 </ul>
                             }
                             placement="bottom"

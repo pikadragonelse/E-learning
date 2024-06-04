@@ -15,6 +15,14 @@ const nextConfig = {
         config.resolve.alias["fs"] = false;
         return config;
     },
+    images: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: "d3lil866y4zpm5.cloudfront.net",
+            },
+        ],
+    },
 };
 
 module.exports = nextConfig;

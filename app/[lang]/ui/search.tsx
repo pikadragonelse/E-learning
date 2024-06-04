@@ -100,8 +100,8 @@ export default function Search({
                         <ul className="w-[400px] max-w-[400px] md:w-[600px] md:max-w-[600px] max-h-[600px] overflow-auto flex flex-col gap-4">
                             <Skeleton loading={isLoading} active className="">
                                 {listCourse.length > 0
-                                    ? listCourse.map((course) => (
-                                          <li>
+                                    ? listCourse.map((course, index) => (
+                                          <li key={index}>
                                               <NewItemCourse
                                                   course={course}
                                                   layout="horizontal"

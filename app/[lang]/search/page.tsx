@@ -107,7 +107,6 @@ export default function Page({
 
     useEffect(() => {
         searchCourse();
-        console.log(searchParamsLocal.get("category"));
     }, [search, currentPage, searchParamsLocal]);
 
     const changePage = (page: number) => {
@@ -158,13 +157,14 @@ export default function Page({
                                         course={course}
                                         className="shadow-xl"
                                         layout="horizontal"
+                                        key={index}
                                     />
                                 ))
                             ) : (
                                 <div className="w-[600px] text-xl ">
                                     <h1 className="text-2xl font-semibold">
-                                        Sorry, we couldn't find any results for
-                                        "{search}"
+                                        Sorry, we couldn&apos;t find any results
+                                        for &quot;{search}&quot;
                                     </h1>
 
                                     <h2>

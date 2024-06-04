@@ -137,8 +137,6 @@ export const ControlPlayer = ({
         setValueSlider(value * 100);
     };
 
-    useEffect(() => {}, [stateSetting.quality]);
-
     const getQualityVid = (quality: number) => {
         // setIsLoadingHidden(false);
         // axios

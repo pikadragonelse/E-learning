@@ -7,6 +7,7 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../lib/hooks/useToken";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
+import Image from "next/image";
 
 export type NewItemCourse = {
     className?: string;
@@ -96,10 +97,12 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                         "w-auto": layout === "vertical",
                     })}
                 >
-                    <img
-                        src={course?.posterUrl}
+                    <Image
+                        src={course?.posterUrl || ""}
                         alt=""
                         className="object-cover w-full h-full transition-all group-hover:scale-110"
+                        width={1920}
+                        height={1080}
                     />
                 </Link>
                 <div className="text-zinc-800 bg-white p-4 pt-2 gap-4 flex flex-col justify-around flex-1">

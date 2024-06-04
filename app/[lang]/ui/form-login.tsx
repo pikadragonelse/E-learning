@@ -122,9 +122,12 @@ export const FormLogin: React.FC<FormLogin> = ({
                             </Button>
                             <Button className="flex justify-center items-center gap-2">
                                 <div className="w-5">
-                                    <img
+                                    <Image
                                         src={"/images/google.png"}
+                                        alt="google icon"
                                         className="w-full h-full"
+                                        width={20}
+                                        height={20}
                                     />
                                 </div>
                                 <span>Login by Google</span>

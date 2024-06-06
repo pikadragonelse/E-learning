@@ -42,6 +42,7 @@ export default function Page({
 
     const getDataLesson = () => {
         setIsLoading(true);
+        console.log(currLessonKey);
         apiInstance
             .get(`lessons/${currLessonKey}`, {
                 headers: {
@@ -50,7 +51,7 @@ export default function Page({
             })
             .then((data) => {
                 setDataLesson(data.data.data.lesson);
-
+                console.log(data.data);
                 setIsLoading(false);
             })
             .catch((err) => {
@@ -69,6 +70,7 @@ export default function Page({
             })
             .then((res) => {
                 setDataCourse(res.data.data.course);
+
                 setIsLoading(false);
             })
             .catch((error) => {

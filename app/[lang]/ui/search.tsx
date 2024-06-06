@@ -25,7 +25,7 @@ export default function Search({
     const timer = useRef<any>();
     const searchParams = useSearchParams();
     const pathname = usePathname();
-    const { push } = useRouter();
+    const { replace } = useRouter();
 
     const searchInline = (value: string) => {
         clearTimeout(timer.current);
@@ -58,16 +58,14 @@ export default function Search({
 
     const searchPage = (value: string) => {
         const params = new URLSearchParams(searchParams);
+
         if (value !== "") {
             params.set("search", value);
         } else {
             params.delete("search");
         }
-        if (pathname.split("/")[2] === "search") {
-            push(`?${params.toString()}`);
-        } else {
-            push(`/search?${params.toString()}`);
-        }
+
+        replace(`/en/search?${params.toString()}`);
     };
 
     return (

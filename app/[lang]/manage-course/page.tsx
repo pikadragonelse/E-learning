@@ -33,8 +33,8 @@ export default function Page({
             });
     };
 
-    const editCourse = () => {
-        route.push(`/create-course/${listCourse[0].courseId}`);
+    const editCourse = (courseId: string) => {
+        route.push(`/create-course/${courseId}`);
     };
 
     useEffect(() => {
@@ -83,7 +83,9 @@ export default function Page({
                                 </div>
                                 <div className="lg:hidden">
                                     <EditOutlined
-                                        onClick={editCourse}
+                                        onClick={() =>
+                                            editCourse(course.courseId)
+                                        }
                                         className=" cursor-pointer text-lg active:text-orange-600 mr-10 p-2"
                                     />
                                     <DeleteOutlined className=" cursor-pointer text-lg active:text-orange-600 mr-10 p-2" />
@@ -94,7 +96,7 @@ export default function Page({
                             </div>
                             <div className="ml-auto  gap-4 hidden lg:flex">
                                 <EditOutlined
-                                    onClick={editCourse}
+                                    onClick={() => editCourse(course.courseId)}
                                     className=" cursor-pointer text-lg active:text-orange-600 mr-10 p-2"
                                 />
                                 <DeleteOutlined className=" cursor-pointer text-lg active:text-orange-600 mr-10 p-2" />

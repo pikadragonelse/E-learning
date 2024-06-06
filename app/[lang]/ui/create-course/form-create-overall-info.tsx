@@ -28,11 +28,13 @@ export type FormCreateOverallInfo = {
     className?: string;
     onNext?: (course: Course) => unknown;
     course?: Course;
+    onSkip?: (...props: any) => void;
 };
 export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
     className,
     onNext = () => {},
     course,
+    onSkip,
 }) => {
     const [loading, setLoading] = useState(false);
     const [form] = useForm();
@@ -240,12 +242,13 @@ export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
                     </Form.Item>
                     <Form.Item>
                         <Row justify={"end"} className="gap-4">
+                            <Button onClick={onSkip}>Skip</Button>
                             <Button
                                 type={"primary"}
                                 htmlType="submit"
                                 className="w-60"
                             >
-                                Next
+                                {course != null ? "Update" : "Create"}
                             </Button>
                         </Row>
                     </Form.Item>

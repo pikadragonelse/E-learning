@@ -23,10 +23,6 @@ const VideoCustom: React.FC<VideoCustom> = ({
     const [isVideoLoading, setIsVideoLoading] = useState(false);
 
     useEffect(() => {
-        onProgress(videoRef.current?.currentTime || 0);
-    }, [videoRef.current?.currentTime]);
-
-    useEffect(() => {
         setCurrentTime(0);
         if (videoRef.current != null && videoRef != null) {
             videoRef.current.currentTime = 0;
@@ -136,6 +132,7 @@ const VideoCustom: React.FC<VideoCustom> = ({
                                     videoRef.current?.duration
                             );
                         }
+                        onProgress(e.currentTarget.currentTime || 0);
                     }}
                     className=""
                 >

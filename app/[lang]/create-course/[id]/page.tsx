@@ -9,6 +9,7 @@ import {
     UploadProps,
     Image,
     Space,
+    message,
 } from "antd";
 import { Locale } from "antd/es/locale";
 import React, { useEffect, useRef, useState } from "react";
@@ -20,8 +21,9 @@ import { useRouter } from "next/navigation";
 import { Course, defaultCourse } from "../../lib/model/course";
 import { useToken } from "../../lib/hooks/useToken";
 import { FormCreateSession } from "../../ui/create-course/form-create-session";
-import { UploadType, beforeUpload, getBase64 } from "../../lib/utils/upload";
+import { UploadType, getBase64 } from "../../lib/utils/upload";
 import { FormCreateOverallInfo } from "../../ui/create-course/form-create-overall-info";
+import { RcFile } from "antd/es/upload";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -36,11 +38,12 @@ export default function Page({
     const [imageUrl, setImageUrl] = useState<any>();
     const [fileList, setFileList] = useState<any>([]);
     const [fileListTrailer, setFileListTrailer] = useState<any>([]);
-    const [trailerUrl, setTrailerUrl] = useState();
+    const [trailerUrl, setTrailerUrl] = useState<string | null>();
     const [items, setItems] = useState<any>([]);
     const newTabIndex = useRef(2);
     const userToken = useToken();
     const [linkUploadPoster, setLinkUploadPoster] = useState("");
+    const [linkUploadTrailer, setLinkUploadTrailer] = useState("");
     const route = useRouter();
 
     const getDataCourse = () => {
@@ -61,7 +64,7 @@ export default function Page({
     useEffect(() => {
         if (currentStep === 3) {
             if (course.topics.length > 0) {
-                newTabIndex.current = course.topics.length;
+                newTabIndex.current = course.topics.length + 1;
                 const listTopicTab = course.topics.map((topic, index) => {
                     return {
                         label: `Topic ${index + 1}`,
@@ -70,11 +73,12 @@ export default function Page({
                                 <FormCreateSession
                                     idSession={index + 1}
                                     courseId={course.courseId}
+                                    topic={topic}
                                 />
                             </div>
                         ),
                         key: `${index + 1}`,
-                        closable: false,
+                        closable: index < 1 ? false : true,
                     };
                 });
 
@@ -186,11 +190,137 @@ export default function Page({
             });
     };
 
-    useEffect(() => {
-        getLinkUploadPoster();
-        if (course.courseId !== "") {
+    const uploadPoster = async (option: any) => {
+        try {
+            const putResponse = await apiInstance.put(
+                linkUploadPoster,
+                option.file,
+                {
+                    headers: {
+                        "Content-Type": "image/jpeg",
+                    },
+                    onUploadProgress: (event) => {
+                        const percentCompleted = Math.round(
+                            (event.loaded * 100) / (event.total || 1)
+                        );
+                        if (option.onProgress != null) {
+                            option.onProgress({
+                                percent: percentCompleted,
+                            });
+                        }
+                    },
+                }
+            );
+
+            console.log("PUT response:", putResponse);
+            if (option.onSuccess) option.onSuccess(putResponse.data);
+        } catch (error) {
+            console.log("PUT error:", error);
+            if (option.onError) option.onError(error);
         }
-    }, [course]);
+
+        try {
+            const getResponse = await apiInstance.get(
+                `courses/${course.courseId}/clear-cache-poster`,
+                {
+                    headers: {
+                        Authorization: "Bearer " + userToken?.accessToken,
+                    },
+                }
+            );
+
+            console.log("Result clear: ", getResponse.data);
+        } catch (error) {
+            console.log("GET error:", error);
+        }
+    };
+
+    const getLinkUploadTrailer = () => {
+        apiInstance
+            .get(`courses/${course.courseId}/presigned-url-to-upload-trailer`, {
+                headers: { Authorization: "Bear " + userToken?.accessToken },
+            })
+            .then((res) => {
+                setLinkUploadTrailer(res.data.data);
+                console.log("Link trailer: ", res.data.data);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
+    const uploadTrailer = async (option: any) => {
+        try {
+            // Thực hiện PUT request cho trailer
+            const putResponse = await apiInstance.put(
+                linkUploadTrailer,
+                option.file,
+                {
+                    headers: {
+                        "Content-Type": "video/mp4",
+                    },
+                    onUploadProgress: (event) => {
+                        const percentCompleted = Math.round(
+                            (event.loaded * 100) / (event.total || 1)
+                        );
+                        if (option.onProgress != null) {
+                            option.onProgress({
+                                percent: percentCompleted,
+                            });
+                        }
+                    },
+                }
+            );
+
+            // Log PUT response và gọi onSuccess nếu tồn tại
+            console.log(putResponse);
+            if (option.onSuccess) option.onSuccess(putResponse.data);
+        } catch (error) {
+            // Log PUT error và gọi onError nếu tồn tại
+            console.log(error);
+            if (option.onError) option.onError(error);
+        }
+
+        try {
+            // Thực hiện GET request để clear cache trailer
+            const getResponse = await apiInstance.get(
+                `courses/${course.courseId}/clear-cache-trailer`,
+                {
+                    headers: {
+                        Authorization: "Bearer " + userToken?.accessToken,
+                    },
+                }
+            );
+
+            // Log GET response
+            console.log("Result clear: ", getResponse.data);
+        } catch (error) {
+            // Log GET error
+            console.log(error);
+        }
+    };
+
+    const beforeUpload = (file: RcFile): boolean => {
+        const isVideo = file.type.startsWith("video/");
+        if (!isVideo) {
+            message.error("You can only upload video files!");
+            return false;
+        }
+
+        // Create a URL for the video file and set it to state
+        const videoUrl = URL.createObjectURL(file);
+        setTrailerUrl(videoUrl);
+
+        // Prevent the actual upload
+        return true;
+    };
+
+    useEffect(() => {
+        if (currentStep === 2) {
+            getLinkUploadPoster();
+            getLinkUploadTrailer();
+        }
+    }, [currentStep]);
 
     return (
         <ConfigProvider
@@ -249,6 +379,7 @@ export default function Page({
                                     setCurrentStep(2);
                                 }}
                                 course={course}
+                                onSkip={() => setCurrentStep(2)}
                             />
                         </div>
                         <div
@@ -297,13 +428,10 @@ export default function Page({
                                         )}
                                     </div>
                                     <Upload
-                                        fileList={fileList}
-                                        action={linkUploadPoster}
-                                        name="poster"
+                                        customRequest={async (option) => {
+                                            uploadPoster(option);
+                                        }}
                                         onChange={handleChange}
-                                        className="flex flex-col items-center"
-                                        onRemove={() => setImageUrl("")}
-                                        method="PUT"
                                     >
                                         <Button type="primary">
                                             Upload poster
@@ -315,7 +443,19 @@ export default function Page({
                                     <div className="w-72 h-72 flex items-center justify-center rounded-lg overflow-hidden">
                                         {trailerUrl !== "" &&
                                         trailerUrl != null ? (
-                                            <Image src={""} alt="Trailer" />
+                                            <div style={{ marginTop: 20 }}>
+                                                <video
+                                                    className="w-72"
+                                                    controls
+                                                >
+                                                    <source
+                                                        src={trailerUrl || ""}
+                                                        type="video/mp4"
+                                                    />
+                                                    Your browser does not
+                                                    support the video tag.
+                                                </video>
+                                            </div>
                                         ) : (
                                             <div className="select-none text-sm w-full h-full border flex items-center justify-center bg-zinc-200 ">
                                                 Trailer
@@ -323,10 +463,10 @@ export default function Page({
                                         )}
                                     </div>
                                     <Upload
-                                        fileList={fileListTrailer}
-                                        name="trailer"
+                                        customRequest={async (option) => {
+                                            uploadTrailer(option);
+                                        }}
                                         beforeUpload={beforeUpload}
-                                        onChange={handleChange}
                                         className="flex flex-col items-center"
                                     >
                                         <Button type="primary">

@@ -1,13 +1,13 @@
 "use client";
 
-import { Button, Divider, Form, Input, Row, Upload } from "antd";
-import React, { useState } from "react";
+import { Button, Divider, Form, Input, Row, Upload, message } from "antd";
+import React, { useEffect, useState } from "react";
 import { useForm } from "antd/es/form/Form";
 import { FormCreateLesson } from "./form-create-lesson";
 import clsx from "clsx";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../../lib/hooks/useToken";
-import { Topic, TopicReturnedCreate } from "../../lib/model/topic";
+import { Lesson, Topic, TopicReturnedCreate } from "../../lib/model/topic";
 import { Course } from "../../lib/model/course";
 
 type FieldType = {
@@ -18,18 +18,21 @@ export type FormCreateSession = {
     className?: string;
     idSession?: number;
     courseId?: string;
-    course?: Course;
+    topic?: Topic;
 };
 export const FormCreateSession: React.FC<FormCreateSession> = ({
     className,
     idSession,
     courseId,
-    course,
+    topic,
 }) => {
     const [form] = useForm();
     const [listLesson, setListLesson] = useState<number[]>([1]);
+    const [listDataLesson, setListDataLesson] = useState<Lesson[]>([]);
     const [isHiddenLesson, setIsHiddenLesson] = useState(true);
-    const [newTopicData, setNewTopicData] = useState<TopicReturnedCreate>();
+    const [newTopicData, setNewTopicData] = useState<
+        TopicReturnedCreate | Topic
+    >();
     const userToken = useToken();
 
     const createTopic = (name: string) => {
@@ -50,6 +53,26 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
             });
     };
 
+    const updateTopic = (name: string) => {
+        apiInstance
+            .put(
+                `courses/topics/${topic?.id}`,
+                {
+                    name: name,
+                },
+                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+            )
+            .then((res) => {
+                message.success("Update topic successful!");
+            })
+            .catch((error) => {
+                console.log(error);
+                message.error(
+                    "Update topic fail, please wait few seconds and try again!"
+                );
+            });
+    };
+
     const addLesson = () => {
         const nextId = listLesson[listLesson.length - 1] + 1;
         const newListLesson = [...listLesson, nextId];
@@ -61,24 +84,46 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
         setListLesson(newListSession);
     };
 
+    useEffect(() => {
+        if (topic != null) {
+            const listLessonCount: number[] = [];
+            setListDataLesson(
+                topic.lessons.map((lesson, index) => {
+                    listLessonCount.push(index + 1);
+                    return lesson;
+                })
+            );
+            setListLesson(listLessonCount);
+            setIsHiddenLesson(false);
+            setNewTopicData(topic);
+            form.setFieldsValue({
+                name: topic.name,
+            });
+        }
+    }, [topic]);
+
     return (
         <div className={`bg-zinc-100 p-4 rounded-lg mb-6 ${className}`}>
             <Divider className="select-none">Topic {idSession} </Divider>
             <Form
                 layout="vertical"
                 form={form}
-                onFinish={(info: FieldType) => createTopic(info.name)}
+                onFinish={(info: FieldType) =>
+                    topic != null
+                        ? updateTopic(info.name)
+                        : createTopic(info.name)
+                }
             >
                 <Form.Item<FieldType> label="Name" name={"name"}>
                     <Input
                         placeholder="Enter name topic"
-                        disabled={!isHiddenLesson}
+                        disabled={topic != null ? false : !isHiddenLesson}
                     />
                 </Form.Item>
             </Form>
             <Row justify={"end"} hidden={!isHiddenLesson}>
                 <Button type="primary" onClick={() => form.submit()}>
-                    Create topic
+                    {topic != null ? "Update" : "Create"} topic
                 </Button>
             </Row>
             <div
@@ -94,6 +139,7 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
                         onDelete={(idLesson) => deleteLesson(idLesson)}
                         isShowAddForm={index === listLesson.length - 1}
                         topicId={newTopicData?.id}
+                        lesson={listDataLesson[index]}
                     />
                 ))}
             </div>

@@ -85,6 +85,7 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
 
     const searchPage = (value: string) => {
         const params = new URLSearchParams(searchParams);
+
         if (value !== "") {
             params.set("category", value);
         } else {

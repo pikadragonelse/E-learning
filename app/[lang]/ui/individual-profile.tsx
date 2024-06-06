@@ -9,7 +9,7 @@ import {
     Col,
 } from "antd";
 import React, { useEffect, useState } from "react";
-import { UploadType, beforeUpload, getBase64 } from "../lib/utils/upload";
+import { UploadType, getBase64 } from "../lib/utils/upload";
 import { User } from "../lib/model/user";
 import { useForm } from "antd/es/form/Form";
 
@@ -75,7 +75,6 @@ export const IndividualProfile: React.FC<IndividualProfile> = ({
                     customRequest={(e) => {
                         setImageUrl(URL.createObjectURL(e.file as any));
                     }}
-                    beforeUpload={beforeUpload}
                     onChange={handleChange}
                     className="flex flex-col items-center"
                     onRemove={() => setImageUrl("")}

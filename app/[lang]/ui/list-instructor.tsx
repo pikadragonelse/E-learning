@@ -35,6 +35,7 @@ export const ListInstructor = () => {
                             onClick={() =>
                                 route.push(`/user/${instructor.profile.id}`)
                             }
+                            key={index}
                         >
                             <ItemInstructor
                                 key={index}

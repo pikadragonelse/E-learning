@@ -36,6 +36,7 @@ export type MenuLecture = {
     dataList?: Topic[];
     onItemClick?: MenuProps["onClick"];
     currentKey?: string;
+    isShowResource?: boolean;
 };
 export const MenuLecture: React.FC<MenuLecture> = ({
     className,
@@ -43,6 +44,7 @@ export const MenuLecture: React.FC<MenuLecture> = ({
     dataList = [],
     onItemClick,
     currentKey,
+    isShowResource = false,
 }) => {
     const [officialData, setOfficialData] = useState<MenuProps["items"]>();
     const [resourceMap, setResourceMap] = useState<Record<number, Resource[]>>(
@@ -74,48 +76,51 @@ export const MenuLecture: React.FC<MenuLecture> = ({
                                 {lesson.title}
                             </h2>
                         </Tooltip>
-
-                        <Popover
-                            content={
-                                <ul className="w-40">
-                                    {resourceMap[lesson.id]?.map(
-                                        (resource, index) => (
-                                            <li
-                                                className="cursor-pointer group "
-                                                key={index}
-                                            >
-                                                <a
-                                                    href={resource.url}
-                                                    className="group-hover:text-orange-600 text-zinc-800 "
-                                                    onClick={(event) => {
-                                                        event.stopPropagation();
-                                                    }}
+                        {isShowResource === true ? (
+                            <Popover
+                                content={
+                                    <ul className="w-40">
+                                        {resourceMap[lesson.id]?.map(
+                                            (resource, index) => (
+                                                <li
+                                                    className="cursor-pointer group "
+                                                    key={index}
                                                 >
-                                                    {resource.name}
-                                                </a>
-                                            </li>
-                                        )
-                                    )}
-                                </ul>
-                            }
-                            placement="bottom"
-                            arrow={false}
-                        >
-                            <Button
-                                icon={<DownOutlined />}
-                                className={clsx(
-                                    "absolute right-0 w-40  justify-around items-center",
-                                    {
-                                        hidden:
-                                            resourceMap[lesson.id]?.length < 1,
-                                        flex:
-                                            resourceMap[lesson.id]?.length > 1,
-                                    }
-                                )}
+                                                    <a
+                                                        href={resource.url}
+                                                        className="group-hover:text-orange-600 text-zinc-800 "
+                                                        onClick={(event) => {
+                                                            event.stopPropagation();
+                                                        }}
+                                                    >
+                                                        {resource.name}
+                                                    </a>
+                                                </li>
+                                            )
+                                        )}
+                                    </ul>
+                                }
+                                placement="bottom"
+                                arrow={false}
                             >
-                                Resource
-                            </Button>
-                        </Popover>
+                                <Button
+                                    icon={<DownOutlined />}
+                                    className={clsx(
+                                        "absolute right-0 w-40  justify-around items-center",
+                                        {
+                                            hidden:
+                                                resourceMap[lesson.id]?.length <
+                                                1,
+                                            flex:
+                                                resourceMap[lesson.id]?.length >
+                                                1,
+                                        }
+                                    )}
+                                >
+                                    Resource
+                                </Button>
+                            </Popover>
+                        ) : undefined}
                     </div>,
                     lesson.id,
                     <BorderOutlined />

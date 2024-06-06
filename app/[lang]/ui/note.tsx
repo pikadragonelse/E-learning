@@ -5,18 +5,18 @@ import { Button, Row, Select, Space } from "antd";
 import React, { useEffect, useState } from "react";
 import ReactQuill from "react-quill";
 import "react-quill/dist/quill.snow.css";
-import { useToken } from "../lib/hooks/useToken";
 import { NoteInfo } from "../lib/model/note";
 import parse from "html-react-parser";
 import { formatTime } from "../lib/utils/formatTime";
 import dayjs from "dayjs";
+import { useTokenStore } from "../lib/store/userInfo";
 
 export type Note = { lessonId?: number; currTime?: number };
 export const Note: React.FC<Note> = ({ lessonId, currTime }) => {
     const [value, setValue] = useState("");
     const [noteList, setNoteList] = useState<NoteInfo[]>([]);
     const [refreshList, setRefreshList] = useState(0);
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
 
     const getAllNote = () => {
         apiInstance
@@ -24,7 +24,7 @@ export const Note: React.FC<Note> = ({ lessonId, currTime }) => {
                 params: {
                     lessonId: lessonId,
                 },
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((res) => setNoteList(res.data.data))
             .catch((error) => {
@@ -45,7 +45,7 @@ export const Note: React.FC<Note> = ({ lessonId, currTime }) => {
                     content: value,
                     time: Number(currTime?.toFixed(0)),
                 },
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+                { headers: { Authorization: "Bear " + userInfo?.accessToken } }
             )
             .then((res) => {
                 setRefreshList((prev) => prev + 1);

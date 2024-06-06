@@ -7,9 +7,10 @@ import ReactQuill from "react-quill";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Category } from "../../lib/model/categories";
 import { Language } from "../../lib/model/language";
-import { useToken } from "../../lib/hooks/useToken";
 import { Course } from "../../lib/model/course";
 import { useForm } from "antd/es/form/Form";
+import { useTokenStore } from "../../lib/store/userInfo";
+import clsx from "clsx";
 
 type FieldType = {
     title: string;
@@ -45,14 +46,14 @@ export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
     const [optionLanguage, setOptionLanguage] = useState<
         SelectProps["options"]
     >([]);
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
 
     const createCourse = (data: FieldType) => {
         setLoading(true);
 
         apiInstance
             .post("courses", data, {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((response) => {
                 setLoading(false);
@@ -73,7 +74,7 @@ export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
                 { ...course, ...data },
                 {
                     headers: {
-                        Authorization: "Bear " + userToken?.accessToken,
+                        Authorization: "Bear " + userInfo?.accessToken,
                     },
                 }
             )
@@ -242,7 +243,14 @@ export const FormCreateOverallInfo: React.FC<FormCreateOverallInfo> = ({
                     </Form.Item>
                     <Form.Item>
                         <Row justify={"end"} className="gap-4">
-                            <Button onClick={onSkip}>Skip</Button>
+                            <Button
+                                onClick={onSkip}
+                                className={clsx({
+                                    hidden: course != null ? false : true,
+                                })}
+                            >
+                                Skip
+                            </Button>
                             <Button
                                 type={"primary"}
                                 htmlType="submit"

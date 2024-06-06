@@ -7,25 +7,25 @@ import { Footer } from "./footer";
 import { SidebarDrawer } from "./sidebar-drawer";
 import { ConfigProvider } from "antd";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../lib/hooks/useToken";
 import { User } from "../lib/model/user";
 import { BillInfo, defaultBillInfo } from "../lib/model/bill";
+import { useTokenStore } from "../lib/store/userInfo";
 
 export type Container = { children?: any; className?: string };
 export const Container: React.FC<Container> = ({ children, className }) => {
     const [openSidebarDrawer, setOpenSidebarDrawer] = useState(false);
     const [billData, setBillData] = useState<BillInfo>(defaultBillInfo);
-    const [userInfo, setUserInfo] = useState<User>();
-    const userDataToken = useToken();
+    const [userProfile, setUserProfile] = useState<User>();
+    const { userInfo } = useTokenStore();
     const getDataUser = () => {
         apiInstance
             .get("users/profile", {
                 headers: {
-                    Authorization: "Bear " + userDataToken?.accessToken,
+                    Authorization: "Bear " + userInfo?.accessToken,
                 },
             })
             .then((res) => {
-                setUserInfo(res.data.data);
+                setUserProfile(res.data.data);
             })
             .catch((error) => {
                 console.log(error);
@@ -45,7 +45,7 @@ export const Container: React.FC<Container> = ({ children, className }) => {
             />
             <Header
                 onClickCategoryIcon={() => setOpenSidebarDrawer(true)}
-                userInfo={userInfo}
+                userInfo={userProfile}
             />
             <ConfigProvider
                 theme={{

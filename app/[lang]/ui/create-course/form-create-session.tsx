@@ -6,9 +6,9 @@ import { useForm } from "antd/es/form/Form";
 import { FormCreateLesson } from "./form-create-lesson";
 import clsx from "clsx";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../../lib/hooks/useToken";
 import { Lesson, Topic, TopicReturnedCreate } from "../../lib/model/topic";
 import { Course } from "../../lib/model/course";
+import { useTokenStore } from "../../lib/store/userInfo";
 
 type FieldType = {
     name: string;
@@ -33,7 +33,7 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
     const [newTopicData, setNewTopicData] = useState<
         TopicReturnedCreate | Topic
     >();
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
 
     const createTopic = (name: string) => {
         apiInstance
@@ -42,7 +42,7 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
                 {
                     names: [name],
                 },
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+                { headers: { Authorization: "Bear " + userInfo?.accessToken } }
             )
             .then((res) => {
                 setNewTopicData(res.data.data[0]);
@@ -60,7 +60,7 @@ export const FormCreateSession: React.FC<FormCreateSession> = ({
                 {
                     name: name,
                 },
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+                { headers: { Authorization: "Bear " + userInfo?.accessToken } }
             )
             .then((res) => {
                 message.success("Update topic successful!");

@@ -4,11 +4,11 @@ import { Course, defaultCourse } from "../lib/model/course";
 import Link from "next/link";
 import { Button, ConfigProvider, notification } from "antd";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../lib/hooks/useToken";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
 import parse from "html-react-parser";
+import { useTokenStore } from "../lib/store/userInfo";
 
 export type NewItemCourse = {
     className?: string;
@@ -27,7 +27,7 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
     isHiddenDesc = false,
     isInCart = false,
 }) => {
-    const userTokenData = useToken();
+    const { userInfo } = useTokenStore();
     const [api, contextHolder] = notification.useNotification();
     const [isLoadingAddCart, setIsLoadingAddCart] = useState(false);
     const [isInCartLocal, setIsInCartLocal] = useState(false);
@@ -42,7 +42,7 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                 },
                 {
                     headers: {
-                        Authorization: "Bear " + userTokenData?.accessToken,
+                        Authorization: "Bear " + userInfo?.accessToken,
                     },
                 }
             )

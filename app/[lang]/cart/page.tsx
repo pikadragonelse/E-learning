@@ -1,18 +1,17 @@
 "use client";
 
 import { Locale } from "antd/es/locale";
-import React, { createContext, useContext, useEffect, useState } from "react";
-import { Button, Checkbox, ConfigProvider, Rate, Select } from "antd";
+import React, { useEffect, useState } from "react";
+import { ConfigProvider, Rate } from "antd";
 import { DeleteOutlined, HeartOutlined } from "@ant-design/icons";
 import Image from "next/image";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../lib/hooks/useToken";
 import { Course } from "../lib/model/course";
 import { useRouter } from "next/navigation";
 import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
-import { BillInfo, defaultBillInfo } from "../lib/model/bill";
 import { Container } from "../ui/container";
 import { useBillStore } from "../lib/store/bill";
+import { useTokenStore } from "../lib/store/userInfo";
 
 export default function Page({
     params: { lang },
@@ -21,8 +20,7 @@ export default function Page({
 }) {
     const [listCart, setListCart] = useState<Course[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const userDataToken = useToken();
-    const [isContinueOrder, setIsContinueOrder] = useState(false);
+    const { userInfo } = useTokenStore();
     const { updateBillData, billData } = useBillStore((state) => state);
     const [refreshCart, setRefreshCart] = useState(0);
     const router = useRouter();
@@ -31,7 +29,7 @@ export default function Page({
         apiInstance
             .get("users/carts", {
                 headers: {
-                    Authorization: "Bear " + userDataToken?.accessToken,
+                    Authorization: "Bear " + userInfo?.accessToken,
                 },
             })
             .then((res) => {
@@ -51,7 +49,7 @@ export default function Page({
         apiInstance
             .delete("users/carts", {
                 headers: {
-                    Authorization: "Bear " + userDataToken?.accessToken,
+                    Authorization: "Bear " + userInfo?.accessToken,
                 },
                 data: {
                     courseIds: [courseId],
@@ -78,7 +76,7 @@ export default function Page({
                 },
                 {
                     headers: {
-                        Authorization: "Bear " + userDataToken?.accessToken,
+                        Authorization: "Bear " + userInfo?.accessToken,
                     },
                 }
             )

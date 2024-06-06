@@ -21,6 +21,9 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { Category } from "../lib/model/categories";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { User } from "../lib/model/user";
+import { useTokenStore } from "../lib/store/userInfo";
+import { defaultUserInfoToken } from "../lib/model/user-info-token";
+import { setCookie } from "cookies-next";
 const listUserFeature: Array<{ title: string; icon: ReactNode; href: string }> =
     [
         {
@@ -57,6 +60,7 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
     const searchParams = useSearchParams();
     const pathname = usePathname();
     const { replace } = useRouter();
+    const { updateUserInfo } = useTokenStore();
 
     useEffect(() => {
         const handleScroll = (event: any) => {
@@ -199,11 +203,33 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
                                             {listUserFeature.map(
                                                 (feature, index) => (
                                                     <li
-                                                        onClick={() =>
+                                                        onClick={() => {
+                                                            if (
+                                                                feature.title ===
+                                                                "Logout"
+                                                            ) {
+                                                                updateUserInfo(
+                                                                    defaultUserInfoToken
+                                                                );
+                                                                setCookie(
+                                                                    "accessToken",
+                                                                    "",
+                                                                    {
+                                                                        secure: true,
+                                                                    }
+                                                                );
+                                                                setCookie(
+                                                                    "refreshToken",
+                                                                    "",
+                                                                    {
+                                                                        secure: true,
+                                                                    }
+                                                                );
+                                                            }
                                                             router.push(
                                                                 `/${feature.href}`
-                                                            )
-                                                        }
+                                                            );
+                                                        }}
                                                         key={index}
                                                         className="p-4 hover:bg-zinc-100 transition-all cursor-pointer flex gap-4 items-center rounded-md active:bg-orange-100"
                                                     >

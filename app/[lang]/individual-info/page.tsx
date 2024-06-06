@@ -7,13 +7,13 @@ import { IndividualProfile } from "../ui/individual-profile";
 import { GridCourse } from "../ui/grid-course";
 import { IndividualPayment } from "../ui/individual-payment";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../lib/hooks/useToken";
 import { User, defaultUser } from "../lib/model/user";
-import { Course, CourseInfoRes } from "../lib/model/course";
+import { CourseInfoRes } from "../lib/model/course";
+import { useTokenStore } from "../lib/store/userInfo";
 
 export default function Page() {
-    const userToken = useToken();
-    const [userInfo, setUserInfo] = useState<User>(defaultUser);
+    const { userInfo } = useTokenStore();
+    const [userProfile, setUserProfile] = useState<User>(defaultUser);
     const [currKey, setCurrKey] = useState("");
     const [listEnrollmentCourse, setListEnrollmentCourse] = useState<
         CourseInfoRes[]
@@ -22,7 +22,7 @@ export default function Page() {
     const getEnrollmentCourse = () => {
         apiInstance
             .get("users/enrollment-courses", {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((res) => {
                 console.log(res);
@@ -42,7 +42,7 @@ export default function Page() {
         {
             key: "1",
             label: "Profile",
-            children: <IndividualProfile userInfo={userInfo} />,
+            children: <IndividualProfile userInfo={userProfile} />,
         },
         {
             key: "2",
@@ -73,10 +73,10 @@ export default function Page() {
     const getUserInfo = () => {
         apiInstance
             .get("users/profile", {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((res) => {
-                setUserInfo(res.data.data);
+                setUserProfile(res.data.data);
             })
             .catch((error) => {
                 console.log(error);
@@ -101,13 +101,13 @@ export default function Page() {
                         <Avatar
                             size={64}
                             icon={<UserOutlined />}
-                            src={userInfo.profile.avatar}
+                            src={userProfile.profile.avatar}
                             alt=""
                         />
                         <div className="">
-                            <h1 className="text-xl">{userInfo.userName}</h1>
+                            <h1 className="text-xl">{userProfile.userName}</h1>
                             <p className="text-sm text-zinc-400">
-                                {userInfo.email}
+                                {userProfile.email}
                             </p>
                         </div>
                     </div>

@@ -16,11 +16,11 @@ import {
 import { useForm } from "antd/es/form/Form";
 import dayjs, { Dayjs } from "dayjs";
 import React, { useEffect, useState } from "react";
-import { useToken } from "../lib/hooks/useToken";
 import { RangePickerProps } from "antd/es/date-picker";
 import { gapi } from "gapi-script";
 import { GoogleOutlined } from "@ant-design/icons";
 import clsx from "clsx";
+import { useTokenStore } from "../lib/store/userInfo";
 
 const CLIENT_ID =
     "875062300763-f2u53vslbvulf9lrnf5424b0b22f38ra.apps.googleusercontent.com";
@@ -44,7 +44,7 @@ export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
     const [api, contextHolder] = notification.useNotification();
     const [linkEvent, setLinkEvent] = useState("");
     const [isSignIn, setIsSignIn] = useState(false);
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
     const [listEvent, setListEvent] = useState<any>([]);
     const [reloadCalendar, setReloadCalendar] = useState(0);
 
@@ -145,7 +145,7 @@ export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
                 },
                 {
                     headers: {
-                        Authorization: "Bear " + userToken?.accessToken,
+                        Authorization: "Bear " + userInfo?.accessToken,
                     },
                 }
             )

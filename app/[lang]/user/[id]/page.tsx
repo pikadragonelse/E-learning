@@ -3,18 +3,16 @@ import React, { useEffect, useState } from "react";
 import { Container } from "../../ui/container";
 import { Avatar, ConfigProvider, Tabs, TabsProps } from "antd";
 import { UserOutlined } from "@ant-design/icons";
-import { IndividualProfile } from "../../ui/individual-profile";
 import { GridCourse } from "../../ui/grid-course";
-import { IndividualPayment } from "../../ui/individual-payment";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../../lib/hooks/useToken";
-import { Instructor, User, defaultUser } from "../../lib/model/user";
+import { Instructor } from "../../lib/model/user";
 import { Course } from "../../lib/model/course";
 import parse from "html-react-parser";
+import { useTokenStore } from "../../lib/store/userInfo";
 
 export default function Page({ params: { id } }: { params: { id: number } }) {
-    const userToken = useToken();
-    const [userInfo, setUserInfo] = useState<Instructor>();
+    const { userInfo } = useTokenStore();
+    const [userProfile, setUserProfile] = useState<Instructor>();
     const [listCourse, setListCourse] = useState<Course[]>([]);
 
     const items: TabsProps["items"] = [
@@ -34,10 +32,10 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
     const getUserInfo = () => {
         apiInstance
             .get(`users/instructors/${id}`, {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((res) => {
-                setUserInfo(res.data.data);
+                setUserProfile(res.data.data);
                 setListCourse(res.data.courses.rows);
             })
             .catch((error) => {
@@ -63,19 +61,19 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
                         <Avatar
                             size={64}
                             icon={<UserOutlined />}
-                            src={userInfo?.avatar}
+                            src={userProfile?.avatar}
                             alt=""
                             className="border border-solid border-zinc-800"
                         />
                         <div className="">
-                            <h1 className="text-xl">{userInfo?.fullName}</h1>
+                            <h1 className="text-xl">{userProfile?.fullName}</h1>
                             <p className="text-sm text-zinc-400">
-                                {userInfo?.createdAt}
+                                {userProfile?.createdAt}
                             </p>
                         </div>
                     </div>
                     <p className="my-20">
-                        {parse(userInfo?.description || "")}
+                        {parse(userProfile?.description || "")}
                     </p>
                     <Tabs items={items} defaultActiveKey="1" />
                 </div>

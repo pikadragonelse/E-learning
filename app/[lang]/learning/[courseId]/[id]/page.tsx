@@ -12,10 +12,10 @@ import { Course, defaultCourse } from "../../../lib/model/course";
 import { OverviewLearning } from "@/app/[lang]/ui/overview-learning";
 import { Comment } from "../../../ui/comment/comment";
 import { Note } from "@/app/[lang]/ui/note";
-import { useToken } from "@/app/[lang]/lib/hooks/useToken";
 import { Reminder } from "@/app/[lang]/ui/reminder";
 import { useWindowResize } from "@/app/[lang]/lib/hooks/useWindowResize";
 import { usePathname, useSearchParams } from "next/navigation";
+import { useTokenStore } from "@/app/[lang]/lib/store/userInfo";
 
 export default function Page({
     params: { lang, id, courseId },
@@ -29,7 +29,7 @@ export default function Page({
     const [reloadLesson, setReloadLesson] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
-    const userDataToken = useToken();
+    const { userInfo } = useTokenStore();
     const windowSize = useWindowResize();
     const onChange = (key: string) => {};
 
@@ -46,7 +46,7 @@ export default function Page({
         apiInstance
             .get(`lessons/${currLessonKey}`, {
                 headers: {
-                    Authorization: "Bearer " + userDataToken?.accessToken,
+                    Authorization: "Bearer " + userInfo?.accessToken,
                 },
             })
             .then((data) => {
@@ -65,7 +65,7 @@ export default function Page({
         apiInstance
             .get(`courses/${courseId}`, {
                 headers: {
-                    Authorization: "Bearer " + userDataToken?.accessToken,
+                    Authorization: "Bearer " + userInfo?.accessToken,
                 },
             })
             .then((res) => {

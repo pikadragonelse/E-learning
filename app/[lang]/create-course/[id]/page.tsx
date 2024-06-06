@@ -19,11 +19,11 @@ import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useRouter } from "next/navigation";
 import { Course, defaultCourse } from "../../lib/model/course";
-import { useToken } from "../../lib/hooks/useToken";
 import { FormCreateSession } from "../../ui/create-course/form-create-session";
 import { UploadType, getBase64 } from "../../lib/utils/upload";
 import { FormCreateOverallInfo } from "../../ui/create-course/form-create-overall-info";
 import { RcFile } from "antd/es/upload";
+import { useTokenStore } from "../../lib/store/userInfo";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
@@ -41,7 +41,7 @@ export default function Page({
     const [trailerUrl, setTrailerUrl] = useState<string | null>();
     const [items, setItems] = useState<any>([]);
     const newTabIndex = useRef(2);
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
     const [linkUploadPoster, setLinkUploadPoster] = useState("");
     const [linkUploadTrailer, setLinkUploadTrailer] = useState("");
     const route = useRouter();
@@ -180,7 +180,7 @@ export default function Page({
     const getLinkUploadPoster = () => {
         apiInstance
             .get(`courses/${course.courseId}/presigned-url-to-upload-poster`, {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((res) => {
                 setLinkUploadPoster(res.data.data);
@@ -224,7 +224,7 @@ export default function Page({
                 `courses/${course.courseId}/clear-cache-poster`,
                 {
                     headers: {
-                        Authorization: "Bearer " + userToken?.accessToken,
+                        Authorization: "Bearer " + userInfo?.accessToken,
                     },
                 }
             );
@@ -238,7 +238,7 @@ export default function Page({
     const getLinkUploadTrailer = () => {
         apiInstance
             .get(`courses/${course.courseId}/presigned-url-to-upload-trailer`, {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((res) => {
                 setLinkUploadTrailer(res.data.data);
@@ -287,7 +287,7 @@ export default function Page({
                 `courses/${course.courseId}/clear-cache-trailer`,
                 {
                     headers: {
-                        Authorization: "Bearer " + userToken?.accessToken,
+                        Authorization: "Bearer " + userInfo?.accessToken,
                     },
                 }
             );

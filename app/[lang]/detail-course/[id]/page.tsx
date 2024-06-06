@@ -14,15 +14,15 @@ import { Course, defaultCourse } from "../../lib/model/course";
 import { Button, MenuProps, Modal, notification } from "antd";
 const VideoCustom = React.lazy(() => import("../../ui/video-custom"));
 import parse from "html-react-parser";
-import { useToken } from "../../lib/hooks/useToken";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import { useTokenStore } from "../../lib/store/userInfo";
 
 export default function Page({ params }: { params: { id: string } }) {
     const [courseData, setCourseData] = useState<Course>(defaultCourse);
     const [openModalPreview, setOpenModalPreview] = useState(false);
     const [refreshVideo, setRefreshVideo] = useState(0);
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
     const [api, contextHolder] = notification.useNotification();
     const [stateCourse, setStateCourse] = useState<{
         isCourseFavorite: boolean;
@@ -44,8 +44,8 @@ export default function Page({ params }: { params: { id: string } }) {
     const getCourseData = () => {
         apiInstance
             .get(`courses/${params.id}`, {
-                headers: userToken?.accessToken
-                    ? { Authorization: "Bearer " + userToken?.accessToken }
+                headers: userInfo?.accessToken
+                    ? { Authorization: "Bearer " + userInfo?.accessToken }
                     : {},
             })
             .then((res) => {
@@ -78,7 +78,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 {
                     courseId: courseData.courseId,
                 },
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+                { headers: { Authorization: "Bear " + userInfo?.accessToken } }
             )
             .then((res) => {
                 api.success({
@@ -115,7 +115,7 @@ export default function Page({ params }: { params: { id: string } }) {
 
                 {
                     headers: {
-                        Authorization: "Bear " + userToken?.accessToken,
+                        Authorization: "Bear " + userInfo?.accessToken,
                     },
                     params: {
                         courseId: courseData.courseId,
@@ -154,7 +154,7 @@ export default function Page({ params }: { params: { id: string } }) {
                 },
                 {
                     headers: {
-                        Authorization: "Bear " + userToken?.accessToken,
+                        Authorization: "Bear " + userInfo?.accessToken,
                     },
                 }
             )

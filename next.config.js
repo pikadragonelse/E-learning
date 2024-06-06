@@ -2,7 +2,9 @@
 const nextConfig = {
     reactStrictMode: true,
     env: {
-        DEVELOP_ENDPOINT: "http://localhost:8000/api/",
+        // DEVELOP_ENDPOINT: "http://localhost:8000/api/",
+        DEVELOP_ENDPOINT:
+            "http://alpha-elearning.southeastasia.cloudapp.azure.com:8000/api/",
         OPEN_AI_API_KEY:
             "sk-proj-JsLGlMX43ls0OX6DFo6qT3BlbkFJKzAIIFkQf3077LSZ0oSk",
         // LANGCHAIN_TRACING_V2: "true",

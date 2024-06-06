@@ -3,7 +3,7 @@
 import React from "react";
 import { Button, Form, Input } from "antd";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../../lib/hooks/useToken";
+import { useTokenStore } from "../../lib/store/userInfo";
 
 type FieldType = {
     content: string;
@@ -21,7 +21,7 @@ export const FormComment: React.FC<FormComment> = ({
     itemId,
     onPost = () => {},
 }) => {
-    const userDataToken = useToken();
+    const { userInfo } = useTokenStore();
 
     const postItem = (
         itemId: string | number,
@@ -52,7 +52,7 @@ export const FormComment: React.FC<FormComment> = ({
         apiInstance
             .post(typeMap[type].api, typeMap[type].data, {
                 headers: {
-                    Authorization: "Bear " + userDataToken?.accessToken,
+                    Authorization: "Bear " + userInfo?.accessToken,
                 },
             })
             .then((res) => {

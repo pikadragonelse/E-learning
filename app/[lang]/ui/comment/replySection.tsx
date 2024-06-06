@@ -7,8 +7,8 @@ import { Button, Rate } from "antd";
 import dayjs from "dayjs";
 import { DeleteOutlined } from "@ant-design/icons";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../../lib/hooks/useToken";
 import Image from "next/image";
+import { useTokenStore } from "../../lib/store/userInfo";
 
 export type ReplySection = {
     isHideAction?: boolean;
@@ -31,12 +31,12 @@ export const ReplySection: React.FC<ReplySection> = ({
     onDeleteCmt = () => {},
 }) => {
     const [isReplying, setIsReplying] = useState(false);
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
 
     const deleteComment = () => {
         apiInstance
             .delete(`reviews/${id}`, {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then(() => {
                 onDeleteCmt();

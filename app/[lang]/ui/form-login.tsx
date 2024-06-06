@@ -8,6 +8,8 @@ import Image from "next/image";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useRouter } from "next/navigation";
 import { setCookie } from "cookies-next";
+import { useTokenStore } from "../lib/store/userInfo";
+import { getToken } from "../lib/utils/get-token";
 
 type FieldType = {
     email: string;
@@ -28,6 +30,7 @@ export const FormLogin: React.FC<FormLogin> = ({
     const [isLoading, setIsLoading] = useState(false);
     const [api, contextHolders] = notification.useNotification();
     const router = useRouter();
+    const { updateUserInfo } = useTokenStore();
 
     const login = (loginData: FieldType) => {
         setIsLoading(true);
@@ -46,6 +49,7 @@ export const FormLogin: React.FC<FormLogin> = ({
                 setCookie("refreshToken", refreshToken, {
                     secure: true,
                 });
+                updateUserInfo(getToken());
                 setIsLoading(false);
                 form.resetFields();
                 router.push("/");

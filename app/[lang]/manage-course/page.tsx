@@ -9,7 +9,7 @@ import Image from "next/image";
 import { Course } from "../lib/model/course";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useRouter } from "next/navigation";
-import { useToken } from "../lib/hooks/useToken";
+import { useTokenStore } from "../lib/store/userInfo";
 
 export default function Page({
     params: { lang },
@@ -18,12 +18,12 @@ export default function Page({
 }) {
     const [listCourse, setListCourse] = useState<Course[]>([]);
     const route = useRouter();
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
 
     const getListCourse = () => {
         apiInstance
             .get("courses/courses-for-instructor", {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((res) => {
                 setListCourse(res.data.data);

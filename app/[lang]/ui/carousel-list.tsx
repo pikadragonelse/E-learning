@@ -8,7 +8,7 @@ import { NewItemCourse } from "./new-item-course";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Course } from "../lib/model/course";
 import { useWindowResize } from "../lib/hooks/useWindowResize";
-import { useToken } from "../lib/hooks/useToken";
+import { useTokenStore } from "../lib/store/userInfo";
 
 const urlMap: Record<"category" | "rcm" | "rcmColab", string> = {
     category: "courses",
@@ -30,7 +30,7 @@ export const CarouselList: React.FC<CarouselList> = ({
     const [listCourse, setListCourse] = useState<Course[]>();
     const windowSize = useWindowResize();
     const [amountPage, setAmountPage] = useState(3);
-    const userTokenInfo = useToken();
+    const { userInfo } = useTokenStore();
     const [courseInCartMap, setCourseInCartMap] = useState<
         Record<string, boolean>
     >({});
@@ -39,7 +39,7 @@ export const CarouselList: React.FC<CarouselList> = ({
         apiInstance
             .get("users/carts", {
                 headers: {
-                    Authorization: "Bear " + userTokenInfo?.accessToken,
+                    Authorization: "Bear " + userInfo?.accessToken,
                 },
             })
             .then((res) => {
@@ -70,9 +70,9 @@ export const CarouselList: React.FC<CarouselList> = ({
                               page: 1,
                               pageSize: 15,
                           },
-                headers: userTokenInfo?.accessToken
+                headers: userInfo?.accessToken
                     ? {
-                          Authorization: "Bear " + userTokenInfo?.accessToken,
+                          Authorization: "Bear " + userInfo?.accessToken,
                       }
                     : {},
             });

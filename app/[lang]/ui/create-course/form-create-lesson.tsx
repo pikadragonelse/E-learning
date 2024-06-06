@@ -20,10 +20,10 @@ import {
 } from "@ant-design/icons";
 import clsx from "clsx";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../../lib/hooks/useToken";
 import { LessonFull, defaultLessonFull } from "../../lib/model/lesson";
 import axios from "axios";
 import { Lesson } from "../../lib/model/topic";
+import { useTokenStore } from "../../lib/store/userInfo";
 
 type FieldType = {
     title: string;
@@ -53,7 +53,7 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
     const [infoCreatedLesson, setInfoCreatedLesson] = useState<
         LessonFull | Lesson
     >(defaultLessonFull);
-    const userToken = useToken();
+    const { userInfo } = useTokenStore();
     const [linkUploadVideo, setLinkUploadVideo] = useState("");
 
     const getVideoDuration = (videoFile: File) => {
@@ -90,7 +90,7 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                         },
                     ],
                 },
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+                { headers: { Authorization: "Bear " + userInfo?.accessToken } }
             )
             .then((res) => {
                 setInfoCreatedLesson(res.data.data[0]);
@@ -114,7 +114,7 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                         },
                     ],
                 },
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+                { headers: { Authorization: "Bear " + userInfo?.accessToken } }
             )
             .then((res) => {
                 message.success("Update lesson successful!");
@@ -130,7 +130,7 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
     const getLinkUploadVideo = () => {
         apiInstance
             .get("lessons/presign-url/upload-video", {
-                headers: { Authorization: "Bear " + userToken?.accessToken },
+                headers: { Authorization: "Bear " + userInfo?.accessToken },
                 params: {
                     lessonId: infoCreatedLesson.id,
                 },
@@ -149,7 +149,7 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                     lessonId: infoCreatedLesson.id,
                     name: file.name,
                 },
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+                { headers: { Authorization: "Bear " + userInfo?.accessToken } }
             )
             .then((res) => {
                 console.log(res);

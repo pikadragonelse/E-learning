@@ -1,7 +1,7 @@
 import { getCookie } from "cookies-next";
 import { UserInfoToken } from "../model/user-info-token";
 
-export const useToken = () => {
+export const getToken = () => {
     const accessToken =
         getCookie("accessToken")?.replace(/^"(.*)"$/, "$1") || "";
     const refreshToken =
@@ -17,15 +17,16 @@ export const useToken = () => {
         accessToken: "",
         refreshToken: "",
     };
-    // try {
-    //     if (accessToken != null) {
-    //         tokenObject = JSON.parse(atob(accessToken.split(".")[1]));
-    //     } else {
-    //         return null;
-    //     }
-    // } catch (err) {
-    //     console.log(err);
-    // }
+    try {
+        if (accessToken != null) {
+            tokenObject = JSON.parse(atob(accessToken.split(".")[1]));
+        } else {
+            return tokenObject;
+        }
+    } catch (err) {
+        console.log(err);
+        return tokenObject;
+    }
 
     tokenObject["accessToken"] = accessToken;
     tokenObject["refreshToken"] = refreshToken;

@@ -42,7 +42,6 @@ export default function Page({
 
     const getDataLesson = () => {
         setIsLoading(true);
-        console.log(currLessonKey);
         apiInstance
             .get(`lessons/${currLessonKey}`, {
                 headers: {
@@ -97,6 +96,7 @@ export default function Page({
                     dataList={dataCourse.topics}
                     onItemClick={onClick}
                     currentKey={currLessonKey}
+                    isShowResource
                 />
             ),
         },
@@ -195,6 +195,7 @@ export default function Page({
                             dataList={dataCourse.topics}
                             onItemClick={onClick}
                             currentKey={currLessonKey}
+                            isShowResource
                         />
                     </div>
                 </div>

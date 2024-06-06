@@ -1,12 +1,13 @@
 "use client";
 
 import React from "react";
-import { Button, Form, Input } from "antd";
+import { Button, Form, Input, Rate } from "antd";
 import { apiInstance } from "@/plugin/apiInstance";
 import { useTokenStore } from "../../lib/store/userInfo";
 
 type FieldType = {
     content: string;
+    rating: number;
 };
 
 export type FormComment = {
@@ -56,6 +57,8 @@ export const FormComment: React.FC<FormComment> = ({
                 },
             })
             .then((res) => {
+                console.log(res);
+
                 onPost(content);
             })
             .catch((error) => {
@@ -68,10 +71,20 @@ export const FormComment: React.FC<FormComment> = ({
             className="mb-6"
             hidden={hidden}
             layout="vertical"
-            onFinish={(value) => {
-                postItem(itemId || 0, 5, value.content, type);
+            onFinish={(data: FieldType) => {
+                postItem(itemId || 0, data.rating, data.content, type);
             }}
         >
+            {type === "review" ? (
+                <Form.Item
+                    name="rating"
+                    label="Rating"
+                    rules={[{ required: true }]}
+                >
+                    <Rate />
+                </Form.Item>
+            ) : undefined}
+
             <Form.Item<FieldType> name={"content"} label={`Your ${type}`}>
                 <Input.TextArea
                     id="comment"

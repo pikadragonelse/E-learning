@@ -48,7 +48,7 @@ export const ReplySection: React.FC<ReplySection> = ({
         <article className="p-6 text-base bg-white rounded-lg ">
             <footer className="flex justify-between items-center mb-2">
                 <div className="flex items-center">
-                    <div className="inline-flex items-center mr-3 text-sm text-gray-900 dark:text-white font-semibold">
+                    <div className="inline-flex items-center mr-3 text-sm text-gray-900 font-semibold">
                         <Image
                             className="mr-2 w-10 h-10 rounded-full object-cover"
                             src={avt || ""}
@@ -68,14 +68,14 @@ export const ReplySection: React.FC<ReplySection> = ({
                             </div>
                         </div>
                     </div>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="text-sm text-gray-800 ">
                         <span title="February 8th, 2022">
                             {dayjs(date).format("DD/MM/YYYY")}
                         </span>
                     </p>
                 </div>
             </footer>
-            <p className="text-gray-500 dark:text-gray-400">{content}</p>
+            <p className="text-gray-800 ">{content}</p>
             <div
                 className={clsx("flex items-center mt-4 space-x-4", {
                     hidden: isHideAction,
@@ -83,7 +83,7 @@ export const ReplySection: React.FC<ReplySection> = ({
             >
                 <Button
                     onClick={() => setIsReplying(true)}
-                    className="flex items-center text-sm text-gray-500 hover:underline dark:text-gray-400 font-medium"
+                    className="flex items-center text-sm text-gray-800 hover:underline  font-medium"
                 >
                     <svg
                         className="mr-1.5 w-3.5 h-3.5"

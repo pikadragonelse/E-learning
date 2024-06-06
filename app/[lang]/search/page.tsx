@@ -9,65 +9,20 @@ import { Course } from "../lib/model/course";
 import { apiInstance } from "@/plugin/apiInstance";
 import clsx from "clsx";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
-const ratingsMenu: MenuProps["items"] = [
-    getItem("Ratings", "sub1", <></>, [
-        getItem("Item 1", "g1", null),
-        getItem("Item 2", "g2", null),
-    ]),
-];
-const languageMenu: MenuProps["items"] = [
-    getItem("Language", "sub1", <></>, [
-        getItem("Item 1", "g1", null),
-        getItem("Item 2", "g2", null),
-    ]),
-];
-const videoDurationMenu: MenuProps["items"] = [
-    getItem("Video duration", "sub1", <></>, [
-        getItem("Item 1", "g1", null),
-        getItem("Item 2", "g2", null),
-    ]),
-];
-const featuresMenu: MenuProps["items"] = [
-    getItem("Features", "sub1", <></>, [
-        getItem("Item 1", "g1", null),
-        getItem("Item 2", "g2", null),
-    ]),
-];
-const topicMenu: MenuProps["items"] = [
-    getItem("Topic", "sub1", <></>, [
-        getItem("Item 1", "g1", null),
-        getItem("Item 2", "g2", null),
-    ]),
-];
-const levelMenu: MenuProps["items"] = [
-    getItem("Level", "sub1", <></>, [
-        getItem("Item 1", "g1", null),
-        getItem("Item 2", "g2", null),
-    ]),
-];
-const subTitlesMenu: MenuProps["items"] = [
-    getItem("Subtitles", "sub1", <></>, [
-        getItem("Item 1", "g1", null),
-        getItem("Item 2", "g2", null),
-    ]),
-];
-const priceMenu: MenuProps["items"] = [
-    getItem("Price", "sub1", <></>, [
-        getItem("Item 1", "g1", null),
-        getItem("Item 2", "g2", null),
-    ]),
-];
+import { Aggregations, ResSearch } from "../lib/model/search";
+import { Language } from "../lib/model/language";
+import {
+    PlusSquareOutlined,
+    UpOutlined,
+    DownOutlined,
+} from "@ant-design/icons";
 
-const listMenu: MenuProps["items"][] = [
-    ratingsMenu,
-    languageMenu,
-    videoDurationMenu,
-    featuresMenu,
-    topicMenu,
-    levelMenu,
-    subTitlesMenu,
-    priceMenu,
-];
+const levelMap: Record<string, string> = {
+    1: "Beginner",
+    2: "Intermediate",
+    3: "Advanced",
+    4: "All",
+};
 
 export default function Page({
     searchParams,
@@ -75,28 +30,180 @@ export default function Page({
     searchParams?: {
         search?: string;
         page?: string;
+        "levels[]"?: string;
+        "languages[]"?: string;
+        "prices[]"?: string;
+        "durations[]"?: string;
     };
 }) {
     const search = searchParams?.search;
-    const currentPage = searchParams?.page;
     const [listCourse, setListCourse] = useState<Course[]>([]);
     const [isLoading, setIsLoading] = useState(false);
+    const [totalResult, setTotalResult] = useState(0);
     const pathname = usePathname();
     const searchParamsLocal = useSearchParams();
     const { replace } = useRouter();
+    const [stateFilter, setStateFilter] = useState<Record<string, string[]>>(
+        {}
+    );
+    const [languageMap, setLanguageMap] = useState<Record<number, string>>({});
+    const [listMenuFilter, setListMenuFilter] = useState<MenuProps["items"][]>(
+        []
+    );
+    const [currentPage, setCurrentPage] = useState(
+        Number(searchParams?.page || 1)
+    );
+
+    const getAllLanguage = () => {
+        apiInstance
+            .get("languages")
+            .then((res) => {
+                const languageMapTemp: Record<number, string> = {};
+                res.data.data.forEach((language: Language) => {
+                    languageMapTemp[language.id] = language.languageName;
+                });
+                setLanguageMap(languageMapTemp);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
 
     const searchCourse = () => {
         setIsLoading(true);
+        const paramsObject: Record<string, string[]> = {};
+        searchParamsLocal.forEach((value, key) => {
+            if (key !== "search" && key !== "page") {
+                if (paramsObject[key]) {
+                    paramsObject[key].push(value);
+                } else {
+                    paramsObject[key] = [value];
+                }
+            }
+        });
+
         apiInstance
-            .get("courses", {
+            .get(`courses/elasticSearch`, {
                 params: {
                     search: search,
                     page: currentPage,
-                    category: searchParamsLocal.get("category"),
+                    pageSize: 10,
+                    ...paramsObject,
                 },
             })
             .then((res) => {
-                setListCourse(res.data.data);
+                console.log(res.data);
+
+                const dataSearch = res.data as ResSearch;
+                setTotalResult(dataSearch.hits.total.value);
+
+                const languageMenuTemp =
+                    dataSearch.aggregations.language.language_id.buckets.map(
+                        (language) => {
+                            return getItem(
+                                <span>
+                                    {languageMap[language.key]}{" "}
+                                    <span className="text-zinc-700">{`(${language.doc_count})`}</span>
+                                </span>,
+                                `${language.key}`,
+                                <PlusSquareOutlined />
+                            );
+                        }
+                    );
+
+                const levelMenuTemp =
+                    dataSearch.aggregations.level.level_id.buckets.map(
+                        (level) => {
+                            return getItem(
+                                <span>
+                                    {levelMap[level.key]}{" "}
+                                    <span className="text-zinc-700">{`(${level.doc_count})`}</span>
+                                </span>,
+                                `${levelMap[level.key]}`,
+                                <PlusSquareOutlined />
+                            );
+                        }
+                    );
+
+                const rangePriceMenuTemp =
+                    dataSearch.aggregations.price_ranges.buckets.map(
+                        (priceRange) => {
+                            return getItem(
+                                <span>
+                                    {priceRange.key}
+                                    <span className="text-zinc-700">{` (${priceRange.doc_count})`}</span>
+                                </span>,
+                                `${priceRange.key.toLocaleLowerCase()}`,
+                                <PlusSquareOutlined />
+                            );
+                        }
+                    );
+
+                const videoDurationRangeTemp =
+                    dataSearch.aggregations.video_duration_ranges.buckets.map(
+                        (videoDuration) => {
+                            return getItem(
+                                <span>
+                                    {videoDuration.to != null
+                                        ? `${videoDuration.from.toFixed()} - ${videoDuration.to.toFixed()} `
+                                        : `>${videoDuration.from.toFixed()} `}
+                                    <span className="text-zinc-700">{`(${videoDuration.doc_count})`}</span>
+                                </span>,
+                                `${videoDuration.key}`,
+                                <PlusSquareOutlined />
+                            );
+                        }
+                    );
+
+                const languageMenu = getItem(
+                    "Language",
+                    "languages[]",
+                    <></>,
+                    languageMenuTemp
+                );
+
+                const levelMenu = getItem(
+                    "Level",
+                    "levels[]",
+                    <></>,
+                    levelMenuTemp
+                );
+
+                const rangePriceMenu = getItem(
+                    "Price",
+                    "prices[]",
+                    <></>,
+                    rangePriceMenuTemp
+                );
+
+                const videoDurationRange = getItem(
+                    "Duration (minute)",
+                    "durations[]",
+                    <></>,
+                    videoDurationRangeTemp
+                );
+
+                setListMenuFilter([
+                    [languageMenu],
+                    [levelMenu],
+                    [rangePriceMenu],
+                    [videoDurationRange],
+                ]);
+
+                setListCourse(
+                    dataSearch.hits.hits.map((hit) => {
+                        if (hit._source != null) {
+                            if (hit.highlight?.introduction?.length > 0) {
+                                return {
+                                    ...(hit._source as any),
+                                    introduction: hit.highlight.introduction[0],
+                                };
+                            } else {
+                                return hit._source;
+                            }
+                        }
+                    })
+                );
                 setIsLoading(false);
             })
             .catch((err) => {
@@ -107,13 +214,55 @@ export default function Page({
 
     useEffect(() => {
         searchCourse();
-    }, [search, currentPage, searchParamsLocal]);
+    }, [search, currentPage, searchParamsLocal, languageMap]);
 
     const changePage = (page: number) => {
-        const params = new URLSearchParams(searchParams);
+        setCurrentPage(page);
+        const params = new URLSearchParams(searchParamsLocal);
         params.set("page", page.toString());
-        replace(`${pathname}?${params.toString()}`);
+        replace(`${pathname}?${params.toString()}`, { scroll: false });
     };
+
+    const changeFilter = (filterType: string, value: string[]) => {
+        const newStateFilter = { ...stateFilter, [filterType]: value };
+        setStateFilter(newStateFilter);
+
+        const params = new URLSearchParams(searchParamsLocal);
+        if (value.length > 0) {
+            value.forEach((item, index) => {
+                if (index === 0) {
+                    params.set(filterType, item);
+                } else {
+                    params.append(filterType, item);
+                }
+            });
+        } else {
+            params.delete(filterType);
+        }
+        params.set("page", "1"); // Reset the page to 1
+        replace(`${pathname}?${params.toString()}`, { scroll: false });
+        setCurrentPage(1);
+    };
+
+    useEffect(() => {
+        getAllLanguage();
+    }, []);
+
+    useEffect(() => {
+        if (searchParamsLocal != null) {
+            const paramsObject: Record<string, string[]> = {};
+            searchParamsLocal.forEach((value, key) => {
+                if (key !== "search" && key !== "page") {
+                    if (paramsObject[key]) {
+                        paramsObject[key].push(value);
+                    } else {
+                        paramsObject[key] = [value];
+                    }
+                }
+            });
+            setStateFilter(paramsObject);
+        }
+    }, [searchParamsLocal]);
 
     return (
         <Container>
@@ -139,12 +288,64 @@ export default function Page({
                         </h1>
 
                         <div className="hidden lg:flex flex-col mb-5">
-                            {listMenu.map((menu, index) => (
+                            {listMenuFilter.map((menu, index) => (
                                 <Menu
                                     key={index}
                                     items={menu}
                                     mode="inline"
                                     className="border-0"
+                                    multiple
+                                    onSelect={(value) => {
+                                        if (
+                                            menu != null &&
+                                            menu[0]?.key !== null
+                                        ) {
+                                            const preData = {
+                                                ...(stateFilter || {}),
+                                            };
+                                            if (
+                                                preData[menu[0]?.key as any] !=
+                                                null
+                                            ) {
+                                                preData[
+                                                    menu[0]?.key as any
+                                                ].push(value.key);
+                                            } else {
+                                                preData[menu[0]?.key as any] = [
+                                                    value.key,
+                                                ];
+                                            }
+                                            changeFilter(
+                                                menu[0]?.key as any,
+                                                preData[menu[0]?.key as any]
+                                            );
+                                        }
+                                    }}
+                                    onDeselect={(value) => {
+                                        if (
+                                            menu != null &&
+                                            menu[0]?.key !== null
+                                        ) {
+                                            const preData = {
+                                                ...(stateFilter || {}),
+                                            };
+                                            preData[menu[0]?.key as any] =
+                                                preData[
+                                                    menu[0]?.key as any
+                                                ].filter(
+                                                    (item) => item !== value.key
+                                                );
+                                            changeFilter(
+                                                menu[0]?.key as any,
+                                                preData[menu[0]?.key as any]
+                                            );
+                                        }
+                                    }}
+                                    selectedKeys={
+                                        stateFilter != null && menu != null
+                                            ? stateFilter[menu[0]?.key as any]
+                                            : []
+                                    }
                                 />
                             ))}
                         </div>
@@ -193,10 +394,11 @@ export default function Page({
                         )}
                     >
                         <Pagination
-                            total={200}
+                            total={totalResult}
                             className="flex flex-row lg:flex-col top-32 sticky"
                             showSizeChanger={false}
                             onChange={changePage}
+                            current={currentPage}
                         />
                     </div>
                 </div>

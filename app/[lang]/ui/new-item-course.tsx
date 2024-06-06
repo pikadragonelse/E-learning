@@ -8,6 +8,7 @@ import { useToken } from "../lib/hooks/useToken";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
 import Image from "next/image";
+import parse from "html-react-parser";
 
 export type NewItemCourse = {
     className?: string;
@@ -128,13 +129,13 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                             </p>
                         </div>
                     </div>
-                    <p
+                    <div
                         className={clsx("text-sm line-clamp-2", {
                             hidden: isHiddenDesc,
                         })}
                     >
-                        {course.introduction}
-                    </p>
+                        {parse(course.introduction)}
+                    </div>
                     <div
                         className={clsx(" justify-end gap-2 ", {
                             hidden: isHiddenButton,

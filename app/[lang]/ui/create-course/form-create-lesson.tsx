@@ -9,6 +9,7 @@ import {
     Select,
     Upload,
     UploadProps,
+    message,
 } from "antd";
 import { useForm } from "antd/es/form/Form";
 import React, { useEffect, useState } from "react";
@@ -22,6 +23,7 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { useToken } from "../../lib/hooks/useToken";
 import { LessonFull, defaultLessonFull } from "../../lib/model/lesson";
 import axios from "axios";
+import { Lesson } from "../../lib/model/topic";
 
 type FieldType = {
     title: string;
@@ -34,6 +36,7 @@ export type FormCreateLesson = {
     onDelete?: (idLesson: number) => unknown;
     isShowAddForm?: boolean;
     topicId?: number;
+    lesson?: Lesson;
 };
 export const FormCreateLesson: React.FC<FormCreateLesson> = ({
     idForm,
@@ -41,13 +44,15 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
     onDelete = () => {},
     isShowAddForm = true,
     topicId,
+    lesson,
 }) => {
     const [form] = useForm();
     const [fileVideoList, setFileVideoList] = useState<any>();
     const [videoDuration, setVideoDuration] = useState(0);
     const [createType, setCreateType] = useState<"info" | "source">("info");
-    const [infoCreatedLesson, setInfoCreatedLesson] =
-        useState<LessonFull>(defaultLessonFull);
+    const [infoCreatedLesson, setInfoCreatedLesson] = useState<
+        LessonFull | Lesson
+    >(defaultLessonFull);
     const userToken = useToken();
     const [linkUploadVideo, setLinkUploadVideo] = useState("");
 
@@ -96,6 +101,32 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
             });
     };
 
+    const updateInfoLesson = (infoForm: FieldType) => {
+        apiInstance
+            .put(
+                `lessons/${lesson?.id}`,
+                {
+                    lessons: [
+                        {
+                            title: infoForm.title,
+                            isPreview: infoForm.isPreview,
+                            duration: 1,
+                        },
+                    ],
+                },
+                { headers: { Authorization: "Bear " + userToken?.accessToken } }
+            )
+            .then((res) => {
+                message.success("Update lesson successful!");
+            })
+            .catch((error) => {
+                console.log(error);
+                message.error(
+                    "Update lesson error, please wait few seconds and try again!"
+                );
+            });
+    };
+
     const getLinkUploadVideo = () => {
         apiInstance
             .get("lessons/presign-url/upload-video", {
@@ -133,11 +164,50 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
         return link;
     };
 
+    const uploadVideo = (option: any) => {
+        apiInstance
+            .put(linkUploadVideo, option.file, {
+                headers: {
+                    "Content-Type": "video/mp4",
+                },
+                onUploadProgress: (event) => {
+                    const percentCompleted = Math.round(
+                        (event.loaded * 100) / (event.total || 1)
+                    );
+                    if (option.onProgress != null) {
+                        option.onProgress({
+                            percent: percentCompleted,
+                        });
+                    }
+                },
+            })
+            .then((res) => {
+                console.log(res);
+                if (option.onSuccess) option.onSuccess(res.data);
+            })
+            .catch((error) => {
+                console.log(error);
+                if (option.onError) option.onError(error);
+            });
+    };
+
     useEffect(() => {
         if (infoCreatedLesson.id !== 0) {
             getLinkUploadVideo();
         }
     }, [infoCreatedLesson]);
+
+    useEffect(() => {
+        if (lesson != null) {
+            form.setFieldsValue({
+                title: lesson.title,
+                isPreview: lesson.isPreview,
+            });
+            setCreateType("source");
+            setInfoCreatedLesson(lesson);
+            getLinkUploadVideo();
+        }
+    }, [lesson]);
 
     return (
         <>
@@ -159,13 +229,17 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                 labelAlign="left"
                 layout="vertical"
                 onFinish={(dataForm: FieldType) => {
-                    createInfoLesson(dataForm);
+                    lesson != null
+                        ? updateInfoLesson(dataForm)
+                        : createInfoLesson(dataForm);
                 }}
             >
                 <Form.Item<FieldType> label="Title" name={"title"}>
                     <Input
                         placeholder="Title lesson"
-                        disabled={createType === "source"}
+                        disabled={
+                            lesson != null ? false : createType === "source"
+                        }
                     />
                 </Form.Item>
                 <Form.Item<FieldType> label="Type lesson" name={"isPreview"}>
@@ -175,17 +249,18 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                             { label: "Preview lesson", value: true },
                             { label: "Normal lesson", value: false },
                         ]}
-                        disabled={createType === "source"}
+                        disabled={
+                            lesson != null ? false : createType === "source"
+                        }
                     />
                 </Form.Item>
                 <div hidden={createType === "info"}>
                     <Form.Item label="Video">
                         <Upload
-                            action={linkUploadVideo || ""}
+                            customRequest={async (option) => {
+                                uploadVideo(option);
+                            }}
                             onChange={handleChangeVideoUpload}
-                            fileList={fileVideoList}
-                            method="PUT"
-                            // accept=".pdf,.docx,.zip,.xlsx,.txt"
                         >
                             <Button icon={<UploadOutlined />}>
                                 Upload video
@@ -252,12 +327,8 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                 >
                     Add lesson
                 </Button>
-                <Button
-                    onClick={() => form.submit()}
-                    type="primary"
-                    className="bg-orange-600"
-                >
-                    Create lesson
+                <Button onClick={() => form.submit()} type="primary">
+                    {lesson != null ? "Update" : "Create"} lesson
                 </Button>
             </Row>
         </>

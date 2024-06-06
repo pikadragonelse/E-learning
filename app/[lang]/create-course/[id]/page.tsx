@@ -13,30 +13,31 @@ import {
 } from "antd";
 import { Locale } from "antd/es/locale";
 import React, { useEffect, useRef, useState } from "react";
-import { FormCreateOverallInfo } from "../ui/create-course/form-create-overall-info";
-import { FormCreateSession } from "../ui/create-course/form-create-session";
 import { LeftOutlined } from "@ant-design/icons";
 import clsx from "clsx";
-import { Course, defaultCourse } from "../lib/model/course";
-import { UploadType, getBase64 } from "../lib/utils/upload";
 import Link from "next/link";
 import { apiInstance } from "@/plugin/apiInstance";
-import { useToken } from "../lib/hooks/useToken";
 import { useRouter } from "next/navigation";
+import { Course, defaultCourse } from "../../lib/model/course";
+import { useToken } from "../../lib/hooks/useToken";
+import { FormCreateSession } from "../../ui/create-course/form-create-session";
+import { UploadType, getBase64 } from "../../lib/utils/upload";
+import { FormCreateOverallInfo } from "../../ui/create-course/form-create-overall-info";
 import { RcFile } from "antd/es/upload";
 
 type TargetKey = React.MouseEvent | React.KeyboardEvent | string;
 
 export default function Page({
-    params: { lang },
+    params: { lang, id },
 }: {
-    params: { lang: Locale };
+    params: { lang: Locale; id: string };
 }) {
-    const [newCourse, setNewCourse] = useState<Course>(defaultCourse);
+    const [course, setCourse] = useState<Course>(defaultCourse);
     const [currentStep, setCurrentStep] = useState(1);
     const [activeKey, setActiveKey] = useState("1");
     const [imageUrl, setImageUrl] = useState<any>();
     const [fileList, setFileList] = useState<any>([]);
+    const [fileListTrailer, setFileListTrailer] = useState<any>([]);
     const [trailerUrl, setTrailerUrl] = useState<string | null>();
     const [items, setItems] = useState<any>([]);
     const newTabIndex = useRef(2);
@@ -45,23 +46,65 @@ export default function Page({
     const [linkUploadTrailer, setLinkUploadTrailer] = useState("");
     const route = useRouter();
 
+    const getDataCourse = () => {
+        apiInstance
+            .get(`courses/${id}`)
+            .then((res) => {
+                setCourse(res.data.data.course);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     useEffect(() => {
-        setItems([
-            {
-                label: "Topic 1",
-                children: (
-                    <div className="h-[700px] max-h-[700px] overflow-auto">
-                        <FormCreateSession
-                            idSession={1}
-                            courseId={newCourse.courseId}
-                        />
-                    </div>
-                ),
-                key: "1",
-                closable: false,
-            },
-        ]);
-    }, [newCourse]);
+        getDataCourse();
+    }, [id]);
+
+    useEffect(() => {
+        if (currentStep === 3) {
+            if (course.topics.length > 0) {
+                newTabIndex.current = course.topics.length + 1;
+                const listTopicTab = course.topics.map((topic, index) => {
+                    return {
+                        label: `Topic ${index + 1}`,
+                        children: (
+                            <div className="h-[700px] max-h-[700px] overflow-auto">
+                                <FormCreateSession
+                                    idSession={index + 1}
+                                    courseId={course.courseId}
+                                    topic={topic}
+                                />
+                            </div>
+                        ),
+                        key: `${index + 1}`,
+                        closable: index < 1 ? false : true,
+                    };
+                });
+
+                setItems(listTopicTab);
+            } else {
+                setItems([
+                    {
+                        label: `Topic 1`,
+                        children: (
+                            <div className="h-[700px] max-h-[700px] overflow-auto">
+                                <FormCreateSession
+                                    idSession={1}
+                                    courseId={course.courseId}
+                                />
+                            </div>
+                        ),
+                        key: `${1}`,
+                        closable: false,
+                    },
+                ]);
+            }
+        }
+        if (currentStep === 2) {
+            setImageUrl(course.posterUrl);
+        }
+    }, [course, currentStep]);
 
     const onChange = (newActiveKey: string) => {
         setActiveKey(newActiveKey);
@@ -76,7 +119,7 @@ export default function Page({
                 <div className="h-[700px] max-h-[700px] overflow-auto">
                     <FormCreateSession
                         idSession={Number(newActiveKey)}
-                        courseId={newCourse.courseId}
+                        courseId={course.courseId}
                     />
                 </div>
             ),
@@ -136,13 +179,11 @@ export default function Page({
 
     const getLinkUploadPoster = () => {
         apiInstance
-            .get(
-                `courses/${newCourse.courseId}/presigned-url-to-upload-poster`,
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
-            )
+            .get(`courses/${course.courseId}/presigned-url-to-upload-poster`, {
+                headers: { Authorization: "Bear " + userToken?.accessToken },
+            })
             .then((res) => {
                 setLinkUploadPoster(res.data.data);
-                console.log("Link", res.data.data);
             })
             .catch((error) => {
                 console.log(error);
@@ -180,7 +221,7 @@ export default function Page({
 
         try {
             const getResponse = await apiInstance.get(
-                `courses/${newCourse.courseId}/clear-cache-poster`,
+                `courses/${course.courseId}/clear-cache-poster`,
                 {
                     headers: {
                         Authorization: "Bearer " + userToken?.accessToken,
@@ -196,10 +237,9 @@ export default function Page({
 
     const getLinkUploadTrailer = () => {
         apiInstance
-            .get(
-                `courses/${newCourse.courseId}/presigned-url-to-upload-trailer`,
-                { headers: { Authorization: "Bear " + userToken?.accessToken } }
-            )
+            .get(`courses/${course.courseId}/presigned-url-to-upload-trailer`, {
+                headers: { Authorization: "Bear " + userToken?.accessToken },
+            })
             .then((res) => {
                 setLinkUploadTrailer(res.data.data);
                 console.log("Link trailer: ", res.data.data);
@@ -244,7 +284,7 @@ export default function Page({
         try {
             // Thực hiện GET request để clear cache trailer
             const getResponse = await apiInstance.get(
-                `courses/${newCourse.courseId}/clear-cache-trailer`,
+                `courses/${course.courseId}/clear-cache-trailer`,
                 {
                     headers: {
                         Authorization: "Bearer " + userToken?.accessToken,
@@ -260,13 +300,6 @@ export default function Page({
         }
     };
 
-    useEffect(() => {
-        if (currentStep === 2) {
-            getLinkUploadPoster();
-            getLinkUploadTrailer();
-        }
-    }, [currentStep]);
-
     const beforeUpload = (file: RcFile): boolean => {
         const isVideo = file.type.startsWith("video/");
         if (!isVideo) {
@@ -281,6 +314,13 @@ export default function Page({
         // Prevent the actual upload
         return true;
     };
+
+    useEffect(() => {
+        if (currentStep === 2) {
+            getLinkUploadPoster();
+            getLinkUploadTrailer();
+        }
+    }, [currentStep]);
 
     return (
         <ConfigProvider
@@ -335,10 +375,11 @@ export default function Page({
 
                             <FormCreateOverallInfo
                                 className="w-full"
-                                onNext={(course) => {
-                                    setNewCourse(course);
+                                onNext={() => {
                                     setCurrentStep(2);
                                 }}
+                                course={course}
+                                onSkip={() => setCurrentStep(2)}
                             />
                         </div>
                         <div
@@ -487,7 +528,7 @@ export default function Page({
                                     type="primary"
                                     onClick={() => {
                                         route.push(
-                                            `detail-course/${newCourse.courseId}`
+                                            `/detail-course/${course.courseId}`
                                         );
                                     }}
                                 >

@@ -81,9 +81,9 @@ export const OverviewLearning: React.FC<OverviewLearning> = ({
                         </li>
                     </ul>
                 </div>
-                <p className="text-sm lg:text-base ">
+                <div className="text-sm lg:text-base ">
                     {parse(courseData.description)}
-                </p>
+                </div>
             </div>
 
             <InstructorBriefInfo

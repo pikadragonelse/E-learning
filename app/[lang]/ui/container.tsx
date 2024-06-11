@@ -34,7 +34,7 @@ export const Container: React.FC<Container> = ({ children, className }) => {
 
     useEffect(() => {
         getDataUser();
-    }, []);
+    }, [userInfo]);
 
     return (
         <main>

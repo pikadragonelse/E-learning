@@ -27,7 +27,7 @@ export const ItemInstructor: React.FC<ItemInstructor> = ({
                 />
             </div>
 
-            <h2>{name}</h2>
+            <h2 className="text-base">{name}</h2>
             <h4 className="text-zinc-600 text-sm font-light group-hover:text-orange-700 transition-all">
                 {major}
             </h4>

@@ -10,13 +10,14 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { User } from "../lib/model/user";
 import { BillInfo, defaultBillInfo } from "../lib/model/bill";
 import { useTokenStore } from "../lib/store/userInfo";
+import { getToken } from "../lib/utils/get-token";
 
 export type Container = { children?: any; className?: string };
 export const Container: React.FC<Container> = ({ children, className }) => {
     const [openSidebarDrawer, setOpenSidebarDrawer] = useState(false);
     const [billData, setBillData] = useState<BillInfo>(defaultBillInfo);
     const [userProfile, setUserProfile] = useState<User>();
-    const { userInfo } = useTokenStore();
+    const { userInfo, updateUserInfo } = useTokenStore();
     const getDataUser = () => {
         apiInstance
             .get("users/profile", {
@@ -33,8 +34,14 @@ export const Container: React.FC<Container> = ({ children, className }) => {
     };
 
     useEffect(() => {
-        getDataUser();
+        if (userInfo.userId != 0) {
+            getDataUser();
+        }
     }, [userInfo]);
+
+    useEffect(() => {
+        updateUserInfo(getToken());
+    }, []);
 
     return (
         <main>

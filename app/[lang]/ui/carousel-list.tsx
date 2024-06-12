@@ -20,41 +20,19 @@ export type CarouselList = {
     byCategory?: string;
     typeList?: "rcm" | "category" | "rcmColab";
     setHiddenList?: (categoryId: string) => void;
+    courseInCartMap?: Record<string, boolean>;
 };
 export const CarouselList: React.FC<CarouselList> = ({
     byCategory = "",
     typeList = "category",
     setHiddenList = () => {},
+    courseInCartMap = {},
 }) => {
     const [currPage, setCurrPage] = useState(1);
     const [listCourse, setListCourse] = useState<Course[]>();
     const windowSize = useWindowResize();
     const [amountPage, setAmountPage] = useState(3);
     const { userInfo } = useTokenStore();
-    const [courseInCartMap, setCourseInCartMap] = useState<
-        Record<string, boolean>
-    >({});
-
-    const getListCart = () => {
-        apiInstance
-            .get("users/carts", {
-                headers: {
-                    Authorization: "Bear " + userInfo?.accessToken,
-                },
-            })
-            .then((res) => {
-                const listCourse: Course[] = res.data.data[0].carts;
-
-                const courseInCartMap: Record<string, boolean> = {};
-                listCourse.forEach((item) => {
-                    courseInCartMap[item.courseId] = true;
-                });
-                setCourseInCartMap(courseInCartMap);
-            })
-            .catch((error) => {
-                console.log(error);
-            });
-    };
 
     const getListCourse = async () => {
         try {
@@ -90,7 +68,6 @@ export const CarouselList: React.FC<CarouselList> = ({
 
     useEffect(() => {
         getListCourse();
-        getListCart();
     }, []);
 
     useEffect(() => {

@@ -3,10 +3,11 @@ const nextConfig = {
     reactStrictMode: true,
     env: {
         DEVELOP_ENDPOINT: "http://localhost:8000/api/",
+        INDEX_PINECONE: "db-recommendation-course",
         // DEVELOP_ENDPOINT:
         //     "http://alpha-elearning.southeastasia.cloudapp.azure.com:8000/api/",
         OPEN_AI_API_KEY:
-            "sk-proj-JsLGlMX43ls0OX6DFo6qT3BlbkFJKzAIIFkQf3077LSZ0oSk",
+            "sk-proj-asIfvCSeYEA97Nl4Ce4OT3BlbkFJRUhBavw5xsZDulUZ17XO",
         // LANGCHAIN_TRACING_V2: "true",
         // LANGCHAIN_API_KEY:
         //     "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",

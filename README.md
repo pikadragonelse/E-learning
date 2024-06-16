@@ -1,12 +1,39 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
 ## Getting Started
-
-First, run the development server:
-
+First, install package
 ```bash
 npm install
 ```
+Then, create next.config.js file have content like this:
+```bash
+/** @type {import('next').NextConfig} */
+const nextConfig = {
+    reactStrictMode: true,
+    env: {
+        DEVELOP_ENDPOINT: URL_ENDPOINT,
+        OPEN_AI_API_KEY: OPEN_AI_KEY
+    },
+    webpack(config) {
+        config.externals = config.externals || [];
+        config.externals = [...config.externals, "hnswlib-node"];
+        config.resolve.alias["fs"] = false;
+        return config;
+    },
+    images: {
+        remotePatterns: [
+            {
+                protocol: "https",
+                hostname: HOST_NAME_IMAGE,
+            },
+        ],
+    },
+};
+
+module.exports = nextConfig;
+```
+
+Next, run the development server:
 
 ```bash
 npm run dev

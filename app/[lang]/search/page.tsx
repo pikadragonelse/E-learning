@@ -11,18 +11,7 @@ import clsx from "clsx";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
 import { Aggregations, ResSearch } from "../lib/model/search";
 import { Language } from "../lib/model/language";
-import {
-    PlusSquareOutlined,
-    UpOutlined,
-    DownOutlined,
-} from "@ant-design/icons";
-
-const levelMap: Record<string, string> = {
-    1: "Beginner",
-    2: "Intermediate",
-    3: "Advanced",
-    4: "All",
-};
+import { PlusSquareOutlined } from "@ant-design/icons";
 
 export default function Page({
     searchParams,
@@ -102,7 +91,7 @@ export default function Page({
                         (language) => {
                             return getItem(
                                 <span>
-                                    {languageMap[language.key]}{" "}
+                                    {language.key}{" "}
                                     <span className="text-zinc-700">{`(${language.doc_count})`}</span>
                                 </span>,
                                 `${language.key}`,
@@ -116,10 +105,10 @@ export default function Page({
                         (level) => {
                             return getItem(
                                 <span>
-                                    {levelMap[level.key]}{" "}
+                                    {level.key}{" "}
                                     <span className="text-zinc-700">{`(${level.doc_count})`}</span>
                                 </span>,
-                                `${levelMap[level.key]}`,
+                                `${level.key}`,
                                 <PlusSquareOutlined />
                             );
                         }

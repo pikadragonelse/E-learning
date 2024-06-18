@@ -23,10 +23,9 @@ const nextConfig = {
             {
                 protocol: "https",
                 hostname: "d3lil866y4zpm5.cloudfront.net",
-                port: "",
-                pathname: "/courses/**",
             },
         ],
+        unoptimized: false,
     },
 };
 

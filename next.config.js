@@ -5,7 +5,7 @@ const nextConfig = {
         // DEVELOP_ENDPOINT: "http://localhost:8000/api/",
         INDEX_PINECONE: "db-recommendation-course",
         DEVELOP_ENDPOINT:
-            "https://alpha-elearning.southeastasia.cloudapp.azure.com/api/",
+            "http://alpha-elearning.southeastasia.cloudapp.azure.com/api/",
         OPEN_AI_API_KEY:
             "sk-proj-asIfvCSeYEA97Nl4Ce4OT3BlbkFJRUhBavw5xsZDulUZ17XO",
         // LANGCHAIN_TRACING_V2: "true",

@@ -63,6 +63,7 @@ export default function DetailCourseContent({
             })
             .then((res) => {
                 setCourseData(res.data.data.course);
+                console.log(res.data.data.course);
 
                 setStateCourse({
                     isCourseFavorite: res.data.data.isCourseFavorite,
@@ -203,7 +204,7 @@ export default function DetailCourseContent({
             {contextHolder}
             <Drawer
                 title={`Chatbot`}
-                open={true}
+                open={isOpenDrawer}
                 onClose={() => setIsOpenDrawer(false)}
                 className="w-96"
             >
@@ -280,7 +281,7 @@ export default function DetailCourseContent({
                 <div className="h-3 hidden lg:block"></div>
                 <DetailOverviewInfo
                     title={courseData?.title}
-                    instructor={courseData?.instructor.profile.fullName}
+                    instructor={courseData?.instructor?.profile.fullName}
                     rating={Number(courseData?.averageRating.toFixed(1))}
                     latestUpdate={courseData?.updatedAt}
                     language={courseData?.language.languageName}
@@ -314,6 +315,13 @@ export default function DetailCourseContent({
                         <div className="mt-14">
                             <h1 className="font-medium text-2xl mb-4">
                                 Content
+                                <Button
+                                    type="primary"
+                                    onClick={() => setIsOpenDrawer(true)}
+                                    className="ml-6"
+                                >
+                                    Open Chatbot
+                                </Button>
                             </h1>
                             <MenuLecture
                                 className="bg-zinc-50"

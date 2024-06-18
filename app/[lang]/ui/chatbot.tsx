@@ -4,32 +4,20 @@ import { Avatar, Button, Col, Form, Input, InputRef, Row } from "antd";
 import React, { useEffect, useRef, useState } from "react";
 import { SendOutlined } from "@ant-design/icons";
 import clsx from "clsx";
+import { apiInstance } from "@/plugin/apiInstance";
+import { useForm } from "antd/es/form/Form";
+import { FlashingDot } from "./flashing-dot";
 
 type FieldType = {
     query?: string;
 };
 
 export const ChatBot = () => {
+    const [form] = useForm();
+    const [isRendering, setIsRendering] = useState(false);
     const [messageList, setMessageList] = useState<
-        { object: "bot" | "person"; message: string }[]
-    >([
-        { message: "Hello", object: "person" },
-        { message: "Hi, What can I help you?", object: "bot" },
-        { message: "Hello", object: "person" },
-        { message: "Hello", object: "person" },
-        { message: "Hi, What can I help you?", object: "bot" },
-        { message: "Hi, What can I help you?", object: "bot" },
-        { message: "Hi, What can I help you?", object: "bot" },
-        {
-            message:
-                "Can you give me some detail information about this course?",
-            object: "person",
-        },
-        { message: "Of course! This course is ...", object: "bot" },
-        { message: "Thank you!", object: "person" },
-        { message: "Thank you!", object: "person" },
-        { message: "Thank you!", object: "person" },
-    ]);
+        { object: "bot" | "person"; message: any }[]
+    >([]);
     const inputRef = useRef<InputRef>(null);
 
     useEffect(() => {
@@ -37,6 +25,46 @@ export const ChatBot = () => {
             inputRef.current.focus();
         }
     }, []);
+
+    const chatbot = (question: string) => {
+        setIsRendering(true);
+        setMessageList((prev) => {
+            return [
+                ...prev,
+                {
+                    message: question,
+                    object: "person",
+                },
+                {
+                    message: <FlashingDot />,
+                    object: "bot",
+                },
+            ];
+        });
+        apiInstance
+            .post("chat", {
+                question: question,
+                history: [],
+                courseId: "nodejs",
+            })
+            .then((res) => {
+                setMessageList((prev) => {
+                    prev.pop();
+                    return [
+                        ...prev,
+                        {
+                            message: res.data.response,
+                            object: "bot",
+                        },
+                    ];
+                });
+                setIsRendering(false);
+            })
+            .catch((error) => {
+                console.log(error);
+                setIsRendering(false);
+            });
+    };
 
     const isStartOfSequence = (
         messages: { object: "bot" | "person"; message: string }[],
@@ -139,7 +167,12 @@ export const ChatBot = () => {
                 </div>
             </div>
             <div className="absolute bottom-0 w-full">
-                <Form>
+                <Form
+                    form={form}
+                    onFinish={(data: FieldType) => {
+                        chatbot(data.query || "");
+                    }}
+                >
                     <Row>
                         <Col span={20}>
                             <Form.Item name={"query"}>
@@ -151,8 +184,26 @@ export const ChatBot = () => {
                         </Col>
                         <Col span={3} offset={1}>
                             <Form.Item>
-                                <div className="hover:bg-zinc-100 px-1 py-2 flex justify-center rounded-lg cursor-pointer active:bg-zinc-200 group">
-                                    <SendOutlined className="text-orange-700 text-lg group-active:text-orange-500 select-none" />
+                                <div
+                                    onClick={() =>
+                                        isRendering ? undefined : form.submit()
+                                    }
+                                    className={clsx(
+                                        "hover:bg-zinc-100 px-1 py-2 flex justify-center rounded-lg cursor-pointer active:bg-zinc-200 group",
+                                        {
+                                            "cursor-default": isRendering,
+                                        }
+                                    )}
+                                >
+                                    <SendOutlined
+                                        className={clsx(
+                                            "text-orange-700 text-lg group-active:text-orange-500 select-none",
+                                            {
+                                                "text-zinc-500 group-active-zinc-500":
+                                                    isRendering,
+                                            }
+                                        )}
+                                    />
                                 </div>
                             </Form.Item>
                         </Col>

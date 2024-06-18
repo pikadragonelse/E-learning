@@ -26,6 +26,7 @@ export async function generateMetadata(
                 ...previousImages,
             ],
         },
+        metadataBase: new URL("https://alpha-education.vercel.app"),
     };
 }
 

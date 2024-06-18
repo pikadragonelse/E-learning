@@ -25,7 +25,6 @@ const nextConfig = {
                 hostname: "d3lil866y4zpm5.cloudfront.net",
             },
         ],
-        unoptimized: false,
     },
 };
 

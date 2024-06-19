@@ -7,7 +7,7 @@ const nextConfig = {
         DEVELOP_ENDPOINT:
             "http://alpha-elearning.southeastasia.cloudapp.azure.com/api/",
         OPEN_AI_API_KEY:
-            "sk-proj-asIfvCSeYEA97Nl4Ce4OT3BlbkFJRUhBavw5xsZDulUZ17XO",
+            "sk-proj-L6muKCaCbXXO7gSueqPaT3BlbkFJPkocr07eShaKtsYdP2sd",
         // LANGCHAIN_TRACING_V2: "true",
         // LANGCHAIN_API_KEY:
         //     "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",

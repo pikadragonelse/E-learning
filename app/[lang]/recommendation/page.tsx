@@ -97,6 +97,8 @@ export default function Page({}: { params: { lang: string } }) {
                 context,
             });
 
+            console.log(result);
+
             setIsLoading(false);
             const listId = result.split("\n");
 

@@ -98,7 +98,7 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                         "w-auto": layout === "vertical",
                     })}
                 >
-                    <Image
+                    <img
                         src={course?.posterUrl || ""}
                         alt=""
                         className="object-cover w-full h-full transition-all group-hover:scale-110"

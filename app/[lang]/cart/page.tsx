@@ -135,7 +135,7 @@ export default function Page({
                                     key={index}
                                     className="flex gap-4 mb-4 items-center border rounded-md p-4 shadow-md bg-white "
                                 >
-                                    <Image
+                                    <img
                                         src={course.posterUrl || ""}
                                         alt=""
                                         className="w-20 h-20 lg:w-32 lg:h-32 rounded-md object-cover"
@@ -199,7 +199,7 @@ export default function Page({
                     </div>
                     <div className="w-full order-1 lg:order-2 lg:w-[300px] mt-14 h-fit flex flex-col gap-3 border p-4 bg-zinc-50 rounded-md shadow-md">
                         <div className="flex justify-center items-center mb-10">
-                            <Image
+                            <img
                                 src="/images/logo-main.png"
                                 width={120}
                                 height={120}

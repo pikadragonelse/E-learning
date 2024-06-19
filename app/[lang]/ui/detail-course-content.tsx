@@ -249,7 +249,7 @@ export default function DetailCourseContent({
                         />
                         Preview this course
                     </div>
-                    <Image
+                    <img
                         src={courseData.posterUrl || ""}
                         alt=""
                         className="w-full h-full object-cover "

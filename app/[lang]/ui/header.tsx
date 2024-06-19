@@ -124,21 +124,21 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
                     <div className="flex flex-wrap items-center gap-3 justify-between">
                         <div className="flex items-center gap-3">
                             <Link href={"/"}>
-                                <Image
+                                <img
                                     src="/images/logo-main.png"
                                     width={80}
                                     height={80}
                                     className="hidden lg:block cursor-pointer"
                                     alt="Alpha logo"
                                 />
-                                <Image
+                                <img
                                     src="/images/logo-text.png"
                                     width={100}
                                     height={100}
                                     className="hidden sm:block lg:hidden cursor-pointer"
                                     alt="Alpha logo"
                                 />
-                                <Image
+                                <img
                                     src="/images/logo-icon.png"
                                     width={30}
                                     height={30}

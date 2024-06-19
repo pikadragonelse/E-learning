@@ -71,7 +71,7 @@ export const FormLogin: React.FC<FormLogin> = ({
         >
             {contextHolders}
             <Spin spinning={isLoading}>
-                <Image
+                <img
                     src="/images/logo-main.png"
                     width={200}
                     height={200}
@@ -126,7 +126,7 @@ export const FormLogin: React.FC<FormLogin> = ({
                             </Button>
                             <Button className="flex justify-center items-center gap-2">
                                 <div className="w-5">
-                                    <Image
+                                    <img
                                         src={"/images/google.png"}
                                         alt="google icon"
                                         className="w-full h-full"

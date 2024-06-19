@@ -21,7 +21,7 @@ export default function Page({
             <div className="text-zinc-800 flex justify-center">
                 <div className=" order-1 lg:order-2 lg:w-[400px] mt-6 h-fit flex flex-col gap-3 border p-4 bg-zinc-50 rounded-md shadow-md">
                     <div className="flex justify-center items-center mb-10">
-                        <Image
+                        <img
                             src="/images/logo-main.png"
                             width={120}
                             height={120}

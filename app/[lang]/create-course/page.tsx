@@ -376,10 +376,7 @@ export default function Page({
                                     <h1 className="font-medium">Poster</h1>
                                     <div className="w-72 h-72 flex items-center justify-center rounded-lg overflow-hidden">
                                         {imageUrl !== "" && imageUrl != null ? (
-                                            <Image
-                                                src={imageUrl}
-                                                alt="Poster"
-                                            />
+                                            <img src={imageUrl} alt="Poster" />
                                         ) : (
                                             <div className="select-none text-sm w-full h-full border flex items-center justify-center bg-zinc-200 ">
                                                 Poster

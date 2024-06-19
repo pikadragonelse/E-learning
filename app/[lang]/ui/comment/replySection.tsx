@@ -49,7 +49,7 @@ export const ReplySection: React.FC<ReplySection> = ({
             <footer className="flex justify-between items-center mb-2">
                 <div className="flex items-center">
                     <div className="inline-flex items-center mr-3 text-sm text-gray-900 font-semibold">
-                        <Image
+                        <img
                             className="mr-2 w-10 h-10 rounded-full object-cover"
                             src={avt || ""}
                             alt={name || ""}

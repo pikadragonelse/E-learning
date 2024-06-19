@@ -4,7 +4,7 @@ import Image from "next/image";
 export default function Loading() {
     return (
         <div className="w-44 m-auto mt-40">
-            <Image
+            <img
                 src="/images/logo-main.png"
                 alt=""
                 className="w-full"

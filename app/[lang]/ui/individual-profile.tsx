@@ -62,7 +62,7 @@ export const IndividualProfile: React.FC<IndividualProfile> = ({
                 <h1 className="font-medium text-sm text-orange-700">Avatar</h1>
                 <div className="w-52 h-52 flex items-center justify-center rounded-lg overflow-hidden">
                     {imageUrl !== "" && imageUrl != null ? (
-                        <Image src={imageUrl} />
+                        <img src={imageUrl} />
                     ) : (
                         <div className="select-none text-sm w-full h-full border flex items-center justify-center bg-zinc-200 ">
                             Avatar

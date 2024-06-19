@@ -25,7 +25,7 @@ export default function Page({
             }}
         >
             <div className="flex flex-col gap-4 justify-center h-full items-center relative overflow-hidden">
-                <Image
+                <img
                     className="absolute w-full h-full object-cover"
                     src="/images/bg-login.webp"
                     alt="bg-image"

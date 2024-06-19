@@ -7,7 +7,7 @@ export const Footer = () => {
             <div className="mx-auto w-auto p-4 py-6 lg:py-8">
                 <div className="md:flex md:justify-between">
                     <div className="mb-6 md:mb-0">
-                        <Image
+                        <img
                             src="/images/logo-main.png"
                             width={100}
                             height={100}

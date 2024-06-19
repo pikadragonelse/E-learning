@@ -55,7 +55,7 @@ export const FormForgotPass: React.FC<FormForgotPass> = ({
         >
             {contextHolders}
             <Spin spinning={isLoading}>
-                <Image
+                <img
                     src="/images/logo-main.png"
                     width={200}
                     height={200}

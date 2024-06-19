@@ -22,7 +22,7 @@ export const OverviewLearning: React.FC<OverviewLearning> = ({
     return (
         <div className="px-16">
             <div className="w-2/3 mx-auto">
-                <Image
+                <img
                     src={courseData.posterUrl || ""}
                     alt=""
                     className="w-full h-full object-cover"

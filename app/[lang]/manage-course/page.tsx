@@ -61,7 +61,7 @@ export default function Page({
                             key={index}
                             className="flex gap-4 mb-4 items-center border rounded-md p-4 shadow-md bg-white "
                         >
-                            <Image
+                            <img
                                 src={course.posterUrl || ""}
                                 alt=""
                                 className="w-20 h-20 lg:w-32 lg:h-32 rounded-md object-cover"

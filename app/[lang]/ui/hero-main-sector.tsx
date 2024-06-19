@@ -16,7 +16,7 @@ export const HeroMainSector = () => {
                         Build your future with 1000+ courses
                     </p>
                 </div>
-                <Image
+                <img
                     src={`/images/main2.jpg`}
                     alt="image"
                     className="w-full h-full object-cover"
@@ -27,7 +27,7 @@ export const HeroMainSector = () => {
             <div className="h-[280px] sm:h-[500px] flex gap-2 mt-2">
                 <div className="bg-zinc-200 h-full w-1/2 relative rounded-xl overflow-hidden">
                     <div className="absolute w-full h-full bg-zinc-800/70"></div>
-                    <Image
+                    <img
                         src="/images/sub1.jpg"
                         alt=""
                         className=" w-full h-full object-cover"
@@ -64,7 +64,7 @@ export const HeroMainSector = () => {
                                 Build your future
                             </p>
                         </div>
-                        <Image
+                        <img
                             src="/images/sub2.jpg"
                             alt=""
                             className=" w-full h-full object-cover"
@@ -76,7 +76,7 @@ export const HeroMainSector = () => {
                         <div className="w-1/2  text-zinc-50 flex flex-col items-center justify-center text-center relative rounded-xl overflow-hidden">
                             <div className="absolute w-full h-full bg-zinc-900/80"></div>
 
-                            <Image
+                            <img
                                 src="/images/sub3.jpg"
                                 alt=""
                                 className=" w-full h-full object-cover"
@@ -96,7 +96,7 @@ export const HeroMainSector = () => {
                         <div className="w-1/2  text-zinc-50 flex flex-col items-center justify-center text-center relative rounded-xl overflow-hidden">
                             <div className="absolute w-full h-full bg-zinc-900/80"></div>
 
-                            <Image
+                            <img
                                 src="/images/sub4.jpg"
                                 alt=""
                                 className=" w-full h-full object-cover"

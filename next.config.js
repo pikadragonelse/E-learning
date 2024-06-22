@@ -2,15 +2,10 @@
 const nextConfig = {
     reactStrictMode: true,
     env: {
-        // DEVELOP_ENDPOINT: "http://localhost:8000/api/",
+        DEVELOP_ENDPOINT: "http://localhost:8000/api/",
         INDEX_PINECONE: "db-recommendation-course",
-        DEVELOP_ENDPOINT:
-            "http://alpha-elearning.southeastasia.cloudapp.azure.com/api/",
-        OPEN_AI_API_KEY:
-            "sk-proj-L6muKCaCbXXO7gSueqPaT3BlbkFJPkocr07eShaKtsYdP2sd",
-        // LANGCHAIN_TRACING_V2: "true",
-        // LANGCHAIN_API_KEY:
-        //     "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",
+        // DEVELOP_ENDPOINT:
+        //     "http://alpha-elearning.southeastasia.cloudapp.azure.com/api/",
     },
     webpack(config) {
         config.externals = config.externals || [];

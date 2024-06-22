@@ -68,6 +68,8 @@ export default function Page({
                 },
             })
             .then((res) => {
+                console.log(res.data);
+
                 setDataCourse(res.data.data.course);
 
                 setIsLoading(false);

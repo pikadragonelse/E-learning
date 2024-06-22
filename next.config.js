@@ -2,10 +2,10 @@
 const nextConfig = {
     reactStrictMode: true,
     env: {
-        DEVELOP_ENDPOINT: "http://localhost:8000/api/",
+        // DEVELOP_ENDPOINT: "http://localhost:8000/api/",
         INDEX_PINECONE: "db-recommendation-course",
-        // DEVELOP_ENDPOINT:
-        //     "http://alpha-elearning.southeastasia.cloudapp.azure.com/api/",
+        DEVELOP_ENDPOINT:
+            "http://alpha-elearning.southeastasia.cloudapp.azure.com/api/",
         OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
     },
     webpack(config) {

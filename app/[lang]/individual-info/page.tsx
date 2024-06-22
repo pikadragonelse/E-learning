@@ -25,8 +25,6 @@ export default function Page() {
                 headers: { Authorization: "Bear " + userInfo?.accessToken },
             })
             .then((res) => {
-                console.log(res);
-
                 setListEnrollmentCourse(res.data.data);
             })
             .catch((error) => console.log(error));

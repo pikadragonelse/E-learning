@@ -4,7 +4,6 @@ import { Locale } from "antd/es/locale";
 import React, { useEffect, useState } from "react";
 import { ConfigProvider, Rate } from "antd";
 import { DeleteOutlined, HeartOutlined } from "@ant-design/icons";
-import Image from "next/image";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Course } from "../lib/model/course";
 import { useRouter } from "next/navigation";
@@ -12,6 +11,7 @@ import { PayPalScriptProvider, PayPalButtons } from "@paypal/react-paypal-js";
 import { Container } from "../ui/container";
 import { useBillStore } from "../lib/store/bill";
 import { useTokenStore } from "../lib/store/userInfo";
+import { getToken } from "../lib/utils/get-token";
 
 export default function Page({
     params: { lang },
@@ -20,7 +20,7 @@ export default function Page({
 }) {
     const [listCart, setListCart] = useState<Course[]>([]);
     const [totalPrice, setTotalPrice] = useState(0);
-    const { userInfo } = useTokenStore();
+    const { userInfo, updateUserInfo } = useTokenStore();
     const { updateBillData, billData } = useBillStore((state) => state);
     const [refreshCart, setRefreshCart] = useState(0);
     const router = useRouter();
@@ -36,7 +36,9 @@ export default function Page({
                 setListCart(res.data.data[0].carts);
                 let totalPrice = 0;
                 res.data.data[0].carts.forEach((course: Course) => {
-                    totalPrice += course.price;
+                    totalPrice += Number(
+                        (course.price * (1 - course.discount / 100)).toFixed(2)
+                    );
                 });
                 setTotalPrice(totalPrice);
             })
@@ -66,7 +68,6 @@ export default function Page({
 
     const createOrder = async () => {
         const listCourseId = listCart.map((cart) => cart.courseId);
-        console.log(listCourseId);
 
         return apiInstance
             .post(
@@ -81,8 +82,6 @@ export default function Page({
                 }
             )
             .then((res) => {
-                console.log(res);
-
                 return res.data.id;
             })
             .catch((error) => {
@@ -93,8 +92,6 @@ export default function Page({
     };
 
     const onApprove = async (data: any) => {
-        console.log(data);
-
         return apiInstance
             .post(`payments/orders/${data.orderID}/capture`, {
                 orderID: data.orderID,
@@ -108,14 +105,20 @@ export default function Page({
     };
 
     useEffect(() => {
-        getListCard();
-    }, [refreshCart]);
+        if (userInfo.userId !== 0) {
+            getListCard();
+        }
+    }, [refreshCart, userInfo]);
 
     useEffect(() => {
         if (billData.id !== 0) {
             router.push(`bill/${billData.id}`);
         }
     }, [billData, router]);
+
+    useEffect(() => {
+        updateUserInfo(getToken());
+    }, []);
 
     return (
         <ConfigProvider
@@ -190,7 +193,11 @@ export default function Page({
                                             }
                                         />
                                         <span className="text-orange-600 text-2xl">
-                                            ${course.price}
+                                            $
+                                            {(
+                                                course.price *
+                                                (1 - course.discount / 100)
+                                            ).toFixed(2)}
                                         </span>
                                     </div>
                                 </li>
@@ -210,31 +217,26 @@ export default function Page({
                             key={1}
                             className="flex justify-between items-center"
                         >
-                            <h1 className="text-zinc-600">Total:</h1>
+                            <h1 className="text-lg text-zinc-600">Total:</h1>
                             <h2 className="text-lg text-orange-600">
                                 ${totalPrice.toFixed(2)}
                             </h2>
                         </div>
                         <div
-                            key={2}
-                            className="flex justify-between items-center"
-                        >
-                            <h1 className="text-zinc-600">Discount:</h1>
-                            <h2 className="text-lg text-orange-600">20%</h2>
-                        </div>
-                        <div
                             key={3}
                             className="flex justify-between items-center"
                         >
-                            <h1 className="text-zinc-600">VAT:</h1>
+                            <h1 className="text-lg text-zinc-600">VAT:</h1>
                             <h2 className="text-lg text-orange-600">2%</h2>
                         </div>
                         <div
                             key={4}
                             className="flex justify-between items-center"
                         >
-                            <h1 className="text-zinc-600">Summary:</h1>
-                            <h2 className="text-lg text-orange-600">$160</h2>
+                            <h1 className="text-lg text-zinc-600">Summary:</h1>
+                            <h2 className="text-lg text-orange-600">
+                                ${totalPrice * (1 + 0.02)}
+                            </h2>
                         </div>
 
                         {/* <Select

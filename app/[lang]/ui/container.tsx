@@ -11,6 +11,7 @@ import { User } from "../lib/model/user";
 import { BillInfo, defaultBillInfo } from "../lib/model/bill";
 import { useTokenStore } from "../lib/store/userInfo";
 import { getToken } from "../lib/utils/get-token";
+import { setCookie } from "cookies-next";
 
 export type Container = { children?: any; className?: string };
 export const Container: React.FC<Container> = ({ children, className }) => {
@@ -41,6 +42,39 @@ export const Container: React.FC<Container> = ({ children, className }) => {
 
     useEffect(() => {
         updateUserInfo(getToken());
+    }, []);
+
+    const refreshToken = () => {
+        apiInstance
+            .post(
+                "auth/get-access-token",
+                {
+                    refreshToken: userInfo.refreshToken,
+                },
+                {
+                    headers: {
+                        Authorization: "Bear " + userInfo.accessToken,
+                    },
+                }
+            )
+            .then((res) => {
+                setCookie("accessToken", res.data.data.token.accessToken, {
+                    secure: true,
+                });
+                updateUserInfo(getToken());
+            })
+            .catch((error) => console.log(error));
+    };
+
+    useEffect(() => {
+        refreshToken();
+        const timer = setInterval(() => {
+            refreshToken();
+        }, 15 * 60000);
+
+        return () => {
+            clearInterval(timer);
+        };
     }, []);
 
     return (

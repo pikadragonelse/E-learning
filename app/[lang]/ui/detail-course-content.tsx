@@ -25,6 +25,7 @@ import { CheckList } from "./check-list";
 import { MenuLecture } from "./menu-lecture";
 import { Comment } from "./comment/comment";
 import { ChatBot } from "./chatbot";
+import { getToken } from "../lib/utils/get-token";
 
 export default function DetailCourseContent({
     params,
@@ -34,7 +35,7 @@ export default function DetailCourseContent({
     const [courseData, setCourseData] = useState<Course>(defaultCourse);
     const [openModalPreview, setOpenModalPreview] = useState(false);
     const [refreshVideo, setRefreshVideo] = useState(0);
-    const { userInfo } = useTokenStore();
+    const { userInfo, updateUserInfo } = useTokenStore();
     const [api, contextHolder] = notification.useNotification();
     const [stateCourse, setStateCourse] = useState<{
         isCourseFavorite: boolean;
@@ -51,10 +52,35 @@ export default function DetailCourseContent({
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const route = useRouter();
     const onClickMenuItem: MenuProps["onClick"] = (e) => {
-        route.push(`/en/learning/${courseData.courseId}/${e.key}`);
+        apiInstance
+            .get("users/newest-processing", {
+                headers: { Authorization: "Bear " + userInfo.accessToken },
+                params: {
+                    courseId: courseData.courseId,
+                },
+            })
+            .then((res) => {
+                if (res.data.data != null) {
+                    route.push(`/en/learning/${courseData.courseId}/${e.key}`);
+                } else {
+                    api.info({
+                        message: "Please buy this course to see detail lesson!",
+                        placement: "bottomRight",
+                    });
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
     const getCourseData = () => {
+        console.log(
+            userInfo?.accessToken
+                ? { Authorization: "Bearer " + userInfo?.accessToken }
+                : {}
+        );
+
         apiInstance
             .get(`courses/${params.id}`, {
                 headers: userInfo?.accessToken
@@ -63,7 +89,7 @@ export default function DetailCourseContent({
             })
             .then((res) => {
                 setCourseData(res.data.data.course);
-                console.log(res.data.data.course);
+                console.log(res.data.data);
 
                 setStateCourse({
                     isCourseFavorite: res.data.data.isCourseFavorite,
@@ -130,7 +156,7 @@ export default function DetailCourseContent({
                     headers: {
                         Authorization: "Bear " + userInfo?.accessToken,
                     },
-                    params: {
+                    data: {
                         courseId: courseData.courseId,
                     },
                 }
@@ -197,6 +223,10 @@ export default function DetailCourseContent({
 
     useEffect(() => {
         getCourseData();
+    }, [userInfo]);
+
+    useEffect(() => {
+        updateUserInfo(getToken());
     }, []);
 
     return (

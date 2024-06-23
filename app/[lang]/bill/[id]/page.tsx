@@ -29,27 +29,29 @@ export default function Page({
                         />
                     </div>
                     <div className="flex justify-between items-center">
-                        <h1 className="text-zinc-600">ID:</h1>
+                        <h1 className="text-zinc-600 text-lg">ID:</h1>
                         <h2 className=" ">{billData.id}</h2>
                     </div>
                     <div className="flex justify-between items-center">
-                        <h1 className="text-zinc-600">Total:</h1>
-                        <h2 className=" ">${billData.price}</h2>
+                        <h1 className="text-zinc-600 text-lg">Total:</h1>
+                        <h2 className=" ">${billData.price.toFixed(2)}</h2>
                     </div>
                     {/* <div className="flex justify-between items-center">
-                        <h1 className="text-zinc-600">Discount:</h1>
+                        <h1 className="text-zinc-600 text-lg">Discount:</h1>
                         <h2 className=" ">20%</h2>
                     </div> */}
                     <div className="flex justify-between items-center">
-                        <h1 className="text-zinc-600">VAT:</h1>
+                        <h1 className="text-zinc-600 text-lg">VAT:</h1>
                         <h2 className=" ">2%</h2>
                     </div>
                     <div className="flex justify-between items-center">
-                        <h1 className="text-zinc-600">Summary:</h1>
-                        <h2 className=" ">$160</h2>
+                        <h1 className="text-zinc-600 text-lg">Summary:</h1>
+                        <h2 className=" ">
+                            ${(billData.price * 1.02).toFixed(2)}
+                        </h2>
                     </div>
                     <div className="flex justify-between ">
-                        <h1 className="text-zinc-600">Created at:</h1>
+                        <h1 className="text-zinc-600 text-lg">Created at:</h1>
                         <div className="flex flex-col">
                             {dayjs(billData.createdAt).format("DD/MM/YYYY")}
                         </div>

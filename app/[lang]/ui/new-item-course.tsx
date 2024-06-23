@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Course, defaultCourse } from "../lib/model/course";
 import Link from "next/link";
@@ -9,6 +9,7 @@ import { useRouter } from "next/navigation";
 import Image from "next/image";
 import parse from "html-react-parser";
 import { useTokenStore } from "../lib/store/userInfo";
+import { getToken } from "../lib/utils/get-token";
 
 export type NewItemCourse = {
     className?: string;
@@ -27,11 +28,38 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
     isHiddenDesc = false,
     isInCart = false,
 }) => {
-    const { userInfo } = useTokenStore();
+    const { userInfo, updateUserInfo } = useTokenStore();
     const [api, contextHolder] = notification.useNotification();
     const [isLoadingAddCart, setIsLoadingAddCart] = useState(false);
     const [isInCartLocal, setIsInCartLocal] = useState(false);
     const router = useRouter();
+
+    useEffect(() => {
+        updateUserInfo(getToken());
+    }, []);
+
+    const getProcessingUser = () => {
+        apiInstance
+            .get("users/newest-processing", {
+                headers: { Authorization: "Bear " + userInfo.accessToken },
+                params: {
+                    courseId: course.courseId,
+                },
+            })
+            .then((res) => {
+                if (res.data.data != null) {
+                    router.push(
+                        `/learning/${course.courseId}/${res.data.data.lessonId}`
+                    );
+                } else {
+                    router.push(`/detail-course/${course.courseId}`);
+                }
+            })
+            .catch((error) => {
+                console.log(error);
+            });
+    };
+
     const addToCart = () => {
         setIsLoadingAddCart(true);
         apiInstance
@@ -91,12 +119,23 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                     }
                 )}
             >
-                <Link
-                    href={`/detail-course/${course.courseId}`}
-                    className={clsx("block group overflow-hidden h-full", {
-                        "w-1/3 ": layout === "horizontal",
-                        "w-auto": layout === "vertical",
-                    })}
+                <div
+                    onClick={() => {
+                        console.log(userInfo);
+
+                        if (userInfo.userId === 0) {
+                            router.push(`/detail-course/${course.courseId}`);
+                        } else {
+                            getProcessingUser();
+                        }
+                    }}
+                    className={clsx(
+                        "cursor-pointer block group overflow-hidden h-full",
+                        {
+                            "w-1/3 ": layout === "horizontal",
+                            "w-auto": layout === "vertical",
+                        }
+                    )}
                 >
                     <img
                         src={course?.posterUrl || ""}
@@ -105,17 +144,25 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                         width={1920}
                         height={1080}
                     />
-                </Link>
+                </div>
                 <div className="text-zinc-800 bg-white p-4 pt-2 gap-4 flex flex-col justify-around flex-1">
                     <div className="">
-                        <Link
-                            href={`/detail-course/${course.courseId}`}
+                        <div
+                            onClick={() => {
+                                if (userInfo.userId === 0) {
+                                    router.push(
+                                        `/detail-course/${course.courseId}`
+                                    );
+                                } else {
+                                    getProcessingUser();
+                                }
+                            }}
                             className={clsx(
-                                " text-zinc-800 text-sm sm:text-lg hover:text-orange-600 line-clamp-2 h-14 mb-4"
+                                " text-zinc-800 cursor-pointer text-sm sm:text-lg hover:text-orange-600 line-clamp-2 h-14 mb-4"
                             )}
                         >
                             {course?.title}
-                        </Link>
+                        </div>
                         <div className="flex items-end gap-2 text-orange-700">
                             <p className="text-sm lg:text-base">
                                 Price: $

@@ -14,8 +14,8 @@ import { Comment } from "../../../ui/comment/comment";
 import { Note } from "@/app/[lang]/ui/note";
 import { Reminder } from "@/app/[lang]/ui/reminder";
 import { useWindowResize } from "@/app/[lang]/lib/hooks/useWindowResize";
-import { usePathname, useSearchParams } from "next/navigation";
 import { useTokenStore } from "@/app/[lang]/lib/store/userInfo";
+import { getToken } from "@/app/[lang]/lib/utils/get-token";
 
 export default function Page({
     params: { lang, id, courseId },
@@ -29,7 +29,7 @@ export default function Page({
     const [reloadLesson, setReloadLesson] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
 
-    const { userInfo } = useTokenStore();
+    const { userInfo, updateUserInfo } = useTokenStore();
     const windowSize = useWindowResize();
     const onChange = (key: string) => {};
 
@@ -38,6 +38,25 @@ export default function Page({
     const onClick: MenuProps["onClick"] = (e) => {
         window.history.pushState(null, "", `/en/learning/${courseId}/${e.key}`);
         setCurrLessonKey(e.key);
+    };
+
+    const setProcessing = (time: number) => {
+        apiInstance
+            .post(
+                "users/processing",
+                {
+                    lessonId: dataLesson.id,
+                    time: time,
+                    isDone: false,
+                },
+                { headers: { Authorization: "Bear " + userInfo.accessToken } }
+            )
+            .then((res) => {
+                console.log("Set processing...", res);
+            })
+            .catch((error) => {
+                console.log(error);
+            });
     };
 
     const getDataLesson = () => {
@@ -81,12 +100,32 @@ export default function Page({
     };
 
     useEffect(() => {
-        getDataLesson();
-    }, [reloadLesson, currLessonKey]);
+        if (userInfo.userId !== 0) {
+            getDataLesson();
+        }
+    }, [reloadLesson, currLessonKey, userInfo]);
 
     useEffect(() => {
-        getDataCourse();
-    }, [reloadCourse]);
+        if (userInfo.userId !== 0) {
+            getDataCourse();
+        }
+    }, [reloadCourse, userInfo]);
+
+    useEffect(() => {
+        updateUserInfo(getToken());
+    }, []);
+
+    useEffect(() => {
+        if (userInfo.userId !== 0 && dataLesson.id !== 0) {
+            setProcessing(currentTime);
+            const timer = setInterval(() => {
+                setProcessing(currentTime);
+            }, 30000);
+            return () => {
+                clearInterval(timer);
+            };
+        }
+    }, [userInfo, dataLesson]);
 
     const items: TabsProps["items"] = [
         {

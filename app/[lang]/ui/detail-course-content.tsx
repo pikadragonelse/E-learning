@@ -52,26 +52,36 @@ export default function DetailCourseContent({
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const route = useRouter();
     const onClickMenuItem: MenuProps["onClick"] = (e) => {
-        apiInstance
-            .get("users/newest-processing", {
-                headers: { Authorization: "Bear " + userInfo.accessToken },
-                params: {
-                    courseId: courseData.courseId,
-                },
-            })
-            .then((res) => {
-                if (res.data.data != null) {
-                    route.push(`/en/learning/${courseData.courseId}/${e.key}`);
-                } else {
-                    api.info({
-                        message: "Please buy this course to see detail lesson!",
-                        placement: "bottomRight",
-                    });
-                }
-            })
-            .catch((error) => {
-                console.log(error);
+        if (userInfo.userId === 0) {
+            apiInstance
+                .get("users/newest-processing", {
+                    headers: { Authorization: "Bear " + userInfo.accessToken },
+                    params: {
+                        courseId: courseData.courseId,
+                    },
+                })
+                .then((res) => {
+                    if (res.data.data != null) {
+                        route.push(
+                            `/en/learning/${courseData.courseId}/${e.key}`
+                        );
+                    } else {
+                        api.info({
+                            message:
+                                "Please buy this course to see detail lesson!",
+                            placement: "bottomRight",
+                        });
+                    }
+                })
+                .catch((error) => {
+                    console.log(error);
+                });
+        } else {
+            api.info({
+                message: "Please buy this course to see detail lesson!",
+                placement: "bottomRight",
             });
+        }
     };
 
     const getCourseData = () => {

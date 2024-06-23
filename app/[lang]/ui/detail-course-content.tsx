@@ -52,7 +52,7 @@ export default function DetailCourseContent({
     const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const route = useRouter();
     const onClickMenuItem: MenuProps["onClick"] = (e) => {
-        if (userInfo.userId === 0) {
+        if (userInfo.userId !== 0) {
             apiInstance
                 .get("users/newest-processing", {
                     headers: { Authorization: "Bear " + userInfo.accessToken },

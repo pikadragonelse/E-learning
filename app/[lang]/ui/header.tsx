@@ -46,7 +46,7 @@ const listUserFeature: Array<{ title: string; icon: ReactNode; href: string }> =
             icon: <FileAddOutlined />,
             href: "quiz",
         },
-        { title: "Logout", icon: <LogoutOutlined />, href: "login" },
+        { title: "Logout", icon: <LogoutOutlined />, href: "" },
     ];
 
 export type Header = {

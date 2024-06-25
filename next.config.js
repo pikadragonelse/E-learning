@@ -7,7 +7,7 @@ const nextConfig = {
         DEVELOP_ENDPOINT:
             "http://elearning-server.eastasia.cloudapp.azure.com/api/",
         OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
-        CRYPTO_SECRET_KEY: "/7-)Q2:dhZW^9Cn0gU-5lJ6-3cZbL4?@",
+        CRYPTO_SECRET_KEY: "helouahsnhdf",
     },
     webpack(config) {
         config.externals = config.externals || [];

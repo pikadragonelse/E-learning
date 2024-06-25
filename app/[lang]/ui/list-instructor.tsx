@@ -5,6 +5,7 @@ import { ItemInstructor } from "./item-instructor";
 import { apiInstance } from "@/plugin/apiInstance";
 import { User } from "../lib/model/user";
 import { useRouter } from "next/navigation";
+import { encryptUrlSafe } from "../lib/utils/crypt";
 const url = "https://api.dicebear.com/7.x/miniavs/svg?seed=1";
 
 export const ListInstructor = () => {
@@ -26,9 +27,6 @@ export const ListInstructor = () => {
         getInstructor();
     }, []);
 
-    useEffect(() => {
-        console.log(listInstructor);
-    }, [listInstructor]);
     return (
         <div className="overflow-hidden">
             <div className="flex gap-4 overflow-auto justify-between py-6">
@@ -36,9 +34,14 @@ export const ListInstructor = () => {
                     index < 8 ? (
                         <div
                             className="cursor-pointer"
-                            onClick={() =>
-                                route.push(`/user/${instructor.profile.id}`)
-                            }
+                            onClick={() => {
+                                route.push(
+                                    `/user/${encryptUrlSafe(
+                                        instructor.id?.toString() || "",
+                                        process.env.CRYPTO_SECRET_KEY || ""
+                                    )}`
+                                );
+                            }}
                             key={index}
                         >
                             <ItemInstructor

@@ -1,5 +1,6 @@
 export interface User {
     email: string;
+    id?: number;
     profile: {
         avatar: string;
         description: string;

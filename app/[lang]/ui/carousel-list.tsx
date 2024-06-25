@@ -9,12 +9,21 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { Course } from "../lib/model/course";
 import { useWindowResize } from "../lib/hooks/useWindowResize";
 import { useTokenStore } from "../lib/store/userInfo";
+import { ItemSkeleton } from "./item-skeleton";
 
 const urlMap: Record<"category" | "rcm" | "rcmColab", string> = {
     category: "courses",
     rcm: "courses/recommends/recommend-courses-based-on-tags",
     rcmColab: "courses/recommends/collaborative-filtering",
 };
+
+const listItemSkeleton = [
+    <ItemSkeleton />,
+    <ItemSkeleton />,
+    <ItemSkeleton />,
+    <ItemSkeleton />,
+    <ItemSkeleton />,
+];
 
 export type CarouselList = {
     byCategory?: string;
@@ -34,41 +43,41 @@ export const CarouselList: React.FC<CarouselList> = ({
     const [amountPage, setAmountPage] = useState(3);
     const { userInfo } = useTokenStore();
 
-    const getListCourse = async () => {
-        try {
-            const response = await apiInstance.get(urlMap[typeList], {
-                params:
-                    typeList === "category"
-                        ? {
-                              category: byCategory,
-                              page: 1,
-                              pageSize: 15,
-                          }
-                        : {
-                              page: 1,
-                              pageSize: 15,
-                          },
-                headers: userInfo?.accessToken
-                    ? {
-                          Authorization: "Bear " + userInfo?.accessToken,
-                      }
-                    : {},
-            });
-
-            const listCourse: Course[] = response.data.data;
-            if (listCourse.length < 1) {
-                setHiddenList(byCategory);
-                return;
-            }
-            setListCourse(listCourse);
-        } catch (error) {
-            console.log("Get list courses failed", error);
-        }
-    };
-
     useEffect(() => {
+        const getListCourse = async () => {
+            try {
+                const response = await apiInstance.get(urlMap[typeList], {
+                    params:
+                        typeList === "category"
+                            ? {
+                                  category: byCategory,
+                                  page: 1,
+                                  pageSize: 15,
+                              }
+                            : {
+                                  page: 1,
+                                  pageSize: 15,
+                              },
+                    headers: userInfo?.accessToken
+                        ? {
+                              Authorization: "Bear " + userInfo?.accessToken,
+                          }
+                        : {},
+                });
+
+                const listCourse: Course[] = response.data.data;
+                if (listCourse.length < 1) {
+                    setHiddenList(byCategory);
+                    return;
+                }
+                setListCourse(listCourse);
+            } catch (error) {
+                console.log("Get list courses failed", error);
+            }
+        };
+
         getListCourse();
-    }, []);
+    }, [userInfo]);
 
     useEffect(() => {
         if (windowSize > 1600) {
@@ -103,15 +112,17 @@ export const CarouselList: React.FC<CarouselList> = ({
                         }
                     )}
                 >
-                    {listCourse?.map((course, index) => (
-                        <NewItemCourse
-                            key={index}
-                            course={course}
-                            layout="vertical"
-                            className="w-64 min-w-64 sm:w-auto sm-min-w-auto shadow-xl"
-                            isInCart={courseInCartMap[course.courseId]}
-                        />
-                    ))}
+                    {listCourse != null
+                        ? listCourse?.map((course, index) => (
+                              <NewItemCourse
+                                  key={index}
+                                  course={course}
+                                  layout="vertical"
+                                  className="w-64 min-w-64 sm:w-auto sm-min-w-auto shadow-xl"
+                                  isInCart={courseInCartMap[course.courseId]}
+                              />
+                          ))
+                        : listItemSkeleton.map((itemSkeleton) => itemSkeleton)}
                 </div>
             </div>
 

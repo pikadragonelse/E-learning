@@ -9,6 +9,7 @@ import { Instructor } from "../../lib/model/user";
 import { Course } from "../../lib/model/course";
 import parse from "html-react-parser";
 import { useTokenStore } from "../../lib/store/userInfo";
+import { decryptUrlSafe } from "../../lib/utils/crypt";
 
 export default function Page({ params: { id } }: { params: { id: number } }) {
     const { userInfo } = useTokenStore();
@@ -31,9 +32,15 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
 
     const getUserInfo = () => {
         apiInstance
-            .get(`users/instructors/${id}`, {
-                headers: { Authorization: "Bear " + userInfo?.accessToken },
-            })
+            .get(
+                `users/instructors/${decryptUrlSafe(
+                    id.toString(),
+                    process.env.CRYPTO_SECRET_KEY || ""
+                )}`,
+                {
+                    headers: { Authorization: "Bear " + userInfo?.accessToken },
+                }
+            )
             .then((res) => {
                 setUserProfile(res.data.data);
                 setListCourse(res.data.courses.rows);
@@ -67,9 +74,6 @@ export default function Page({ params: { id } }: { params: { id: number } }) {
                         />
                         <div className="">
                             <h1 className="text-xl">{userProfile?.fullName}</h1>
-                            <p className="text-sm text-zinc-400">
-                                {userProfile?.createdAt}
-                            </p>
                         </div>
                     </div>
                     <p className="my-20">

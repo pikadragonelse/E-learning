@@ -37,7 +37,7 @@ export const Comment: React.FC<Comment> = ({
                 </div>
                 {listReview.filter(
                     (review) => review.userId === userInfo.userId
-                ).length > 0 ? undefined : (
+                ).length > 0 && type === "review" ? undefined : (
                     <FormComment
                         hidden={isHideCommentForm}
                         type={type}
@@ -52,13 +52,16 @@ export const Comment: React.FC<Comment> = ({
                         name={comment.user.profile.fullName}
                         date={comment.createdAt}
                         avt={comment.user.profile.avatar}
-                        content={comment.review}
+                        content={
+                            type === "review" ? comment.review : comment.content
+                        }
                         key={index}
                         rating={Number(comment.rating)}
                         id={comment.id}
                         onDeleteCmt={onDeleteCmt}
                         isDeletable={userInfo.userId === comment.userId}
                         canReply={type === "comment"}
+                        type={type}
                     />
                 ))}
             </div>

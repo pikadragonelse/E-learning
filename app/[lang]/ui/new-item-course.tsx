@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Course, defaultCourse } from "../lib/model/course";
-import Link from "next/link";
 import { Button, ConfigProvider, Modal, notification } from "antd";
 import { apiInstance } from "@/plugin/apiInstance";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
-import Image from "next/image";
 import parse from "html-react-parser";
 import { useTokenStore } from "../lib/store/userInfo";
 import { getToken } from "../lib/utils/get-token";
@@ -51,10 +49,13 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
             .then((res) => {
                 if (res.data.data != null) {
                     router.push(
-                        `/learning/${course.courseId}/${res.data.data.lessonId}`
+                        `/learning/${course.courseId}/${res.data.data.lessonId}`,
+                        { scroll: true }
                     );
                 } else {
-                    router.push(`/detail-course/${course.courseId}`);
+                    router.push(`/detail-course/${course.courseId}`, {
+                        scroll: true,
+                    });
                 }
             })
             .catch((error) => {

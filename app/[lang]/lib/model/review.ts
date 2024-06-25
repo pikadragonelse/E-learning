@@ -8,6 +8,7 @@ export interface Review {
     updatedAt: string;
     deletedAt: string;
     user: ReviewUser;
+    content?: string;
 }
 
 export interface ReviewUser {

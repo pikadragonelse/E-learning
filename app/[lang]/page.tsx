@@ -12,6 +12,7 @@ import { useEffect, useState } from "react";
 import { Course } from "./lib/model/course";
 import { useTokenStore } from "./lib/store/userInfo";
 import Head from "next/head";
+import InfiniteScroll from "react-infinite-scroll-component";
 
 export default function Home({
     params: { lang },
@@ -19,7 +20,9 @@ export default function Home({
     params: { lang: Locale };
 }) {
     const [listCategory, setListCategory] = useState<Category[]>([]);
+    const [listShowCategory, setListShowCategory] = useState<Category[]>([]);
     const [isShowMap, setIsShowMap] = useState<Record<any, boolean>>({});
+    const [hasMore, setHasMore] = useState(true);
     const { userInfo } = useTokenStore();
 
     const [courseInCartMap, setCourseInCartMap] = useState<
@@ -79,6 +82,18 @@ export default function Home({
         }
     }, [userInfo]);
 
+    useEffect(() => {
+        setListShowCategory([listCategory[0], listCategory[1]]);
+    }, [listCategory]);
+
+    const loadMoreCateList = () => {
+        if (listShowCategory.length < listCategory.length) {
+            setListShowCategory([...listCategory]);
+        } else {
+            setHasMore(false);
+        }
+    };
+
     return (
         <Container>
             <Head>
@@ -132,20 +147,30 @@ export default function Home({
                     </h2>
                     <ListInstructor />
                 </div>
-                {listCategory.map((category, index) =>
-                    isShowMap[category.categoryId] ? (
-                        <div className="" key={index}>
-                            <h2 className="text-2xl text-orange-700 font-medium cursor-pointer w-fit mb-3">
-                                {category.name}
-                            </h2>
-                            <CarouselList
-                                byCategory={category.categoryId}
-                                setHiddenList={setHiddenList}
-                                courseInCartMap={courseInCartMap}
-                            />
-                        </div>
-                    ) : undefined
-                )}
+                <InfiniteScroll
+                    dataLength={listCategory.length}
+                    next={loadMoreCateList}
+                    hasMore
+                    loader={<h4>Loading...</h4>}
+                    className="overflow-visible"
+                >
+                    {listShowCategory.length > 0
+                        ? listShowCategory.map((category, index) =>
+                              isShowMap[category?.categoryId] ? (
+                                  <div className="" key={index}>
+                                      <h2 className="text-2xl text-orange-700 font-medium cursor-pointer w-fit mb-3">
+                                          {category.name}
+                                      </h2>
+                                      <CarouselList
+                                          byCategory={category.categoryId}
+                                          setHiddenList={setHiddenList}
+                                          courseInCartMap={courseInCartMap}
+                                      />
+                                  </div>
+                              ) : undefined
+                          )
+                        : undefined}
+                </InfiniteScroll>
             </div>
         </Container>
     );

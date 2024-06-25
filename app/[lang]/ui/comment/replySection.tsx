@@ -21,6 +21,7 @@ export type ReplySection = {
     onDeleteCmt?: () => void;
     isDeletable?: boolean;
     canReply?: boolean;
+    type?: "review" | "comment";
 };
 export const ReplySection: React.FC<ReplySection> = ({
     isHideAction = false,
@@ -33,6 +34,7 @@ export const ReplySection: React.FC<ReplySection> = ({
     onDeleteCmt = () => {},
     isDeletable = false,
     canReply = true,
+    type = "review",
 }) => {
     const [isReplying, setIsReplying] = useState(false);
     const { userInfo } = useTokenStore();
@@ -60,7 +62,11 @@ export const ReplySection: React.FC<ReplySection> = ({
                             width={1920}
                             height={1080}
                         />
-                        <div className="flex flex-col items-start ml-2">
+                        <div
+                            className={clsx("flex flex-col items-start ml-2", {
+                                hidden: type === "comment",
+                            })}
+                        >
                             <span className="text-base mb-1 text-zinc-800">
                                 {name}
                             </span>

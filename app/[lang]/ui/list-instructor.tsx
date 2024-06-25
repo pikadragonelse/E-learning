@@ -25,6 +25,10 @@ export const ListInstructor = () => {
     useEffect(() => {
         getInstructor();
     }, []);
+
+    useEffect(() => {
+        console.log(listInstructor);
+    }, [listInstructor]);
     return (
         <div className="overflow-hidden">
             <div className="flex gap-4 overflow-auto justify-between py-6">

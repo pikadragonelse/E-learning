@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 import clsx from "clsx";
 import { Course, defaultCourse } from "../lib/model/course";
 import Link from "next/link";
-import { Button, ConfigProvider, notification } from "antd";
+import { Button, ConfigProvider, Modal, notification } from "antd";
 import { apiInstance } from "@/plugin/apiInstance";
 import { LoadingOutlined } from "@ant-design/icons";
 import { useRouter } from "next/navigation";
@@ -32,6 +32,8 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
     const [api, contextHolder] = notification.useNotification();
     const [isLoadingAddCart, setIsLoadingAddCart] = useState(false);
     const [isInCartLocal, setIsInCartLocal] = useState(false);
+    const [isOpenModalLogin, setIsOpenModalLogin] = useState(false);
+    const [isLoadingBuyNow, setIsLoadingBuyNow] = useState(false);
     const router = useRouter();
 
     useEffect(() => {
@@ -60,8 +62,12 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
             });
     };
 
-    const addToCart = () => {
-        setIsLoadingAddCart(true);
+    const addToCart = (type: "buyNow" | "addToCart" = "addToCart") => {
+        if (type === "addToCart") {
+            setIsLoadingAddCart(true);
+        } else {
+            setIsLoadingBuyNow(true);
+        }
         apiInstance
             .post(
                 "users/carts",
@@ -75,22 +81,43 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                 }
             )
             .then((res) => {
-                api.success({
-                    message: "Add cart successful!",
-                    placement: "bottomRight",
-                });
-                setIsLoadingAddCart(false);
-                setIsInCartLocal(true);
+                if (type === "buyNow") {
+                    router.push("/cart");
+                    setIsLoadingBuyNow(false);
+                } else {
+                    api.success({
+                        message: "Add cart successful!",
+                        placement: "bottomRight",
+                    });
+                    setIsLoadingAddCart(false);
+                    setIsInCartLocal(true);
+                }
             })
             .catch((error) => {
                 console.log(error);
-                api.error({
-                    message: "Add cart error!",
-                    placement: "bottomRight",
-                    description: "Please wait few seconds and try again",
-                });
-                setIsLoadingAddCart(false);
+                if (type === "addToCart") {
+                    api.error({
+                        message: "Add cart error!",
+                        placement: "bottomRight",
+                        description: "Please wait few seconds and try again",
+                    });
+                    setIsLoadingAddCart(false);
+                } else {
+                    setIsLoadingBuyNow(false);
+                    api.error({
+                        message: "Something is wrong, please try later!",
+                        placement: "bottomRight",
+                    });
+                }
             });
+    };
+
+    const handleBuyNow = () => {
+        if (userInfo.userId === 0) {
+            setIsOpenModalLogin(true);
+        } else {
+            addToCart("buyNow");
+        }
     };
 
     return (
@@ -110,6 +137,19 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
             }}
         >
             {contextHolder}
+            <Modal
+                title="Login remind"
+                okText="Login"
+                cancelText="Cancel"
+                open={isOpenModalLogin}
+                onCancel={() => setIsOpenModalLogin(false)}
+                onOk={() => {
+                    setIsOpenModalLogin(false);
+                    router.push("/login");
+                }}
+            >
+                You need to login to add to cart or buy now!
+            </Modal>
             <div
                 className={clsx(
                     `flex rounded-md overflow-hidden ${className}`,
@@ -189,15 +229,27 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
                             flex: !isHiddenButton,
                         })}
                     >
-                        <Button type="primary" className="px-2 py-1">
+                        <Button
+                            type="primary"
+                            className="px-2 py-1"
+                            onClick={handleBuyNow}
+                            icon={
+                                isLoadingBuyNow ? (
+                                    <LoadingOutlined />
+                                ) : undefined
+                            }
+                        >
                             Buy now
                         </Button>
                         <Button
                             className="px-2 py-1"
                             onClick={() => {
-                                isInCart === true || isInCartLocal === true
-                                    ? router.push("/cart")
-                                    : addToCart();
+                                userInfo.userId !== 0
+                                    ? isInCart === true ||
+                                      isInCartLocal === true
+                                        ? router.push("/cart")
+                                        : addToCart()
+                                    : setIsOpenModalLogin(true);
                             }}
                             icon={
                                 isLoadingAddCart ? (

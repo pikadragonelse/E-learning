@@ -5,8 +5,9 @@ const nextConfig = {
         // DEVELOP_ENDPOINT: "http://localhost:8000/api/",
         INDEX_PINECONE: "db-recommendation-course",
         DEVELOP_ENDPOINT:
-            "http://alpha-elearning.southeastasia.cloudapp.azure.com/api/",
+            "http://elearning-server.eastasia.cloudapp.azure.com/api/",
         OPEN_AI_API_KEY: process.env.OPEN_AI_API_KEY,
+        CRYPTO_SECRET_KEY: "/7-)Q2:dhZW^9Cn0gU-5lJ6-3cZbL4?@",
     },
     webpack(config) {
         config.externals = config.externals || [];

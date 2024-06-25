@@ -4,6 +4,7 @@ import React from "react";
 import { FormComment } from "./form-comment";
 import { ReplySection } from "./replySection";
 import { Review } from "../../lib/model/review";
+import { useTokenStore } from "../../lib/store/userInfo";
 
 export type Comment = {
     isHideCommentForm?: boolean;
@@ -25,6 +26,7 @@ export const Comment: React.FC<Comment> = ({
     onPost = () => {},
     onDeleteCmt = () => {},
 }) => {
+    const { userInfo } = useTokenStore();
     return (
         <section className="bg-white antialiased text-orange-700 px-16">
             <div className="">
@@ -33,12 +35,17 @@ export const Comment: React.FC<Comment> = ({
                         {title} ({listReview.length})
                     </h2>
                 </div>
-                <FormComment
-                    hidden={isHideCommentForm}
-                    type={type}
-                    itemId={itemId}
-                    onPost={onPost}
-                />
+                {listReview.filter(
+                    (review) => review.userId === userInfo.userId
+                ).length > 0 ? undefined : (
+                    <FormComment
+                        hidden={isHideCommentForm}
+                        type={type}
+                        itemId={itemId}
+                        onPost={onPost}
+                    />
+                )}
+
                 {listReview.map((comment, index) => (
                     <ReplySection
                         isHideAction={isHideAction}
@@ -50,6 +57,8 @@ export const Comment: React.FC<Comment> = ({
                         rating={Number(comment.rating)}
                         id={comment.id}
                         onDeleteCmt={onDeleteCmt}
+                        isDeletable={userInfo.userId === comment.userId}
+                        canReply={type === "comment"}
                     />
                 ))}
             </div>

@@ -33,7 +33,9 @@ export default function Page({
                 },
             })
             .then((res) => {
-                setListCart(res.data.data[0].carts);
+                setListCart(
+                    res.data.data[0] != null ? res.data.data[0].carts : []
+                );
                 let totalPrice = 0;
                 res.data.data[0].carts.forEach((course: Course) => {
                     totalPrice += Number(
@@ -235,7 +237,7 @@ export default function Page({
                         >
                             <h1 className="text-lg text-zinc-600">Summary:</h1>
                             <h2 className="text-lg text-orange-600">
-                                ${totalPrice * (1 + 0.02)}
+                                ${(totalPrice * (1 + 0.02)).toFixed(2)}
                             </h2>
                         </div>
 

@@ -19,6 +19,8 @@ export type ReplySection = {
     rating?: number;
     id?: number;
     onDeleteCmt?: () => void;
+    isDeletable?: boolean;
+    canReply?: boolean;
 };
 export const ReplySection: React.FC<ReplySection> = ({
     isHideAction = false,
@@ -29,6 +31,8 @@ export const ReplySection: React.FC<ReplySection> = ({
     rating,
     id,
     onDeleteCmt = () => {},
+    isDeletable = false,
+    canReply = true,
 }) => {
     const [isReplying, setIsReplying] = useState(false);
     const { userInfo } = useTokenStore();
@@ -77,13 +81,18 @@ export const ReplySection: React.FC<ReplySection> = ({
             </footer>
             <p className="text-gray-800 ">{content}</p>
             <div
-                className={clsx("flex items-center mt-4 space-x-4", {
+                className={clsx("flex items-center mt-4 space-x-4 gap-2", {
                     hidden: isHideAction,
                 })}
             >
                 <Button
                     onClick={() => setIsReplying(true)}
-                    className="flex items-center text-sm text-gray-800 hover:underline  font-medium"
+                    className={clsx(
+                        "flex items-center text-sm text-gray-800 hover:underline  font-medium",
+                        {
+                            hidden: !canReply,
+                        }
+                    )}
                 >
                     <svg
                         className="mr-1.5 w-3.5 h-3.5"
@@ -102,7 +111,11 @@ export const ReplySection: React.FC<ReplySection> = ({
                     </svg>
                     Reply
                 </Button>
-                <Button icon={<DeleteOutlined />} onClick={deleteComment}>
+                <Button
+                    icon={<DeleteOutlined />}
+                    onClick={deleteComment}
+                    className={clsx({ hidden: !isDeletable })}
+                >
                     Delete
                 </Button>
             </div>

@@ -81,8 +81,6 @@ export default function Page({
                 },
             })
             .then((res) => {
-                console.log(res.data);
-
                 const dataSearch = res.data as ResSearch;
                 setTotalResult(dataSearch.hits.total.value);
 

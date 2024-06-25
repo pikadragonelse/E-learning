@@ -88,7 +88,6 @@ export default function Page({
             })
             .then((res) => {
                 setDataCourse(res.data.data.course);
-
                 setIsLoading(false);
             })
             .catch((error) => {

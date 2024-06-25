@@ -7,6 +7,7 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { Course } from "../lib/model/course";
 import { NewItemCourse } from "./new-item-course";
 import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { ResSearch } from "../lib/model/search";
 
 export default function Search({
     placeholder,
@@ -37,9 +38,24 @@ export default function Search({
         }
         timer.current = setTimeout(() => {
             apiInstance
-                .get("courses", { params: { search: value } })
+                .get("courses/elasticSearch", { params: { search: value } })
                 .then((res) => {
-                    setListCourse(res.data.data);
+                    const dataSearch = res.data as ResSearch;
+                    setListCourse(
+                        dataSearch.hits.hits.map((hit) => {
+                            if (hit._source != null) {
+                                if (hit.highlight?.introduction?.length > 0) {
+                                    return {
+                                        ...(hit._source as any),
+                                        introduction:
+                                            hit.highlight.introduction[0],
+                                    };
+                                } else {
+                                    return hit._source;
+                                }
+                            }
+                        })
+                    );
                     setIsLoading(false);
                 })
                 .catch((err) => {
@@ -97,7 +113,7 @@ export default function Search({
                     content={
                         <ul className="w-[400px] max-w-[400px] md:w-[600px] md:max-w-[600px] max-h-[600px] overflow-auto flex flex-col gap-4">
                             <Skeleton loading={isLoading} active className="">
-                                {listCourse.length > 0
+                                {listCourse?.length > 0
                                     ? listCourse.map((course, index) => (
                                           <li key={index}>
                                               <NewItemCourse

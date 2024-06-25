@@ -17,13 +17,7 @@ const urlMap: Record<"category" | "rcm" | "rcmColab", string> = {
     rcmColab: "courses/recommends/collaborative-filtering",
 };
 
-const listItemSkeleton = [
-    <ItemSkeleton />,
-    <ItemSkeleton />,
-    <ItemSkeleton />,
-    <ItemSkeleton />,
-    <ItemSkeleton />,
-];
+const listItemSkeleton = [1, 2, 3, 4, 5];
 
 export type CarouselList = {
     byCategory?: string;
@@ -122,7 +116,9 @@ export const CarouselList: React.FC<CarouselList> = ({
                                   isInCart={courseInCartMap[course.courseId]}
                               />
                           ))
-                        : listItemSkeleton.map((itemSkeleton) => itemSkeleton)}
+                        : listItemSkeleton.map((itemSkeleton) => (
+                              <ItemSkeleton key={itemSkeleton} />
+                          ))}
                 </div>
             </div>
 

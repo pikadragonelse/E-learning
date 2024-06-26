@@ -52,8 +52,13 @@ const listUserFeature: Array<{ title: string; icon: ReactNode; href: string }> =
 export type Header = {
     onClickCategoryIcon?: (props?: any) => unknown;
     userInfo?: User;
+    onRefresh?: (props?: any) => void;
 };
-export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
+export const Header: React.FC<Header> = ({
+    onClickCategoryIcon,
+    userInfo,
+    onRefresh = () => {},
+}) => {
     const [isScroll, setIsScroll] = useState(false);
     const [listCategory, setListCategory] = useState<Category[]>([]);
     const router = useRouter();
@@ -208,6 +213,7 @@ export const Header: React.FC<Header> = ({ onClickCategoryIcon, userInfo }) => {
                                                                 feature.title ===
                                                                 "Logout"
                                                             ) {
+                                                                onRefresh();
                                                                 updateUserInfo(
                                                                     defaultUserInfoToken
                                                                 );

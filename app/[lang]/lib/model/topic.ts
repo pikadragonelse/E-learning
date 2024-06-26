@@ -1,3 +1,5 @@
+import { Resource } from "./resource";
+
 export interface Topic {
     id: number;
     name: string;
@@ -16,6 +18,7 @@ export interface Lesson {
     title: string;
     duration: number;
     isPreview: boolean;
+    resources: Resource[];
 }
 
 export const defaultLesson = {

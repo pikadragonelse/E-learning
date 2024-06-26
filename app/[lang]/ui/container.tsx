@@ -16,9 +16,9 @@ import { setCookie } from "cookies-next";
 export type Container = { children?: any; className?: string };
 export const Container: React.FC<Container> = ({ children, className }) => {
     const [openSidebarDrawer, setOpenSidebarDrawer] = useState(false);
-    const [billData, setBillData] = useState<BillInfo>(defaultBillInfo);
     const [userProfile, setUserProfile] = useState<User>();
     const { userInfo, updateUserInfo } = useTokenStore();
+    const [refreshUser, setRefreshUser] = useState(0);
     const getDataUser = () => {
         apiInstance
             .get("users/profile", {
@@ -31,14 +31,13 @@ export const Container: React.FC<Container> = ({ children, className }) => {
             })
             .catch((error) => {
                 console.log(error);
+                setUserProfile(undefined);
             });
     };
 
     useEffect(() => {
-        if (userInfo.userId != 0) {
-            getDataUser();
-        }
-    }, [userInfo]);
+        getDataUser();
+    }, [userInfo, refreshUser]);
 
     useEffect(() => {
         updateUserInfo(getToken());
@@ -87,6 +86,7 @@ export const Container: React.FC<Container> = ({ children, className }) => {
             <Header
                 onClickCategoryIcon={() => setOpenSidebarDrawer(true)}
                 userInfo={userProfile}
+                onRefresh={() => setRefreshUser((prev) => prev + 1)}
             />
             <ConfigProvider
                 theme={{

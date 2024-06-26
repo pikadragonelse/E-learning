@@ -4,7 +4,15 @@ import { Locale } from "@/i18n.config";
 import React, { Suspense, useEffect, useState } from "react";
 const VideoCustom = React.lazy(() => import("../../../ui/video-custom"));
 import { MenuLecture } from "../../../ui/menu-lecture";
-import { ConfigProvider, MenuProps, Skeleton, Tabs, TabsProps } from "antd";
+import {
+    Button,
+    ConfigProvider,
+    Drawer,
+    MenuProps,
+    Skeleton,
+    Tabs,
+    TabsProps,
+} from "antd";
 import { Container } from "../../../ui/container";
 import { apiInstance } from "@/plugin/apiInstance";
 import { LessonFull, defaultLessonFull } from "../../../lib/model/lesson";
@@ -16,6 +24,7 @@ import { Reminder } from "@/app/[lang]/ui/reminder";
 import { useWindowResize } from "@/app/[lang]/lib/hooks/useWindowResize";
 import { useTokenStore } from "@/app/[lang]/lib/store/userInfo";
 import { getToken } from "@/app/[lang]/lib/utils/get-token";
+import { ChatBot } from "@/app/[lang]/ui/chatbot";
 
 export default function Page({
     params: { lang, id, courseId },
@@ -28,7 +37,7 @@ export default function Page({
     const [reloadCourse, setReloadCourse] = useState(0);
     const [reloadLesson, setReloadLesson] = useState(0);
     const [isLoading, setIsLoading] = useState(false);
-
+    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
     const { userInfo, updateUserInfo } = useTokenStore();
     const windowSize = useWindowResize();
     const onChange = (key: string) => {};
@@ -197,6 +206,26 @@ export default function Page({
 
     return (
         <Container className="">
+            <Drawer
+                title={`Chatbot`}
+                open={isOpenDrawer}
+                onClose={() => setIsOpenDrawer(false)}
+                className="w-96"
+            >
+                <div className="text-zinc-800">
+                    <h1 className="text-base">
+                        <p className="text-lg font-medium">Ask something!</p>
+                        This chatbot will provide you with information about the
+                        course:&nbsp;
+                        <span className="text-orange-700">
+                            {dataCourse.title}
+                        </span>
+                    </h1>
+                    <div className="mt-24">
+                        <ChatBot courseId={dataCourse.courseId} />
+                    </div>
+                </div>
+            </Drawer>
             <div className="text-zinc-800 flex lg:flex-row flex-col gap-8 ">
                 <div className="lg:w-2/3">
                     <Suspense
@@ -227,6 +256,13 @@ export default function Page({
                 <div className="hidden lg:block w-1/3">
                     <h1 className="text-2xl text-orange-600 font-medium mb-5">
                         Course structure
+                        <Button
+                            type="primary"
+                            onClick={() => setIsOpenDrawer(true)}
+                            className="ml-6"
+                        >
+                            Open Chatbot
+                        </Button>
                     </h1>
                     <div className="max-h-[450px] overflow-auto">
                         <MenuLecture

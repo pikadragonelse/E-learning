@@ -18,6 +18,7 @@ export type DetailOverviewInfo = {
     rating?: number;
     latestUpdate?: string;
     language?: string;
+    totalStudent?: number;
 };
 export const DetailOverviewInfo: React.FC<DetailOverviewInfo> = ({
     title,
@@ -26,6 +27,7 @@ export const DetailOverviewInfo: React.FC<DetailOverviewInfo> = ({
     rating,
     latestUpdate,
     language,
+    totalStudent,
 }) => {
     return (
         <div className="bg-zinc-800 p-6 lg:pl-[500px] mt-2 flex flex-col gap-4">
@@ -38,8 +40,7 @@ export const DetailOverviewInfo: React.FC<DetailOverviewInfo> = ({
                     <span>{rating}</span>
                     <Rate value={rating} disabled />
                 </div>
-                <span>(22,248 ratings)</span>
-                <span>(22,248 students)</span>
+                <span>({totalStudent?.toLocaleString("it")} students)</span>
             </div>
             <p className="text-sm lg:text-base">Created by: {instructor}</p>
             <ul className="text-xs lg:text-sm mt-2 flex gap-4">

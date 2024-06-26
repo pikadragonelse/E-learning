@@ -36,6 +36,7 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
 
     useEffect(() => {
         updateUserInfo(getToken());
+        console.log(userInfo);
     }, []);
 
     const getProcessingUser = () => {
@@ -162,8 +163,6 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
             >
                 <div
                     onClick={() => {
-                        console.log(userInfo);
-
                         if (userInfo.userId === 0) {
                             router.push(`/detail-course/${course.courseId}`);
                         } else {

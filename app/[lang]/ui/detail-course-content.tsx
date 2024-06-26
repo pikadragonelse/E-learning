@@ -49,33 +49,18 @@ export default function DetailCourseContent({
         isUserEnrollmentCourse: false,
     });
     const [isLoadingAddCart, setIsLoadingAddCart] = useState(false);
-    const [isOpenDrawer, setIsOpenDrawer] = useState(false);
+
     const route = useRouter();
     const onClickMenuItem: MenuProps["onClick"] = (e) => {
         if (userInfo.userId !== 0) {
-            apiInstance
-                .get("users/newest-processing", {
-                    headers: { Authorization: "Bear " + userInfo.accessToken },
-                    params: {
-                        courseId: courseData.courseId,
-                    },
-                })
-                .then((res) => {
-                    if (res.data.data != null) {
-                        route.push(
-                            `/en/learning/${courseData.courseId}/${e.key}`
-                        );
-                    } else {
-                        api.info({
-                            message:
-                                "Please buy this course to see detail lesson!",
-                            placement: "bottomRight",
-                        });
-                    }
-                })
-                .catch((error) => {
-                    console.log(error);
+            if (stateCourse.isUserEnrollmentCourse === true) {
+                route.push(`/en/learning/${courseData.courseId}/${e.key}`);
+            } else {
+                api.info({
+                    message: "Please buy this course to see detail lesson!",
+                    placement: "bottomRight",
                 });
+            }
         } else {
             api.info({
                 message: "Please buy this course to see detail lesson!",
@@ -99,7 +84,6 @@ export default function DetailCourseContent({
             })
             .then((res) => {
                 setCourseData(res.data.data.course);
-                console.log(res.data.data);
 
                 setStateCourse({
                     isCourseFavorite: res.data.data.isCourseFavorite,
@@ -242,26 +226,7 @@ export default function DetailCourseContent({
     return (
         <div>
             {contextHolder}
-            <Drawer
-                title={`Chatbot`}
-                open={isOpenDrawer}
-                onClose={() => setIsOpenDrawer(false)}
-                className="w-96"
-            >
-                <div className="text-zinc-800">
-                    <h1 className="text-base">
-                        <p className="text-lg font-medium">Ask something!</p>
-                        This chatbot will provide you with information about the
-                        course:&nbsp;
-                        <span className="text-orange-700">
-                            {courseData.title}
-                        </span>
-                    </h1>
-                    <div className="mt-24">
-                        <ChatBot />
-                    </div>
-                </div>
-            </Drawer>
+
             <Modal
                 title="Preview course"
                 open={openModalPreview}
@@ -326,6 +291,7 @@ export default function DetailCourseContent({
                     latestUpdate={courseData?.updatedAt}
                     language={courseData?.language.languageName}
                     desc={courseData?.introduction}
+                    totalStudent={courseData.totalStudents}
                 />
                 <div className="lg:ml-[500px] lg:mr-60">
                     <div className="mt-4 lg:hidden">
@@ -355,13 +321,6 @@ export default function DetailCourseContent({
                         <div className="mt-14">
                             <h1 className="font-medium text-2xl mb-4">
                                 Content
-                                <Button
-                                    type="primary"
-                                    onClick={() => setIsOpenDrawer(true)}
-                                    className="ml-6"
-                                >
-                                    Open Chatbot
-                                </Button>
                             </h1>
                             <MenuLecture
                                 className="bg-zinc-50"
@@ -424,11 +383,15 @@ export default function DetailCourseContent({
                             className="mb-6"
                             instructor={courseData.instructor}
                         />
-                        <Comment
-                            isHideCommentForm
-                            isHideAction
-                            listReview={courseData.reviews}
-                        />
+                        <div className="-ml-16">
+                            <Comment
+                                isHideCommentForm
+                                isHideAction
+                                listReview={courseData.reviews}
+                                type="review"
+                                title="Reviews"
+                            />
+                        </div>
                     </div>
                 </div>
             </div>

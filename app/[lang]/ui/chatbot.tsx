@@ -12,7 +12,8 @@ type FieldType = {
     query?: string;
 };
 
-export const ChatBot = () => {
+export type ChatBot = { courseId?: string };
+export const ChatBot: React.FC<ChatBot> = ({ courseId }) => {
     const [form] = useForm();
     const [isRendering, setIsRendering] = useState(false);
     const [messageList, setMessageList] = useState<
@@ -28,6 +29,7 @@ export const ChatBot = () => {
 
     const chatbot = (question: string) => {
         setIsRendering(true);
+        form.setFieldValue("query", "");
         setMessageList((prev) => {
             return [
                 ...prev,
@@ -45,7 +47,7 @@ export const ChatBot = () => {
             .post("chat", {
                 question: question,
                 history: [],
-                courseId: "nodejs",
+                courseId: courseId,
             })
             .then((res) => {
                 setMessageList((prev) => {

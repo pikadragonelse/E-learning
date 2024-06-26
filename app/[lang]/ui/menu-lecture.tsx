@@ -4,13 +4,15 @@ import React, { useEffect, useState } from "react";
 import type { MenuProps } from "antd";
 import { Button, ConfigProvider, Menu, Popover, Tooltip } from "antd";
 import { BorderOutlined } from "@ant-design/icons";
-import { Topic } from "../lib/model/topic";
+import { Lesson, Topic } from "../lib/model/topic";
 import { usePathname } from "next/navigation";
 import { apiInstance } from "@/plugin/apiInstance";
 import { Resource } from "../lib/model/resource";
 import { DownOutlined } from "@ant-design/icons";
 import { useRouter } from "next/router";
 import clsx from "clsx";
+import { useTokenStore } from "../lib/store/userInfo";
+import { getToken } from "../lib/utils/get-token";
 
 type MenuItem = Required<MenuProps>["items"][number];
 
@@ -50,20 +52,28 @@ export const MenuLecture: React.FC<MenuLecture> = ({
     const [resourceMap, setResourceMap] = useState<Record<number, Resource[]>>(
         {}
     );
+    const { userInfo, updateUserInfo } = useTokenStore();
 
-    const resourceLesson = async (lessonId: number) => {
-        const data = await apiInstance
-            .get(`lessons/${lessonId}/resources`)
+    useEffect(() => {
+        updateUserInfo(getToken());
+    }, []);
+
+    const resourceLesson = async (resourceId: number) => {
+        apiInstance
+            .get(`lessons/resources/${resourceId}`, {
+                headers: {
+                    Authorization: "Bear " + userInfo?.accessToken,
+                },
+            })
             .then((res) => {
-                const lessonResourceMap = {
-                    [lessonId]: res.data.data,
-                };
-
-                return lessonResourceMap;
+                console.log(res.data.data.url);
+                const link = document.createElement("a");
+                link.href = res.data.data.url;
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
             })
             .catch((error) => console.log(error));
-
-        return data;
     };
 
     const handleDataList = () => {
@@ -86,15 +96,17 @@ export const MenuLecture: React.FC<MenuLecture> = ({
                                                     className="cursor-pointer group "
                                                     key={index}
                                                 >
-                                                    <a
-                                                        href={resource.url}
-                                                        className="group-hover:text-orange-600 text-zinc-800 "
+                                                    <div
+                                                        className="group-hover:text-orange-600 text-zinc-800 line-clamp-1"
                                                         onClick={(event) => {
                                                             event.stopPropagation();
+                                                            resourceLesson(
+                                                                resource.id
+                                                            );
                                                         }}
                                                     >
                                                         {resource.name}
-                                                    </a>
+                                                    </div>
                                                 </li>
                                             )
                                         )}
@@ -147,23 +159,19 @@ export const MenuLecture: React.FC<MenuLecture> = ({
 
     const getLesson = async (dataList: Topic[]) => {
         let tempMap: Record<number, Resource[]> = {};
-        const promises: Promise<void>[] = [];
 
         dataList.forEach((topic) => {
-            topic.lessons.forEach((lesson) => {
-                const promise = resourceLesson(lesson.id).then((newMap) => {
-                    tempMap = { ...tempMap, ...newMap };
-                });
-                promises.push(promise);
+            topic.lessons.forEach((lesson: Lesson) => {
+                tempMap[lesson.id] = lesson.resources;
             });
         });
 
-        await Promise.all(promises);
         setResourceMap(tempMap);
     };
 
     useEffect(() => {
         getLesson(dataList);
+        console.log(dataList);
     }, [dataList]);
 
     useEffect(() => {

@@ -1,5 +1,6 @@
 import { getCookie } from "cookies-next";
 import { UserInfoToken } from "../model/user-info-token";
+import { usePathname, useRouter } from "next/navigation";
 
 export const getToken = () => {
     const accessToken =

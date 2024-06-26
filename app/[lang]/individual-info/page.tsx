@@ -10,9 +10,10 @@ import { apiInstance } from "@/plugin/apiInstance";
 import { User, defaultUser } from "../lib/model/user";
 import { CourseInfoRes } from "../lib/model/course";
 import { useTokenStore } from "../lib/store/userInfo";
+import { getToken } from "../lib/utils/get-token";
 
 export default function Page() {
-    const { userInfo } = useTokenStore();
+    const { userInfo, updateUserInfo } = useTokenStore();
     const [userProfile, setUserProfile] = useState<User>(defaultUser);
     const [currKey, setCurrKey] = useState("");
     const [listEnrollmentCourse, setListEnrollmentCourse] = useState<
@@ -29,6 +30,10 @@ export default function Page() {
             })
             .catch((error) => console.log(error));
     };
+
+    useEffect(() => {
+        updateUserInfo(getToken());
+    }, []);
 
     useEffect(() => {
         if (currKey === "2") {
@@ -83,7 +88,7 @@ export default function Page() {
 
     useEffect(() => {
         getUserInfo();
-    }, []);
+    }, [userInfo]);
 
     return (
         <Container>

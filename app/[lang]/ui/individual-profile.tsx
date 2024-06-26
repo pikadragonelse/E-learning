@@ -40,8 +40,6 @@ export const IndividualProfile: React.FC<IndividualProfile> = ({
             // Get this url from response in real world.
             getBase64(info.file.originFileObj as UploadType, (url) => {
                 setLoading(false);
-                console.log(url);
-
                 setImageUrl(url);
             });
         }

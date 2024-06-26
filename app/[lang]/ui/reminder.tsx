@@ -60,7 +60,6 @@ export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
                     scope: SCOPES,
                 })
                 .then(() => {
-                    console.log("Google API initialized");
                     listUpcomingEvents();
                 });
         };
@@ -74,7 +73,6 @@ export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
             .signIn()
             .then(() => {
                 setIsSignIn(true);
-                console.log("User signed in");
             })
             .catch((error: any) => {
                 console.log(error);
@@ -131,7 +129,6 @@ export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
         });
 
         request.execute((event: any) => {
-            console.log("Event created: ", event.htmlLink);
             setLinkEvent(event.htmlLink);
             listUpcomingEvents();
         });
@@ -150,7 +147,6 @@ export const Reminder: React.FC<Reminder> = ({ lessonId }) => {
                 }
             )
             .then((res) => {
-                console.log(res);
                 api.success({
                     message: "Set reminder successful!",
                     placement: "bottomRight",

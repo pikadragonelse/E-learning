@@ -192,7 +192,11 @@ export const Header: React.FC<Header> = ({
                             <Tooltip title="Your cart">
                                 <ShoppingCartOutlined
                                     className="hidden sm:block text-2xl cursor-pointer"
-                                    onClick={() => router.push("/cart")}
+                                    onClick={() =>
+                                        userInfo != null
+                                            ? router.push("/cart")
+                                            : router.push("/login")
+                                    }
                                 />
                             </Tooltip>
                             <Tooltip title="Notification">

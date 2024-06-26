@@ -12,13 +12,14 @@ import { BillInfo, defaultBillInfo } from "../lib/model/bill";
 import { useTokenStore } from "../lib/store/userInfo";
 import { getToken } from "../lib/utils/get-token";
 import { setCookie } from "cookies-next";
-
+import { useRouter } from "next/navigation";
 export type Container = { children?: any; className?: string };
 export const Container: React.FC<Container> = ({ children, className }) => {
     const [openSidebarDrawer, setOpenSidebarDrawer] = useState(false);
     const [userProfile, setUserProfile] = useState<User>();
     const { userInfo, updateUserInfo } = useTokenStore();
     const [refreshUser, setRefreshUser] = useState(0);
+    const route = useRouter();
     const getDataUser = () => {
         apiInstance
             .get("users/profile", {

@@ -212,7 +212,6 @@ export default function Page({
                 }
             );
 
-            console.log("PUT response:", putResponse);
             if (option.onSuccess) option.onSuccess(putResponse.data);
         } catch (error) {
             console.log("PUT error:", error);
@@ -229,7 +228,6 @@ export default function Page({
                 }
             );
 
-            console.log("Result clear: ", getResponse.data);
         } catch (error) {
             console.log("GET error:", error);
         }
@@ -242,7 +240,6 @@ export default function Page({
             })
             .then((res) => {
                 setLinkUploadTrailer(res.data.data);
-                console.log("Link trailer: ", res.data.data);
             })
             .catch((error) => {
                 console.log(error);
@@ -273,7 +270,6 @@ export default function Page({
             );
 
             // Log PUT response và gọi onSuccess nếu tồn tại
-            console.log(putResponse);
             if (option.onSuccess) option.onSuccess(putResponse.data);
         } catch (error) {
             // Log PUT error và gọi onError nếu tồn tại
@@ -293,7 +289,6 @@ export default function Page({
             );
 
             // Log GET response
-            console.log("Result clear: ", getResponse.data);
         } catch (error) {
             // Log GET error
             console.log(error);

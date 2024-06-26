@@ -1,7 +1,7 @@
 "use client";
 
 import { Locale } from "@/i18n.config";
-import React, { Suspense, useEffect, useState } from "react";
+import React, { Suspense, useEffect, useRef, useState } from "react";
 const VideoCustom = React.lazy(() => import("../../../ui/video-custom"));
 import { MenuLecture } from "../../../ui/menu-lecture";
 import {
@@ -25,6 +25,7 @@ import { useWindowResize } from "@/app/[lang]/lib/hooks/useWindowResize";
 import { useTokenStore } from "@/app/[lang]/lib/store/userInfo";
 import { getToken } from "@/app/[lang]/lib/utils/get-token";
 import { ChatBot } from "@/app/[lang]/ui/chatbot";
+import { useRouter } from "next/navigation";
 
 export default function Page({
     params: { lang, id, courseId },
@@ -41,6 +42,8 @@ export default function Page({
     const { userInfo, updateUserInfo } = useTokenStore();
     const windowSize = useWindowResize();
     const onChange = (key: string) => {};
+    const route = useRouter();
+    const countLogin = useRef(0);
 
     const [currLessonKey, setCurrLessonKey] = useState(id);
 
@@ -78,11 +81,13 @@ export default function Page({
             })
             .then((data) => {
                 setDataLesson(data.data.data.lesson);
-                console.log(data.data);
                 setIsLoading(false);
             })
             .catch((err) => {
                 console.log(err);
+                if (err.response.status === 403) {
+                    route.push("/");
+                }
                 setIsLoading(false);
             });
     };
@@ -100,7 +105,9 @@ export default function Page({
                 setIsLoading(false);
             })
             .catch((error) => {
-                console.log(error);
+                if (error.response.status === 403) {
+                    route.push("/");
+                }
                 setIsLoading(false);
             });
     };
@@ -110,6 +117,14 @@ export default function Page({
             getDataLesson();
         }
     }, [reloadLesson, currLessonKey, userInfo]);
+
+    useEffect(() => {
+        countLogin.current += 1;
+        if (countLogin.current > 2 && userInfo.userId === 0) {
+            route.push("/");
+        }
+        console.log(countLogin.current);
+    }, [userInfo]);
 
     useEffect(() => {
         if (userInfo.userId !== 0) {

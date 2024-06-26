@@ -58,8 +58,6 @@ export default function Page({}: { params: { lang: string } }) {
 
             const context = await vectorStore.similaritySearch(value, 6);
 
-            console.log(context);
-
             const llm = new ChatOpenAI({
                 model: "gpt-3.5-turbo",
                 temperature: 0,
@@ -98,8 +96,6 @@ export default function Page({}: { params: { lang: string } }) {
                 question: value,
                 context,
             });
-
-            console.log(result);
 
             setIsLoading(false);
             const listId = result.split("\n");

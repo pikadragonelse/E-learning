@@ -60,7 +60,6 @@ export default function Page({
                 },
             })
             .then((res) => {
-                console.log(res);
                 setRefreshCart((prev) => prev + 1);
             })
             .catch((error) => {

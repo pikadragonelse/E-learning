@@ -164,7 +164,7 @@ export default function Page({
                 );
 
                 const videoDurationRange = getItem(
-                    "Duration (minute)",
+                    "Duration (hour)",
                     "durations[]",
                     <></>,
                     videoDurationRangeTemp

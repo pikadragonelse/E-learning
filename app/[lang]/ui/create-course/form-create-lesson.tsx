@@ -152,7 +152,6 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                 { headers: { Authorization: "Bear " + userInfo?.accessToken } }
             )
             .then((res) => {
-                console.log(res);
 
                 return res.data.data.url;
             })
@@ -182,7 +181,6 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                 },
             })
             .then((res) => {
-                console.log(res);
                 if (option.onSuccess) option.onSuccess(res.data);
             })
             .catch((error) => {
@@ -294,7 +292,6 @@ export const FormCreateLesson: React.FC<FormCreateLesson> = ({
                                         },
                                     })
                                     .then((res) => {
-                                        console.log(res);
                                         if (option.onSuccess)
                                             option.onSuccess(res.data);
                                     })

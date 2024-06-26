@@ -66,7 +66,6 @@ export const MenuLecture: React.FC<MenuLecture> = ({
                 },
             })
             .then((res) => {
-                console.log(res.data.data.url);
                 const link = document.createElement("a");
                 link.href = res.data.data.url;
                 document.body.appendChild(link);
@@ -171,7 +170,6 @@ export const MenuLecture: React.FC<MenuLecture> = ({
 
     useEffect(() => {
         getLesson(dataList);
-        console.log(dataList);
     }, [dataList]);
 
     useEffect(() => {

@@ -36,7 +36,6 @@ export const NewItemCourse: React.FC<NewItemCourse> = ({
 
     useEffect(() => {
         updateUserInfo(getToken());
-        console.log(userInfo);
     }, []);
 
     const getProcessingUser = () => {

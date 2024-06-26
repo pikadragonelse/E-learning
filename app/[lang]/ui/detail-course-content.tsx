@@ -70,12 +70,6 @@ export default function DetailCourseContent({
     };
 
     const getCourseData = () => {
-        console.log(
-            userInfo?.accessToken
-                ? { Authorization: "Bearer " + userInfo?.accessToken }
-                : {}
-        );
-
         apiInstance
             .get(`courses/${params.id}`, {
                 headers: userInfo?.accessToken

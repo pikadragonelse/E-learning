@@ -57,8 +57,6 @@ export const FormComment: React.FC<FormComment> = ({
                 },
             })
             .then((res) => {
-                console.log(res);
-
                 onPost(content);
             })
             .catch((error) => {

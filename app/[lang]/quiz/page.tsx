@@ -37,7 +37,6 @@ const formatString = (input: string): Question[] => {
             answer: question[question.length - 1],
         });
     });
-    console.log(questions);
 
     return questions;
 };

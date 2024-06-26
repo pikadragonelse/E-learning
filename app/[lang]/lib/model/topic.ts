@@ -26,6 +26,7 @@ export const defaultLesson = {
     title: "",
     duration: 0,
     isPreview: false,
+    resources: [],
 };
 
 export const defaultTopic = {

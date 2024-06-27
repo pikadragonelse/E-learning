@@ -15,10 +15,12 @@ import { createStuffDocumentsChain } from "langchain/chains/combine_documents";
 import { Course } from "../lib/model/course";
 import { Container } from "../ui/container";
 import { useForm } from "antd/es/form/Form";
+import { CloseOutlined } from "@ant-design/icons";
 
 type FieldType = {
     document: any;
     quantity: number;
+    language: string;
 };
 
 interface Question {
@@ -68,6 +70,7 @@ export default function Page({}: { params: { lang: string } }) {
     const [resultQuote, setResultQuote] = useState<Question[]>([]);
     const [nameFile, setNameFile] = useState("");
     const [resultText, setResultText] = useState("");
+    const [language, setLanguage] = useState("English");
 
     const request = async (value: string) => {
         setIsLoading(true);
@@ -101,7 +104,7 @@ export default function Page({}: { params: { lang: string } }) {
             apiKey: process.env.OPEN_AI_API_KEY,
         });
 
-        const template = `You are an advanced AI model designed to generate multiple-choice questions based on a given document. Your task is to create a list of ${quantity} unique multiple-choice questions with answers from the dataset provided. Each question should have at least 4 answer options, with one correct answer clearly marked. Ensure the questions cover different parts of the document to provide a comprehensive assessment.
+        const template = `You are an advanced AI model designed to generate multiple-choice questions based on a given document. Your task is to create a list of ${quantity} unique multiple-choice questions with answers from the dataset provided. Each question should have at least 4 answer options, with one correct answer clearly marked. Ensure the questions cover different parts of the document to provide a comprehensive assessment. Create by language: ${language}.
 
         Your output should follow this format:
 
@@ -225,6 +228,20 @@ export default function Page({}: { params: { lang: string } }) {
                             onChange={(value) => setQuantity(value)}
                         />
                     </Form.Item>
+                    <Form.Item<FieldType>
+                        name="language"
+                        label="Language"
+                        rules={[{ required: true }]}
+                    >
+                        <Select
+                            options={[
+                                { label: "Vietnamese", value: "Vietnamese" },
+                                { label: "English", value: "English" },
+                            ]}
+                            className="w-32"
+                            onChange={(value) => setLanguage(value)}
+                        />
+                    </Form.Item>
                     <div className="flex gap-4">
                         <Form.Item<FieldType>
                             name="document"
@@ -240,6 +257,13 @@ export default function Page({}: { params: { lang: string } }) {
                             </Upload>
                         </Form.Item>
                         <div className="text-lg">{nameFile}</div>
+                        <Button
+                            icon={<CloseOutlined />}
+                            onClick={() => {
+                                setNameFile("");
+                                setDataTrain("");
+                            }}
+                        />
                     </div>
 
                     <Button type="primary" onClick={() => form.submit()}>

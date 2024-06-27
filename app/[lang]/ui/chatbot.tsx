@@ -29,7 +29,7 @@ export const ChatBot: React.FC<ChatBot> = ({ courseId }) => {
 
     const chatbot = (question: string) => {
         setIsRendering(true);
-        form.setFieldValue("query", "");
+
         setMessageList((prev) => {
             return [
                 ...prev,
@@ -66,6 +66,7 @@ export const ChatBot: React.FC<ChatBot> = ({ courseId }) => {
                 console.log(error);
                 setIsRendering(false);
             });
+        form.setFieldValue("query", "");
     };
 
     const isStartOfSequence = (

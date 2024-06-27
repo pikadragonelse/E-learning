@@ -83,6 +83,8 @@ export default function Page({
                 }
             )
             .then((res) => {
+                console.log(res.data);
+
                 return res.data.id;
             })
             .catch((error) => {

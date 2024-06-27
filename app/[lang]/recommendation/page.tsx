@@ -58,6 +58,8 @@ export default function Page({}: { params: { lang: string } }) {
 
             const context = await vectorStore.similaritySearch(value, 6);
 
+            console.log(context);
+
             const llm = new ChatOpenAI({
                 model: "gpt-3.5-turbo",
                 temperature: 0,
@@ -66,23 +68,23 @@ export default function Page({}: { params: { lang: string } }) {
 
             const template = `You are an advanced AI model designed to provide course information from a given dataset, with each course's information separated by ";". Your primary task is to:
 
-        Field courseId in dataset is the id of the course, Field title is the name of the course, field category is the category of the course, field updatedAt is the latest update date of the course.
+            Field courseId in dataset is the id of the course, Field title is the name of the course, field category is the category of the course, field updatedAt is the latest update date of the course.
 
-        1. Identify the course category the user is interested in from their query.
-        2. Extract and present at least 10 unique course IDs from that category in the dataset, ensuring that no duplicate course IDs are included in your response. If no courses from the specified category are found, default to presenting 10 unique course IDs from any category in the dataset.
-        
-        The dataset you have is an array where each element is a string containing the details of a course. Use the course data to fulfill this requirement. If the user's query is not directly related to courses, you should still provide 10 unique course IDs from any category as part of your response. If you don't know the answer, just say that you don't know, and do not try to make up an answer. Find all of your dataset and return the closest answer.
-        
-        result format example:
-        1. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
-        2. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
-        ...
+            1. Identify the course category the user is interested in from their query.
+            2. Extract and present at least 10 unique course IDs from that category in the dataset, ensuring that no duplicate course IDs are included in your response. If no courses from the specified category are found, default to presenting 10 unique course IDs from any category in the dataset.
 
-        {context}
+            The dataset you have is an array where each element is a string containing the details of a course. Use the course data to fulfill this requirement. If the user's query is not directly related to courses, you should still provide 10 unique course IDs from any category as part of your response. If you don't know the answer, just say that you don't know, and do not try to make up an answer. Find all of your dataset and return the closest answer.
 
-        Question: {question}
+            result format example:
+            1. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
+            2. complete-introduction-to-microsoft-power-bi-9d2ce194-1714883817359
+            ...
 
-        Helpful Answer:`;
+            {context}
+
+            Question: {question}
+
+            Helpful Answer:`;
 
             const customRagPrompt = PromptTemplate.fromTemplate(template);
 
@@ -103,6 +105,8 @@ export default function Page({}: { params: { lang: string } }) {
             const finalResult = listId.map((id) => {
                 return id.trim().split(".")[1];
             });
+
+            console.log(finalResult);
 
             setListCourseId(finalResult);
             setIsLoading(false);
